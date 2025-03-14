@@ -1,0 +1,51 @@
+name: api-template
+
+networks:
+  api-template-network:
+    name: api-template-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24
+
+services:
+  api-template-dev:
+    image: api-template-dev:latest
+    container_name: api-template-dev
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: development
+    networks:
+      - api-template-network
+    # ports:
+    #   - 8080:8080
+    command: ["tail", "-f", "/dev/null"] # NOTE: For testing the container
+    restart: "no"
+    develop:
+      watch:
+        # Sync the working directory with the `/app` directory in the container
+        - action: sync
+          path: .
+          target: /app
+          # Exclude the project virtual environment
+          ignore:
+            - .venv/
+
+        # Rebuild the image on changes to the `pyproject.toml`
+        - action: rebuild
+          path: ./pyproject.toml
+
+  api-template-prod:
+    image: api-template-prod:latest
+    container_name: api-template-prod
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: production
+    networks:
+      - api-template-network
+    # ports:
+    #   - 8080:8080
+    command: ["tail", "-f", "/dev/null"] # NOTE: For testing the container
+    restart: "no"
