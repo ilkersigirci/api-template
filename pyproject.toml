@@ -31,7 +31,20 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 
-dependencies = []
+dependencies = [
+    "email-validator>=2.0.0",
+    "fastapi[standard]>=0.115.11",
+    "opentelemetry-distro>=0.52b0",
+    "opentelemetry-exporter-otlp>=1.31.0",
+    "opentelemetry-instrumentation-fastapi>=0.52b0",
+    "opentelemetry-instrumentation-logging>=0.52b0",
+    "passlib[bcrypt]>=1.7.4",
+    "prometheus-client>=0.21.1",
+    "pydantic-settings>=2.0.3",
+    "python-dotenv>=1.0.0",
+    "python-jose[cryptography]>=3.3.0",
+    "python-multipart>=0.0.6",
+]
 
 [dependency-groups]
 dev = [
@@ -114,7 +127,6 @@ select = [
     "B",  # flake8-bugbear
     "C",  # flake8-comprehensions
     "C9",  # mccabe
-
     "E",  # pycodestyle errors (default)
     "F",  # pyflakes (default)
     "I",  # isort
@@ -147,7 +159,6 @@ unfixable = [
 # some_alias = ""
 
 
-
 [tool.ruff.lint.mccabe]
 max-complexity = 10
 
@@ -157,10 +168,8 @@ combine-as-imports = true
 # known-first-party = ["SomeLibrary"]
 # known-third-party = ["SomeLibrary"]
 
-
-
 [tool.coverage.run]
-source = ['src/api_template']
+source = ['app']
 branch = true
 context = '${CONTEXT}'
 
@@ -176,13 +185,5 @@ exclude_lines = [
 
 # [tool.coverage.paths]
 # source = [
-#     'src/api_template/',
+#     'app/',
 # ]
-
-# [build-system]
-# requires = ["uv>=0.5.24,<1.0.0"]
-# build-backend = "uv._build_backend" # FIXME: Only builds source distribution, not wheel
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"

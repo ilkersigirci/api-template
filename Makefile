@@ -3,13 +3,13 @@
 .ONESHELL:
 SHELL=/bin/bash
 ROOT_DIR=api-template
-PACKAGE=src/api_template
+PACKAGE=app
 DOC_DIR=./docs
 TEST_DIR=./tests
 TEST_MARKER=placeholder
 TEST_OUTPUT_DIR=tests_outputs
-PRECOMMIT_FILE_PATHS=./api_template/__init__.py
-PROFILE_FILE_PATH=./api_template/__init__.py
+PRECOMMIT_FILE_PATHS=./app/__init__.py
+PROFILE_FILE_PATH=./app/__init__.py
 DOCKER_IMAGE=api-template
 DOCKER_TARGET=development
 
@@ -154,7 +154,10 @@ format: ## Run ruff for all package files. CHANGES CODE
 	uv run --module ruff format ${PACKAGE}
 	uv run --module ruff check ${PACKAGE} --fix --show-fixes
 
-
+format-unsafe: ## Run ruff for all package files. CHANGES CODE
+	uv lock --locked
+	uv run --module ruff format ${PACKAGE}
+	uv run --module ruff check ${PACKAGE} --fix --unsafe-fixes --show-fixes
 
 # profile: ## Profile the file with scalene and shows the report in the terminal
 # 	uv lock --locked
@@ -170,3 +173,6 @@ profile-builtin: ## Profile the file with cProfile and shows the report in the t
 
 docker-build: ## Build docker image
 	docker build --tag ${DOCKER_IMAGE} --file docker/Dockerfile --target ${DOCKER_TARGET} .
+
+run-local-app: ## Run the app in the local mode
+	fastapi run app/main.py --reload --port 8000

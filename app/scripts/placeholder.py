@@ -1,7 +1,4 @@
-"""Useful python cli scripts.
-
-Currently, `uv` not support this feature.
-"""
+"""Useful python cli scripts."""
 
 
 def placeholder_script():
