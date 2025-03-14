@@ -22,6 +22,12 @@ class UserRepository(BaseRepository[User]):
                 email="jane@example.com",
                 hashed_password=get_password_hash("password"),
             ),
+            UserInDB(
+                id=3,
+                name="ilker",
+                email="ilker@example.com",
+                hashed_password=get_password_hash("ilker"),
+            ),
         ]
 
     def get_by_id(self, id: int) -> Optional[User]:
