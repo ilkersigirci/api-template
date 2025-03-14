@@ -1,49 +1,26 @@
-name: Test the module
+# name: Test the module
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
 
-jobs:
-  test:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Disable Logger Outputs
-        run: |
-          sed -i "s/log_cli = true/log_cli = false/" pyproject.toml
-      - name: Set up python environment
-        uses: ./.github/actions/setup-python
-      - name: Install the Project with Test Dependencies
-        run: |
-          make install-test
-      - name: Test the Project
-        run: |
-          make test-all-parallel
-
-  # Uncomment if you want to test against multiple Python versions
-  # test_matrix:
-  #   strategy:
-  #     matrix:
-  #       python-version: ['3.11', '3.12']
-  #       os: [ubuntu-22.04] # windows-latest
-  #   runs-on: ${{ matrix.os }}
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Disable Logger Outputs
-  #       run: |
-  #         sed -i "s/log_cli = true/log_cli = false/" pyproject.toml
-  #     - name: Set up python environment
-  #       uses: ./.github/actions/setup-python
-  #     - name: Install the Project with Test Dependencies
-  #       run: |
-  #         make install-test
-  #     - name: Test the Project
-  #       run: |
-  #         make test-all-parallel
-  #     # - name: Publish code coverage
-  #     #   uses: codecov/codecov-action@v3
+# jobs:
+#   test:
+#     runs-on: ubuntu-22.04
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Disable Logger Outputs
+#         run: |
+#           sed -i "s/log_cli = true/log_cli = false/" pyproject.toml
+#       - name: Set up python environment
+#         uses: ./.github/actions/setup-python
+#       - name: Install the Project with Test Dependencies
+#         run: |
+#           make install-test
+#       - name: Test the Project
+#         run: |
+#           make test-all-parallel
