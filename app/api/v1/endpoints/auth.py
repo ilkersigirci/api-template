@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
+from app.dependencies.auth import get_current_user
 from app.dependencies.repositories import get_user_service
 from app.models.token import Token
 from app.models.user import User, UserCreate
@@ -36,7 +37,7 @@ async def register_user(
 
 
 @router.post("/test-token", response_model=User)
-async def test_token(current_user: Annotated[User, Depends(get_user_service)]):
+async def test_token(current_user: Annotated[User, Depends(get_current_user)]):
     """
     Test access token
     """
