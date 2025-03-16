@@ -271,3 +271,5 @@ profile.*
 /.ruff_cache/
 public
 .sesskey
+
+docker/volumes/*

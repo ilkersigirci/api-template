@@ -18,9 +18,9 @@ services:
       target: development
     networks:
       - api-template-network
-    # ports:
-    #   - 8080:8080
-    command: ["tail", "-f", "/dev/null"] # NOTE: For testing the container
+    ports:
+      - 8000:8000
+    # command: ["tail", "-f", "/dev/null"] # NOTE: For testing the container
     restart: "no"
     develop:
       watch:
@@ -36,16 +36,20 @@ services:
         - action: rebuild
           path: ./pyproject.toml
 
-  api-template-prod:
-    image: api-template-prod:latest
-    container_name: api-template-prod
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-      target: production
+  grafana-lgtm:
+    image: docker.io/grafana/otel-lgtm:latest
+    container_name: grafana-lgtm
+    ports:
+      - 3000:3000 # Grafana
+      - 4317:4317 # gRPC
+      - 4318:4318 # HTTP
+    volumes:
+      - ./docker/volumes/grafana:/data/grafana
+      - ./docker/volumes/prometheus:/data/prometheus
+      - ./docker/volumes/loki:/data/loki
+    environment:
+      - GF_PATHS_DATA=/data/grafana
+    env_file:
+      - .env
     networks:
       - api-template-network
-    # ports:
-    #   - 8080:8080
-    command: ["tail", "-f", "/dev/null"] # NOTE: For testing the container
-    restart: "no"
