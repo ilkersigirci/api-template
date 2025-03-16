@@ -175,4 +175,7 @@ docker-build: ## Build docker image
 	docker build --tag ${DOCKER_IMAGE} --file docker/Dockerfile --target ${DOCKER_TARGET} .
 
 run-local-app: ## Run the app in the local mode
-	fastapi run app/main.py --reload --port 8000
+	uv run --module fastapi run app/main.py --reload --port 8000
+
+run-ui:
+	uv run --module uvicorn ui.main:app --host 0.0.0.0 --port 5002

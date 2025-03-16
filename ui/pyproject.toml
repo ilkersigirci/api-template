@@ -1,0 +1,9 @@
+[project]
+name = "ui"
+version = "0.0.1"
+description = "FastAPI Template UI"
+readme = "README.md"
+requires-python = ">=3.11, < 3.12"
+dependencies = [
+    "python-fasthtml>=0.12.4",
+]

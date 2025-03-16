@@ -1,7 +1,7 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, Security, status
+from fastapi.security import APIKeyHeader, OAuth2PasswordBearer
 from jose import JWTError, jwt
 from pydantic import ValidationError
 
@@ -12,6 +12,7 @@ from app.models.user import User
 from app.services.user_service import UserService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
+api_key_header = APIKeyHeader(name="X-API-Key")
 
 
 def get_current_user(
@@ -39,6 +40,28 @@ def get_current_user(
         ) from e
 
     user = user_service.get_user(int(token_data.sub))
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
+    return user
+
+
+def get_current_user_by_api_key(
+    api_key: Annotated[str, Depends(Security(api_key_header))],
+    user_service: Annotated[UserService, Depends(get_user_service)],
+) -> User:
+    check_api_key = True
+
+    if check_api_key is False:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing or invalid API key",
+        )
+
+    user = user_service.get_user_by_api_key(api_key)
 
     if not user:
         raise HTTPException(

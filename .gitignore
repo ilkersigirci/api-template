@@ -265,8 +265,9 @@ cython_debug/
 
 # Custom ignores
 
-/.ruff_cache/
-public
-
 # Scalene related
 profile.*
+
+/.ruff_cache/
+public
+.sesskey

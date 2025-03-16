@@ -32,20 +32,14 @@ classifiers = [
 ]
 
 dependencies = [
-    "email-validator>=2.0.0",
+    "fastapi-users[oauth,sqlalchemy]>=14.0.1",
     "fastapi[standard]>=0.115.11",
     "opentelemetry-distro>=0.52b0",
     "opentelemetry-exporter-otlp>=1.31.0",
     "opentelemetry-instrumentation-fastapi>=0.52b0",
     "opentelemetry-instrumentation-logging>=0.52b0",
-    "passlib[bcrypt]>=1.7.4",
-    "bcrypt==4.0.1", # Pin bcrypt until passlib supports the latest
     "prometheus-client>=0.21.1",
     "pydantic-settings>=2.0.3",
-    "python-dotenv>=1.0.0",
-    "python-jose[cryptography]>=3.3.0",
-    "python-multipart>=0.0.6",
-    "sqlalchemy[asyncio]>=2.0.39",
 ]
 
 [dependency-groups]
@@ -54,7 +48,6 @@ dev = [
     "pre-commit>=4.0.1",
     "ruff>=0.11.0",
     # "scalene~=1.5.21.2",
-
 ]
 
 test = [
@@ -67,6 +60,9 @@ test = [
 
 [tool.uv]
 default-groups = ["dev", "test"]
+
+[tool.uv.workspace]
+members = ["ui"]
 
 
 [tool.pytest.ini_options]
