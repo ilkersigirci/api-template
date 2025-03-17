@@ -1,3 +1,4 @@
+from enum import StrEnum
 from typing import Annotated
 
 from pydantic import (
@@ -17,24 +18,33 @@ CustomHttpUrlStr = Annotated[
 ]
 
 
+class LogLevel(StrEnum):
+    """Possible log levels."""
+
+    NOTSET = "NOTSET"
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    FATAL = "FATAL"
+
+
 class Settings(BaseSettings):
-    API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "FastAPI Template"
-
-    ENVIRONMENT: str = "dev"
-
-    # CORS configuration
-    CORS_ORIGINS: list[CustomHttpUrlStr] = []
-
-    # JWT configuration
-    SECRET_KEY: str = "CHANGE_ME_IN_PRODUCTION"
-    ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-
-    # OpenTelemetry settings
+    ALGORITHM: str = "HS256"
+    API_V1_STR: str = "/api/v1"
+    CORS_ORIGINS: list[CustomHttpUrlStr] = []
+    ENVIRONMENT: str = "dev"
+    HOST: str = "127.0.0.1"
+    LOG_LEVEL: LogLevel = LogLevel.INFO
+    OTLP_ENDPOINT: CustomHttpUrlStr = ""
+    PORT: int = 8000
+    PROJECT_NAME: str = "FastAPI Template"
+    RELOAD: bool = False
+    SECRET_KEY: str = "CHANGE_ME_IN_PRODUCTION"
     TELEMETRY_ENABLED: bool = False
     TELEMETRY_LOGGING_ENABLED: bool = False
-    OTLP_ENDPOINT: CustomHttpUrlStr = ""
+    WORKERS: int = 1
 
     class Config:
         case_sensitive = True

@@ -19,7 +19,7 @@ repos:
         args: ["--fix=lf"]
         description: Forces to replace line ending by the UNIX 'lf' character.
       - id: check-added-large-files
-        args: ["--maxkb=1000"]
+        args: ["--maxkb=2000"]
 
   - repo: https://github.com/astral-sh/uv-pre-commit
     rev: 0.6.2

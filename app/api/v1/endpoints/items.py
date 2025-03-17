@@ -2,6 +2,7 @@ from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, Query
 
+# from pydantic import Field
 from app.dependencies.repositories import get_item_service
 from app.models.item import Item, ItemCreate, ItemUpdate
 from app.services.item_service import ItemService
@@ -13,6 +14,7 @@ router = APIRouter()
 async def get_items(  # noqa: PLR0913
     item_service: Annotated[ItemService, Depends(get_item_service)],
     skip: int = Query(0, ge=0, description="Number of items to skip"),
+    # skip: int = Field(0, ge=0, description="Number of items to skip"), # FIXME: Not working
     limit: int = Query(100, ge=1, le=100, description="Number of items to return"),
     name: Optional[str] = Query(None, description="Filter items by name"),
     description: Optional[str] = Query(None, description="Filter items by description"),
@@ -27,6 +29,7 @@ async def get_items(  # noqa: PLR0913
         sort_by=sort_by,
         order=order,
     )
+    # return {"message": "Get all items"}
 
 
 @router.get("/{item_id}")
