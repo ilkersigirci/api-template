@@ -21,7 +21,7 @@ from app.core.config import settings
 def setup_opentelemetry(app):  # pragma: no cover
     """Setup OpenTelemetry instrumentation for FastAPI."""
     if not settings.TELEMETRY_ENABLED:
-        return None
+        return
 
     resource = Resource(
         attributes={
