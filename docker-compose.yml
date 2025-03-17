@@ -36,20 +36,41 @@ services:
         - action: rebuild
           path: ./pyproject.toml
 
+  ########## OpenTelemetry ##########
+
+  ##### SIMPLE #####
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.53.0
+    container_name: otel-collector
+    networks:
+      - api-template-network
+    ports:
+      - "4317:4317"
+    volumes:
+      - ./docker/otel-collector-config.yml:/config.yml
+    command: --config config.yml
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.35
+    hostname: jaeger
+    networks:
+      - api-template-network
+    ports:
+      - 16686:16686
+
+  ##### ADVANCED #######
   grafana-lgtm:
     image: docker.io/grafana/otel-lgtm:latest
     container_name: grafana-lgtm
+    networks:
+      - api-template-network
     ports:
       - 3000:3000 # Grafana
       - 4317:4317 # gRPC
       - 4318:4318 # HTTP
+    environment:
+      - GF_PATHS_DATA=/data/grafana
     volumes:
       - ./docker/volumes/grafana:/data/grafana
       - ./docker/volumes/prometheus:/data/prometheus
       - ./docker/volumes/loki:/data/loki
-    environment:
-      - GF_PATHS_DATA=/data/grafana
-    env_file:
-      - .env
-    networks:
-      - api-template-network
