@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, Optional
 
 from app.models.item import Item, ItemCreate, ItemUpdate
 from app.repositories.base import BaseRepository
@@ -16,7 +16,7 @@ class ItemRepository(BaseRepository[Item]):
     def get_by_id(self, id: int) -> Optional[Item]:
         return next((item for item in self._items if item.id == id), None)
 
-    def get_all(self) -> List[Item]:
+    def get_all(self) -> list[Item]:
         return self._items
 
     def create(self, item_in: ItemCreate) -> Item:
@@ -45,3 +45,26 @@ class ItemRepository(BaseRepository[Item]):
             self._items = [i for i in self._items if i.id != id]
             return True
         return False
+
+    def get_items(
+        self,
+        skip: int = 0,
+        limit: int = 100,
+        filters: dict[str, Any] | None = None,
+        sort_by: Optional[str] = None,
+        order: Optional[str] = "asc",
+    ) -> list[Item]:
+        items = list(self._items)
+
+        # Apply filters if provided
+        if filters:
+            for field, value in filters.items():
+                items = [item for item in items if getattr(item, field, None) == value]
+
+        # Apply sorting if requested
+        if sort_by and hasattr(Item, sort_by):
+            reverse = order.lower() == "desc"
+            items.sort(key=lambda x: getattr(x, sort_by), reverse=reverse)
+
+        # Apply pagination
+        return items[skip : skip + limit]

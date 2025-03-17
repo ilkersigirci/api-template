@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
@@ -10,46 +10,46 @@ from app.services.user_service import UserService
 router = APIRouter()
 
 
-@router.get("/", response_model=List[User])
+@router.get("/")
 async def get_users(
     current_user: Annotated[User, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(get_user_service)],
-):
+) -> list[User]:
     return user_service.get_users()
 
 
-@router.get("/me", response_model=User)
+@router.get("/me")
 async def get_current_user_info(
     current_user: Annotated[User, Depends(get_current_user)],
-):
+) -> User:
     return current_user
 
 
-@router.get("/{user_id}", response_model=User)
+@router.get("/{user_id}")
 async def get_user(
     user_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(get_user_service)],
-):
+) -> User:
     return user_service.get_user(user_id)
 
 
-@router.post("/", response_model=User)
+@router.post("/")
 async def create_user(
     user_in: UserCreate,
     current_user: Annotated[User, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(get_user_service)],
-):
+) -> User:
     return user_service.create_user(user_in)
 
 
-@router.put("/{user_id}", response_model=User)
+@router.put("/{user_id}")
 async def update_user(
     user_id: int,
     user_in: UserUpdate,
     current_user: Annotated[User, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(get_user_service)],
-):
+) -> User:
     return user_service.update_user(user_id, user_in)
 
 
@@ -58,6 +58,6 @@ async def delete_user(
     user_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(get_user_service)],
-):
+) -> dict:
     user_service.delete_user(user_id)
     return {"message": "User deleted successfully"}
