@@ -11,6 +11,9 @@ from opentelemetry.sdk.resources import (
 )
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from prometheus_fastapi_instrumentator.instrumentation import (
+    PrometheusFastApiInstrumentator,
+)
 
 from app.core.config import settings
 
@@ -50,9 +53,9 @@ def setup_opentelemetry(app):  # pragma: no cover
         excluded_urls=",".join(excluded_endpoints),
     )
 
-    # TODO: How this is used?
     # Instrument Python logging
-    # LoggingInstrumentor().instrument(tracer_provider=trace_provider)
+    if settings.TELEMETRY_LOGGING_ENABLED:
+        LoggingInstrumentor().instrument(tracer_provider=trace_provider)
 
     # Set the trace provider as the global default
     trace.set_tracer_provider(trace_provider)
@@ -64,3 +67,10 @@ def stop_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
         return
 
     FastAPIInstrumentor().uninstrument_app(app)
+
+
+def setup_prometheus(app: FastAPI) -> None:  # pragma: no cover
+    """Enables prometheus integration."""
+    PrometheusFastApiInstrumentator(should_group_status_codes=False).instrument(
+        app,
+    ).expose(app, should_gzip=True, name="prometheus_metrics")

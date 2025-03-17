@@ -33,6 +33,7 @@ class Settings(BaseSettings):
 
     # OpenTelemetry settings
     TELEMETRY_ENABLED: bool = False
+    TELEMETRY_LOGGING_ENABLED: bool = False
     OTLP_ENDPOINT: CustomHttpUrlStr = ""
 
     class Config:
