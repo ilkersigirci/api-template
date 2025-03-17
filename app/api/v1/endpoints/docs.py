@@ -18,6 +18,10 @@ async def swagger_ui_html(request: Request) -> HTMLResponse:
 
     Returns:
         Rendered Swagger UI.
+
+    NOTE:
+        swagger-ui-bundle.js: https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js
+        swagger-ui.css: https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css
     """
     app: FastAPI = request.app
 
@@ -49,6 +53,9 @@ async def redoc_html(request: Request) -> HTMLResponse:
 
     Returns:
         Rendered Redoc UI.
+
+    NOTE:
+        redoc.standalone.js: https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js
     """
     app: FastAPI = request.app
 
