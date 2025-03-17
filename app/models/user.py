@@ -21,18 +21,18 @@ class UserInDB(UserBase):
     hashed_password: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class User(UserBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserInDBBase(UserBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

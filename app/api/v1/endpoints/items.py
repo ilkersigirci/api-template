@@ -1,8 +1,7 @@
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 
-# from pydantic import Field
 from app.dependencies.repositories import get_item_service
 from app.models.item import Item, ItemCreate, ItemUpdate
 from app.services.item_service import ItemService
@@ -13,13 +12,16 @@ router = APIRouter()
 @router.get("/")
 async def get_items(  # noqa: PLR0913
     item_service: Annotated[ItemService, Depends(get_item_service)],
-    skip: int = Query(0, ge=0, description="Number of items to skip"),
-    # skip: int = Field(0, ge=0, description="Number of items to skip"), # FIXME: Not working
-    limit: int = Query(100, ge=1, le=100, description="Number of items to return"),
-    name: Optional[str] = Query(None, description="Filter items by name"),
-    description: Optional[str] = Query(None, description="Filter items by description"),
-    sort_by: Optional[str] = Query(None, description="Field to sort by"),
-    order: Optional[str] = Query("asc", description="Sort order (asc or desc)"),
+    skip: Annotated[int, Query(ge=0, description="Number of items to skip")] = 0,
+    limit: Annotated[
+        int, Query(ge=1, le=100, description="Number of items to return")
+    ] = 100,
+    name: Annotated[str | None, Query(description="Filter items by name")] = None,
+    description: Annotated[
+        str | None, Query(description="Filter items by description")
+    ] = None,
+    sort_by: Annotated[str | None, Query(description="Field to sort by")] = None,
+    order: Annotated[str | None, Query(description="Sort order (asc or desc)")] = "asc",
 ) -> list[Item]:
     return item_service.get_items(
         skip=skip,
@@ -29,7 +31,6 @@ async def get_items(  # noqa: PLR0913
         sort_by=sort_by,
         order=order,
     )
-    # return {"message": "Get all items"}
 
 
 @router.get("/{item_id}")

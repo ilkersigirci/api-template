@@ -1,13 +1,12 @@
 from enum import StrEnum
+from pathlib import Path
+from tempfile import gettempdir
 from typing import Annotated
 
-from pydantic import (
-    AfterValidator,
-    AnyHttpUrl,
-    PlainValidator,
-    TypeAdapter,
-)
+from pydantic import AfterValidator, AnyHttpUrl, Field, PlainValidator, TypeAdapter
 from pydantic_settings import BaseSettings
+
+TEMP_DIR = Path(gettempdir())
 
 AnyHttpUrlAdapter = TypeAdapter(AnyHttpUrl)
 
@@ -45,6 +44,10 @@ class Settings(BaseSettings):
     TELEMETRY_ENABLED: bool = False
     TELEMETRY_LOGGING_ENABLED: bool = False
     WORKERS: int = 1
+    PROMETHEUS_DIR: Path = Field(
+        default=TEMP_DIR / "prom",
+        description="This variable is used to define multiproc_dir.It's required for [uvi|guni]corn projects.",
+    )
 
     class Config:
         case_sensitive = True

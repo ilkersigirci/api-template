@@ -174,8 +174,12 @@ profile-builtin: ## Profile the file with cProfile and shows the report in the t
 docker-build: ## Build docker image
 	docker build --tag ${DOCKER_IMAGE} --file docker/Dockerfile --target ${DOCKER_TARGET} .
 
-run-local-app: ## Run the app in the local mode
-	uv run --module fastapi run app/main.py --reload --port 8000
+run-dev: ## Run the app in the dev mode
+	# uv run --module uvicorn app.main:app --port 8000
+	uv run --module app.__main__
+
+# run-prod: ## Run the app in the prod mode
+# 	uv run --module fastapi run app/main.py --port 8000
 
 run-ui:
 	uv run --module uvicorn ui.main:app --host 0.0.0.0 --port 5002
