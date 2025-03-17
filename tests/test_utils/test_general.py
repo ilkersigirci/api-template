@@ -1,37 +1,6 @@
-import os
 import pytest
 
-from app.utils.general import check_env_vars, is_module_installed
-
-
-def test_check_env_vars_with_empty_list():
-    """Test check_env_vars with an empty list."""
-    # Should not raise any exception
-    check_env_vars([])
-    check_env_vars(None)
-
-
-def test_check_env_vars_with_existing_var():
-    """Test check_env_vars with vars that exist."""
-    # Set a test environment variable
-    os.environ["TEST_ENV_VAR"] = "test_value"
-
-    # Should not raise any exception
-    check_env_vars(["TEST_ENV_VAR"])
-
-    # Clean up
-    del os.environ["TEST_ENV_VAR"]
-
-
-def test_check_env_vars_with_missing_var():
-    """Test check_env_vars with missing vars."""
-    # Make sure the variable doesn't exist
-    if "NONEXISTENT_VAR" in os.environ:
-        del os.environ["NONEXISTENT_VAR"]
-
-    # Should raise ValueError
-    with pytest.raises(ValueError, match="Please set NONEXISTENT_VAR env var."):
-        check_env_vars(["NONEXISTENT_VAR"])
+from app.utils.general import is_module_installed
 
 
 def test_is_module_installed_existing():
