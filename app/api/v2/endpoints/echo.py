@@ -6,7 +6,7 @@ router = APIRouter()
 
 
 @router.post("/", response_model=Message)
-async def send_echo_message(incoming_message: Message) -> Message:
+async def send_echo_message_v2(incoming_message: Message) -> Message:
     """Sends echo back to user.
 
     Args:
