@@ -6,7 +6,6 @@ from httpx import AsyncClient
 from starlette import status
 
 
-# FIXME: Goes to only v1 endpoint. How to change this behavior?
 @pytest.mark.anyio
 async def test_echo(fastapi_app: FastAPI, client_authenticated: AsyncClient) -> None:
     """Tests that echo route works.
