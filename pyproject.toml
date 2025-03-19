@@ -94,7 +94,7 @@ addopts = [
 
 env = [
     "ENVIRONMENT=pytest",
-    "DB_BASE=api_template_test",
+    "OTEL_SDK_DISABLED=true",
 ]
 
 testpaths = ["tests"]
