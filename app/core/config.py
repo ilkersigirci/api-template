@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     ALGORITHM: str = "HS256"
     API_V1_STR: str = "/api/v1"
+    API_V2_STR: str = "/api/v2"
     CORS_ORIGINS: list[CustomHttpUrlStr] = []
     ENVIRONMENT: str = "dev"
     HOST: str = "127.0.0.1"

@@ -46,12 +46,12 @@ api-template/
 
 The project follows a multi-layered architecture:
 
-1. **API Layer** (`app/api/`): 
+1. **API Layer** (`app/api/`):
    - Handles HTTP requests and responses
    - Defines API endpoints and routes
    - Depends on the service layer
 
-2. **Service Layer** (`app/services/`): 
+2. **Service Layer** (`app/services/`):
    - Implements business logic
    - Coordinates activities between multiple repositories
    - Handles exceptions and error responses
