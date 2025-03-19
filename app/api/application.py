@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from app.api import docs, health
 from app.api.lifespan import lifespan_setup
 from app.api.v1.api import api_router
 from app.core.config import settings
@@ -35,6 +36,8 @@ def get_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    app.include_router(docs.router)
+    app.include_router(health.router)
     app.include_router(api_router, prefix=settings.API_V1_STR)
 
     # Adds static directory. This directory is used to access swagger files.

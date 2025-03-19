@@ -1,12 +1,9 @@
 from fastapi import APIRouter, Depends
 
-from app.api.v1.endpoints import auth, docs, health, items, users
+from app.api.v1.endpoints import auth, items, users
 from app.dependencies.auth import get_current_user
 
 api_router = APIRouter()
-
-api_router.include_router(docs.router)
-api_router.include_router(health.router)
 
 api_router.include_router(
     auth.router,
