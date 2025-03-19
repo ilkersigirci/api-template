@@ -7,3 +7,16 @@ requires-python = ">=3.11, < 3.12"
 dependencies = [
     "python-fasthtml>=0.12.4",
 ]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+src = ["src"]
+respect-gitignore = true
+
+[tool.ruff.lint]
+ignore = [
+    "E501",  # Line too long, handled by ruff formatter
+    "D107", # "Missing docstring in __init__",
+    "F811", # Redefinition of same function
+]

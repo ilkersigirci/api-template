@@ -115,12 +115,13 @@ respect-gitignore = true
 
 extend-exclude = [
     "docs",
-    # "tests",
+    "ui",
 ]
 
 # Ignore `E402` (import violations) in all `__init__.py` files, and in `path/to/file.py`.
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["E402", "F401"]
+"tests/*.py" = ["T20", "PLR2004"]
 # "*.ipynb" = ["E501"]  # disable line-too-long in notebooks
 
 # "path/to/file.py" = ["E402"]

@@ -1,10 +1,6 @@
 from datetime import timedelta
 
-from app.core.security import (
-    create_access_token,
-    verify_password,
-    get_password_hash
-)
+from app.core.security import create_access_token, get_password_hash, verify_password
 
 
 def test_password_hashing():

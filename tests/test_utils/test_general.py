@@ -1,5 +1,4 @@
 import pytest
-
 from app.utils.general import is_module_installed
 
 
@@ -18,5 +17,7 @@ def test_is_module_installed_nonexisting():
     assert is_module_installed("nonexistent_module_xyz123") is False
 
     # With throw_error=True should raise ImportError
-    with pytest.raises(ImportError, match="Module nonexistent_module_xyz123 is not installed."):
+    with pytest.raises(
+        ImportError, match="Module nonexistent_module_xyz123 is not installed."
+    ):
         is_module_installed("nonexistent_module_xyz123", throw_error=True)
