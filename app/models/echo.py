@@ -1,7 +1,9 @@
-from pydantic import BaseModel
+from typing import Annotated
+
+from pydantic import BaseModel, Field
 
 
 class Message(BaseModel):
     """Simple message model."""
 
-    message: str
+    message: Annotated[str, Field(description="Message to be echoed.")]

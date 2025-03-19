@@ -78,6 +78,7 @@ class Settings(BaseSettings):
         env_file=".env",
         # env_prefix="API_TEMPLATE_",
         env_file_encoding="utf-8",
+        extra="ignore",
     )
 
 
