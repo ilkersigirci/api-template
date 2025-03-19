@@ -1,11 +1,12 @@
 from typing import Annotated
 
+import jwt
 from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import APIKeyHeader, OAuth2PasswordBearer
-from jose import JWTError, jwt
 from pydantic import ValidationError
 
 from app.core.config import settings
+from app.core.security import decode_access_token
 from app.dependencies.repositories import get_user_service
 from app.models.token import TokenPayload
 from app.models.user import User
@@ -20,9 +21,7 @@ def get_current_user(
     user_service: Annotated[UserService, Depends(get_user_service)],
 ) -> User:
     try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
-        )
+        payload = decode_access_token(token)
         token_data = TokenPayload(**payload)
 
         if token_data.sub is None:
@@ -32,7 +31,7 @@ def get_current_user(
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-    except (JWTError, ValidationError) as e:
+    except (jwt.exceptions.PyJWTError, ValidationError) as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
