@@ -34,11 +34,11 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     API_V1_STR: str = "/api/v1"
     API_V2_STR: str = "/api/v2"
-    CORS_ORIGINS: list[CustomHttpUrlStr] = []
+    CORS_ORIGINS: list[str] = ["*"]
     ENVIRONMENT: str = "dev"
     HOST: str = "127.0.0.1"
     LOG_LEVEL: LogLevel = LogLevel.INFO
-    OTLP_ENDPOINT: CustomHttpUrlStr = ""
+    OTLP_ENDPOINT: CustomHttpUrlStr = "http://localhost"
     PORT: int = 8000
     PROJECT_NAME: str = "FastAPI Template"
     RELOAD: bool = False
