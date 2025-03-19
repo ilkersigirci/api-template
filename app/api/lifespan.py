@@ -4,6 +4,7 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 
 from app.core.telemetry import setup_opentelemetry, setup_prometheus, stop_opentelemetry
+from app.utils.redis import init_redis, shutdown_redis
 
 
 @asynccontextmanager
@@ -23,10 +24,12 @@ async def lifespan_setup(
     app.middleware_stack = None
     # _setup_db(app)
     setup_opentelemetry(app)
+    init_redis(app)
     setup_prometheus(app)
     app.middleware_stack = app.build_middleware_stack()
 
     yield
     # await app.state.db_engine.dispose()
 
+    await shutdown_redis(app)
     stop_opentelemetry(app)

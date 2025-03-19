@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.api.v1.endpoints import auth, items, users
+from app.api.v1.endpoints import auth, items, redis, users
 from app.dependencies.auth import get_current_user
 
 api_router = APIRouter()
@@ -20,5 +20,12 @@ api_router.include_router(
     items.router,
     prefix="/items",
     tags=["items"],
+    dependencies=[Depends(get_current_user)],
+)
+
+api_router.include_router(
+    redis.router,
+    prefix="/redis",
+    tags=["redis"],
     dependencies=[Depends(get_current_user)],
 )

@@ -3,6 +3,7 @@ from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
+from opentelemetry.instrumentation.redis import RedisInstrumentor
 from opentelemetry.sdk.resources import (
     DEPLOYMENT_ENVIRONMENT,
     SERVICE_NAME,
@@ -53,6 +54,8 @@ def setup_opentelemetry(app):  # pragma: no cover
         excluded_urls=",".join(excluded_endpoints),
     )
 
+    RedisInstrumentor().instrument(tracer_provider=trace_provider)
+
     # Instrument Python logging
     if settings.TELEMETRY_LOGGING_ENABLED:
         LoggingInstrumentor().instrument(tracer_provider=trace_provider)
@@ -67,6 +70,7 @@ def stop_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
         return
 
     FastAPIInstrumentor().uninstrument_app(app)
+    RedisInstrumentor().uninstrument()
 
 
 def setup_prometheus(app: FastAPI) -> None:  # pragma: no cover
