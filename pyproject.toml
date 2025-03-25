@@ -36,6 +36,7 @@ dependencies = [
     "fastapi[standard]>=0.115.11",
     "loguru>=0.7.3",
     "opentelemetry-distro[otlp]>=0.52b0",
+    # "opentelemetry-instrumentation-celery>=0.52b0",
     "opentelemetry-instrumentation-fastapi>=0.52b0",
     "opentelemetry-instrumentation-logging>=0.52b0",
     "opentelemetry-instrumentation-redis>=0.52b0",
