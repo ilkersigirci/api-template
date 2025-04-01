@@ -3,8 +3,8 @@ from typing import AsyncGenerator
 
 from fastapi import FastAPI
 
+from app.api.redis.utils import init_redis, shutdown_redis
 from app.core.telemetry import setup_opentelemetry, setup_prometheus, stop_opentelemetry
-from app.utils.redis import init_redis, shutdown_redis
 
 
 @asynccontextmanager

@@ -2,9 +2,9 @@ from typing import Any, AsyncGenerator
 
 import pytest
 from app.api.application import get_app
-from app.core.security import create_access_token
-from app.dependencies.redis import get_redis_pool
-from app.models.user import User
+from app.api.auth.utils import create_access_token
+from app.api.redis.deps import get_redis_pool
+from app.api.users.schemas import User
 from fakeredis import FakeServer
 from fakeredis.aioredis import FakeConnection
 from fastapi import FastAPI
