@@ -32,8 +32,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "fastapi-users[oauth,sqlalchemy]>=14.0.1",
     "fastapi[standard]>=0.115.11",
+    # "fastapi-users[oauth,sqlalchemy]>=14.0.1",
     "loguru>=0.7.3",
     "opentelemetry-distro[otlp]>=0.52b0",
     # "opentelemetry-instrumentation-celery>=0.52b0",
@@ -42,8 +42,11 @@ dependencies = [
     "opentelemetry-instrumentation-redis>=0.52b0",
     "prometheus-client>=0.21.1",
     "prometheus-fastapi-instrumentator>=7.0.2",
-    "pydantic-settings>=2.0.3",
+    "pwdlib[argon2]>=0.2.1",
+    "pydantic-settings>=2.8.1",
+    "pyjwt[crypto]>=2.10.1",
     "redis[hiredis]>=5.2.1",
+    "sqlalchemy[asyncio]>=2.0.39",
     "yarl>=1.18.3",
 ]
 

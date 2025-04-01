@@ -273,3 +273,6 @@ public
 .sesskey
 
 docker/volumes/*
+
+# TODO: Remove this later and rename app folder with src
+src

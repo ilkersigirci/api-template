@@ -2,10 +2,10 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from app.repositories.item_repository import ItemRepository
-from app.repositories.user_repository import UserRepository
-from app.services.item_service import ItemService
-from app.services.user_service import UserService
+from app.api.items.repository import ItemRepository
+from app.api.items.service import ItemService
+from app.api.users.repository import UserRepository
+from app.api.users.service import UserService
 
 
 # Repository dependencies
