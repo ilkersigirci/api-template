@@ -183,3 +183,9 @@ run-dev: ## Run the app in the dev mode
 
 run-ui:
 	uv run --module uvicorn ui.main:app --host 0.0.0.0 --port 5002
+
+run-taskiq-workers: # Run 2 taskiq workers
+	uv run --module taskiq worker app.worker.broker:broker --workers 2 -fsd --tasks-pattern ['app/worker/tasks/*.py']
+
+run-taskiq-main: # Run taskiq main to test the workers and the broker
+	uv run --module app.worker.main

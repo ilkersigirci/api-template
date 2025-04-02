@@ -3,11 +3,12 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 from redis.asyncio import Redis
 from starlette.requests import Request
+from taskiq import TaskiqDepends
 
 
 async def get_redis_pool(
-    request: Request,
-) -> AsyncGenerator[Redis, None]:  # pragma: no cover
+    request: Request = TaskiqDepends(),  # noqa: B008
+) -> AsyncGenerator[Redis, None]:
     """
     Returns connection pool.
 
@@ -21,8 +22,11 @@ async def get_redis_pool(
 
     Pool is used, so you don't acquire connection till the end of the handler.
 
-    :param request: current request.
-    :returns:  redis connection pool.
+    Args:
+        request: current request.
+
+    Returns:
+        Redis connection pool.
     """
     app: FastAPI = request.app
 

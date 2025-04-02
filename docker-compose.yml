@@ -74,3 +74,76 @@ services:
       - ./docker/volumes/grafana:/data/grafana
       - ./docker/volumes/prometheus:/data/prometheus
       - ./docker/volumes/loki:/data/loki
+
+  ########## Other Services ##########
+  # migrator:
+  #   image: fastapi_template_full:${FASTAPI_TEMPLATE_FULL_VERSION:-latest}
+  #   restart: "no"
+  #   command: alembic upgrade head
+  #   environment:
+  #     FASTAPI_TEMPLATE_FULL_DB_FILE: /db_data/db.sqlite3
+  #   volumes:
+  #     - fastapi_template_full-db-data:/db_data/
+
+  # taskiq-worker:
+  #   <<: *main_app
+  #   labels: []
+  #   command:
+  #     - taskiq
+  #     - worker
+  #     - app.worker.main:broker
+
+  redis:
+    image: bitnami/redis:latest
+    container_name: redis
+    restart: "unless-stopped"
+    hostname: "api-template-redis"
+    networks:
+      - api-template-network
+    ports:
+      - "$REDIS_PORT:6379"
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
+      timeout: 3s
+      retries: 50
+
+  rabbitmq:
+    image: bitnami/rabbitmq:latest
+    container_name: rabbitmq
+    restart: "unless-stopped"
+    hostname: "api-template-rabbitmq"
+    networks:
+      - api-template-network
+    ports:
+      - "$RABBITMQ_PORT:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_USERNAME: $RABBITMQ_USERNAME
+      RABBITMQ_PASSWORD: $RABBITMQ_PASSWORD
+      RABBITMQ_VHOST: $RABBITMQ_VHOST
+      RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS: "true"
+
+  # kafka:
+  #   image: bitnami/kafka:3.7.1-debian-12-r0
+  #   hostname: "fastapi_template_full-kafka"
+  #   environment:
+  #     KAFKA_CFG_NODE_ID: "0"
+  #     KAFKA_CFG_PROCESS_ROLES: "controller,broker"
+  #     KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094"
+  #     KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094"
+  #     KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+  #     KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "0@fastapi_template_full-kafka:9093"
+  #     KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+  #     KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+  #     KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+  #   # Uncomment it to connect from localhost.
+  #   # ports:
+  #   #   - 9094:9094
+  #   healthcheck:
+  #     test: kafka-topics.sh --list --bootstrap-server localhost:9092
+  #     interval: 1s
+  #     timeout: 3s
+  #     retries: 30

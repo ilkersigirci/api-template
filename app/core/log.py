@@ -86,6 +86,9 @@ def configure_logging() -> None:  # pragma: no cover
         if logger_name.startswith("uvicorn."):
             logging.getLogger(logger_name).handlers = []
 
+        if logger_name.startswith("taskiq."):
+            logging.getLogger(logger_name).root.handlers = [intercept_handler]
+
     # change handler for default uvicorn logger
     logging.getLogger("uvicorn").handlers = [intercept_handler]
     logging.getLogger("uvicorn.access").handlers = [intercept_handler]

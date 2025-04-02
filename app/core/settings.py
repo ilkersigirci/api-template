@@ -29,13 +29,21 @@ class LogLevel(StrEnum):
     FATAL = "FATAL"
 
 
+class Environment(StrEnum):
+    """Possible environments."""
+
+    DEV = "dev"
+    TEST = "test"
+    PROD = "prod"
+
+
 class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     ALGORITHM: str = "HS256"
     API_PREFIX: str = "/api/v1"
     API_V2_STR: str = "/api/v2"
     CORS_ORIGINS: list[str] = ["*"]
-    ENVIRONMENT: str = "dev"
+    ENVIRONMENT: Environment = Environment.DEV
     HOST: str = "127.0.0.1"
     LOG_LEVEL: LogLevel = LogLevel.INFO
     OTLP_ENDPOINT: CustomHttpUrlStr | None = Field(
@@ -52,6 +60,11 @@ class Settings(BaseSettings):
         default=TEMP_DIR / "prom",
         description="This variable is used to define multiproc_dir.It's required for [uvi|guni]corn projects.",
     )
+    RABBITMQ_HOST: str = "localhost"
+    RABBITMQ_PORT: int = 5672
+    RABBITMQ_USERNAME: str
+    RABBITMQ_PASSWORD: str
+    RABBITMQ_VHOST: str = "/"
     REDIS_PORT: int = 6379
     REDIS_HOST: str = "localhost"
     REDIS_USER: str | None = None
@@ -74,6 +87,22 @@ class Settings(BaseSettings):
             user=self.REDIS_USER,
             password=self.REDIS_PASS,
             path=path,
+        )
+
+    @property
+    def RABBITMQ_URL(self) -> URL:
+        """Assemble RabbitMQ URL from settings.
+
+        Returns:
+            RabbitMQ URL.
+        """
+        return URL.build(
+            scheme="amqp",
+            host=self.RABBITMQ_HOST,
+            port=self.RABBITMQ_PORT,
+            user=self.RABBITMQ_USERNAME,
+            password=self.RABBITMQ_PASSWORD,
+            path=self.RABBITMQ_VHOST,
         )
 
     model_config = SettingsConfigDict(

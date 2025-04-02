@@ -47,6 +47,10 @@ dependencies = [
     "pyjwt[crypto]>=2.10.1",
     "redis[hiredis]>=5.2.1",
     "sqlalchemy[asyncio]>=2.0.39",
+    "taskiq>=0.11.16",
+    "taskiq-aio-pika>=0.4.1",
+    "taskiq-fastapi>=0.3.4",
+    "taskiq-redis>=1.0.4",
     "yarl>=1.18.3",
 ]
 
