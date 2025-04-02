@@ -16,7 +16,7 @@ from prometheus_fastapi_instrumentator.instrumentation import (
     PrometheusFastApiInstrumentator,
 )
 
-from app.core.config import settings
+from app.core.settings import settings
 
 
 def setup_opentelemetry(app):  # pragma: no cover

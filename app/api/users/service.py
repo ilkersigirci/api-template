@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from app.api.auth.utils import create_access_token
 from app.api.users.repository import UserRepository
 from app.api.users.schemas import User, UserCreate, UserUpdate
-from app.core.config import settings
+from app.core.settings import settings
 
 
 class UserService:

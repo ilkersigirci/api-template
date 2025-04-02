@@ -4,7 +4,7 @@ from pathlib import Path
 
 import uvicorn
 
-from app.core.config import settings
+from app.core.settings import settings
 
 
 def set_multiproc_dir() -> None:

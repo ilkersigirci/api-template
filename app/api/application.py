@@ -8,8 +8,8 @@ from fastapi.staticfiles import StaticFiles
 from app.api import docs, health
 from app.api.lifespan import lifespan_setup
 from app.api.router import api_router
-from app.core.config import settings
 from app.core.log import configure_logging
+from app.core.settings import settings
 
 APP_ROOT = Path(__file__).parent.parent
 
