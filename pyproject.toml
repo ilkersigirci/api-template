@@ -101,7 +101,7 @@ addopts = [
 # ]
 
 env = [
-    "ENVIRONMENT=pytest",
+    "ENVIRONMENT=test",
     "OTEL_SDK_DISABLED=true",
 ]
 
