@@ -21,7 +21,7 @@ from app.core.config import settings
 
 def setup_opentelemetry(app):  # pragma: no cover
     """Setup OpenTelemetry instrumentation for FastAPI."""
-    if not settings.TELEMETRY_ENABLED:
+    if settings.OTLP_ENDPOINT is None:
         return
 
     resource = Resource(
@@ -35,9 +35,8 @@ def setup_opentelemetry(app):  # pragma: no cover
     trace_provider = TracerProvider(resource=resource)
 
     # Create and register OTLP exporter
-    if settings.OTLP_ENDPOINT:
-        otlp_exporter = OTLPSpanExporter(endpoint=settings.OTLP_ENDPOINT, insecure=True)
-        trace_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
+    otlp_exporter = OTLPSpanExporter(endpoint=settings.OTLP_ENDPOINT, insecure=True)
+    trace_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
 
     excluded_endpoints = [
         app.url_path_for("health_check"),
@@ -57,7 +56,7 @@ def setup_opentelemetry(app):  # pragma: no cover
     RedisInstrumentor().instrument(tracer_provider=trace_provider)
 
     # Instrument Python logging
-    if settings.TELEMETRY_LOGGING_ENABLED:
+    if settings.OLTP_LOGGING_ENABLED is True:
         LoggingInstrumentor().instrument(tracer_provider=trace_provider)
 
     # Set the trace provider as the global default
@@ -66,7 +65,7 @@ def setup_opentelemetry(app):  # pragma: no cover
 
 def stop_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
     """Disables opentelemetry instrumentation."""
-    if not settings.TELEMETRY_ENABLED:
+    if settings.OTLP_ENDPOINT is None:
         return
 
     FastAPIInstrumentor().uninstrument_app(app)

@@ -38,13 +38,15 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "dev"
     HOST: str = "127.0.0.1"
     LOG_LEVEL: LogLevel = LogLevel.INFO
-    OTLP_ENDPOINT: CustomHttpUrlStr = "http://localhost"
+    OTLP_ENDPOINT: CustomHttpUrlStr | None = Field(
+        default=None,
+        description="OpenTelemetry GRPC endpoint for OTLP exporter.",
+    )
+    OLTP_LOGGING_ENABLED: bool = False
     PORT: int = 8000
     PROJECT_NAME: str = "FastAPI Template"
     RELOAD: bool = False
     SECRET_KEY: str = "CHANGE_ME_IN_PRODUCTION"
-    TELEMETRY_ENABLED: bool = False
-    TELEMETRY_LOGGING_ENABLED: bool = False
     WORKERS: int = 1
     PROMETHEUS_DIR: Path = Field(
         default=TEMP_DIR / "prom",
