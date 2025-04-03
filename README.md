@@ -27,8 +27,15 @@ logfire projects use api-template
 
 - The official docs recommend [taskiq-aio-pika](https://pypi.org/project/taskiq-aio-pika/) as the broker and [taskiq-redis](https://pypi.org/project/taskiq-redis/) as the result backend for production use.
 
-- To run these services
+- Test taskiq with RabbitMQ and Redis
 
 ```bash
-docker compose up -d redis rabbitmq
+# Run Redis and RabbitMQ in docker
+make run-taskiq-services
+
+# Run the taskiq workers
+make run-taskiq-workers
+
+# Test the taskiq workers
+make run-taskiq-main
 ```
