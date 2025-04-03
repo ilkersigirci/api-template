@@ -69,8 +69,8 @@ class Settings(BaseSettings):
     )
     RABBITMQ_HOST: str = "localhost"
     RABBITMQ_PORT: int = 5672
-    RABBITMQ_USERNAME: str
-    RABBITMQ_PASSWORD: str
+    RABBITMQ_USERNAME: str | None = None
+    RABBITMQ_PASSWORD: str | None = None
     RABBITMQ_VHOST: str = "/"
     REDIS_PORT: int = 6379
     REDIS_HOST: str = "localhost"
