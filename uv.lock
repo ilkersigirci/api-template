@@ -64,6 +64,7 @@ version = "0.0.1"
 source = { virtual = "." }
 dependencies = [
     { name = "fastapi", extra = ["standard"] },
+    { name = "logfire", extra = ["fastapi", "httpx", "redis", "system-metrics"] },
     { name = "loguru" },
     { name = "opentelemetry-distro", extra = ["otlp"] },
     { name = "opentelemetry-instrumentation-fastapi" },
@@ -102,6 +103,7 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.11" },
+    { name = "logfire", extras = ["fastapi", "redis", "httpx", "system-metrics"], specifier = ">=3.12.0" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "opentelemetry-distro", extras = ["otlp"], specifier = ">=0.52b0" },
     { name = "opentelemetry-instrumentation-fastapi", specifier = ">=0.52b0" },
@@ -884,6 +886,38 @@ wheels = [
 ]
 
 [[package]]
+name = "logfire"
+version = "3.12.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "executing" },
+    { name = "opentelemetry-exporter-otlp-proto-http" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-sdk" },
+    { name = "protobuf" },
+    { name = "rich" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b6/13/3f8efed24ac44c86831917f06c3f03af156b3dc816dd049c4f9344db3040/logfire-3.12.0.tar.gz", hash = "sha256:1c8c21f33e94a63106c38bdf51c0bad554430d0581f1cfbb0e8bb1741a5bd43b", size = 470112 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/08/04/a46bb34107dbe3ceea5562b0ba1720eeb25c19a10277cbc9c9f9b39d4cc7/logfire-3.12.0-py3-none-any.whl", hash = "sha256:d1812d96e5a88d3aa364947075af7a8bc2791e6e2474893fe02ce57b2a417a69", size = 191451 },
+]
+
+[package.optional-dependencies]
+fastapi = [
+    { name = "opentelemetry-instrumentation-fastapi" },
+]
+httpx = [
+    { name = "opentelemetry-instrumentation-httpx" },
+]
+redis = [
+    { name = "opentelemetry-instrumentation-redis" },
+]
+system-metrics = [
+    { name = "opentelemetry-instrumentation-system-metrics" },
+]
+
+[[package]]
 name = "loguru"
 version = "0.7.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1139,6 +1173,22 @@ wheels = [
 ]
 
 [[package]]
+name = "opentelemetry-instrumentation-httpx"
+version = "0.52b0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-semantic-conventions" },
+    { name = "opentelemetry-util-http" },
+    { name = "wrapt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6d/fc/607b483df75f5b5121de46a9b7fd06bfebdbeb0288626b9a65de6708c9f2/opentelemetry_instrumentation_httpx-0.52b0.tar.gz", hash = "sha256:171ae5f68b6fdf56a1eb9524589245c8dfdb73e2da76c10706547904da9c50d8", size = 17699 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0c/54/6c9e6ca8bff3e3fde9f7c368119b540e1c86f32f2e38c3912b4003e1c93c/opentelemetry_instrumentation_httpx-0.52b0-py3-none-any.whl", hash = "sha256:1016464d95a30581fdfcde7779182f4e72dc84c8bd16e4859e856bce1785b770", size = 14107 },
+]
+
+[[package]]
 name = "opentelemetry-instrumentation-logging"
 version = "0.52b0"
 source = { registry = "https://pypi.org/simple" }
@@ -1164,6 +1214,20 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/dd/ce/762aca2a719490d570ca86d78e3e976e8c2a82dde1e2040fc0889584a305/opentelemetry_instrumentation_redis-0.52b0.tar.gz", hash = "sha256:684e1485cee71a2782d048e07c65d5a5020944a694c653eb77f22d199b49882d", size = 11715 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/28/25/5818d4c379f8a9cf7f21acfa995cc821726ae2dc48c57cabb771a1c8e022/opentelemetry_instrumentation_redis-0.52b0-py3-none-any.whl", hash = "sha256:5aac05a4de2e14076d9d7f7b9e687c5d9f003ef4b1427505bd303261e9fd22cc", size = 13019 },
+]
+
+[[package]]
+name = "opentelemetry-instrumentation-system-metrics"
+version = "0.52b0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "psutil" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/01/dd/e69ebc56dfddc8d31f1c70bab58011eedd2f650456c7dbd74a731332a84b/opentelemetry_instrumentation_system_metrics-0.52b0.tar.gz", hash = "sha256:c6db25508341d557d8ee9cc514eb3e676191cefead26be6f22880f0851bc3ad3", size = 15009 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2a/82/3da4434550c771a9cdc9a2dc05c3f3e71195c77d2debd3e5b0ebdcb27a95/opentelemetry_instrumentation_system_metrics-0.52b0-py3-none-any.whl", hash = "sha256:9a060a95780c7b84a81ef095564d421772f16c9645c3d30d4d3b57baf5e31a86", size = 13092 },
 ]
 
 [[package]]

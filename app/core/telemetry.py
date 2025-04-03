@@ -1,4 +1,6 @@
+import logfire
 from fastapi import FastAPI
+from loguru import logger  # noqa: F401
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
@@ -16,12 +18,38 @@ from prometheus_fastapi_instrumentator.instrumentation import (
     PrometheusFastApiInstrumentator,
 )
 
-from app.core.settings import settings
+from app.core.settings import OLTPLogMethod, settings
 
 
 def setup_opentelemetry(app):  # pragma: no cover
     """Setup OpenTelemetry instrumentation for FastAPI."""
-    if settings.OTLP_ENDPOINT is None:
+    if settings.OLTP_LOG_METHOD == OLTPLogMethod.NONE:
+        return
+
+    excluded_endpoints = [
+        app.url_path_for("health_check"),
+        app.url_path_for("openapi"),
+        app.url_path_for("swagger_ui_html"),
+        app.url_path_for("swagger_ui_redirect"),
+        app.url_path_for("redoc_html"),
+        "/metrics",
+    ]
+    excluded_urls = ",".join(excluded_endpoints)
+
+    if settings.OLTP_LOG_METHOD == OLTPLogMethod.LOGFIRE:
+        logfire.configure(environment=settings.ENVIRONMENT.value)
+
+        logfire.instrument_system_metrics()
+
+        logfire.instrument_httpx()
+
+        logfire.instrument_fastapi(app, excluded_urls=excluded_urls)
+        logfire.instrument_redis()
+
+        # FIXME: Breaks the loguru logger format. Fix this
+        # if settings.OLTP_STD_LOGGING_ENABLED is True:
+        #     logger.configure(handlers=[logfire.loguru_handler()])
+
         return
 
     resource = Resource(
@@ -38,25 +66,14 @@ def setup_opentelemetry(app):  # pragma: no cover
     otlp_exporter = OTLPSpanExporter(endpoint=settings.OTLP_ENDPOINT, insecure=True)
     trace_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
 
-    excluded_endpoints = [
-        app.url_path_for("health_check"),
-        app.url_path_for("openapi"),
-        app.url_path_for("swagger_ui_html"),
-        app.url_path_for("swagger_ui_redirect"),
-        app.url_path_for("redoc_html"),
-        "/metrics",
-    ]
-
     FastAPIInstrumentor.instrument_app(
-        app,
-        tracer_provider=trace_provider,
-        excluded_urls=",".join(excluded_endpoints),
+        app, tracer_provider=trace_provider, excluded_urls=excluded_urls
     )
 
     RedisInstrumentor().instrument(tracer_provider=trace_provider)
 
     # Instrument Python logging
-    if settings.OLTP_LOGGING_ENABLED is True:
+    if settings.OLTP_STD_LOGGING_ENABLED is True:
         LoggingInstrumentor().instrument(tracer_provider=trace_provider)
 
     # Set the trace provider as the global default
@@ -65,7 +82,7 @@ def setup_opentelemetry(app):  # pragma: no cover
 
 def stop_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
     """Disables opentelemetry instrumentation."""
-    if settings.OTLP_ENDPOINT is None:
+    if settings.OLTP_LOG_METHOD in [OLTPLogMethod.NONE, OLTPLogMethod.LOGFIRE]:
         return
 
     FastAPIInstrumentor().uninstrument_app(app)

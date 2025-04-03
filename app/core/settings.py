@@ -37,6 +37,12 @@ class Environment(StrEnum):
     PROD = "prod"
 
 
+class OLTPLogMethod(StrEnum):
+    NONE = "none"
+    MANUAL = "manual"
+    LOGFIRE = "logfire"
+
+
 class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     ALGORITHM: str = "HS256"
@@ -46,11 +52,12 @@ class Settings(BaseSettings):
     ENVIRONMENT: Environment = Environment.DEV
     HOST: str = "127.0.0.1"
     LOG_LEVEL: LogLevel = LogLevel.INFO
+    OLTP_LOG_METHOD: OLTPLogMethod = OLTPLogMethod.NONE
     OTLP_ENDPOINT: CustomHttpUrlStr | None = Field(
         default=None,
         description="OpenTelemetry GRPC endpoint for OTLP exporter.",
     )
-    OLTP_LOGGING_ENABLED: bool = False
+    OLTP_STD_LOGGING_ENABLED: bool = False
     PORT: int = 8000
     PROJECT_NAME: str = "FastAPI Template"
     RELOAD: bool = False
