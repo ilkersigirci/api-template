@@ -38,4 +38,7 @@ make run-taskiq-workers
 
 # Test the taskiq workers
 make run-taskiq-main
+
+# (Optional) Run taskiq scheduler for periodic tasks
+make run-taskiq-scheduler
 ```

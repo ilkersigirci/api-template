@@ -1,7 +1,14 @@
 from typing import Any
 
 import taskiq_fastapi
-from taskiq import AsyncBroker, AsyncResultBackend, InMemoryBroker
+from taskiq import (
+    AsyncBroker,
+    AsyncResultBackend,
+    InMemoryBroker,
+    SimpleRetryMiddleware,
+)
+from taskiq.schedule_sources import LabelScheduleSource
+from taskiq.scheduler.scheduler import TaskiqScheduler
 from taskiq_aio_pika import AioPikaBroker
 from taskiq_redis import ListQueueBroker, RedisAsyncResultBackend  # noqa: F401
 
@@ -19,8 +26,19 @@ else:
     #     str(settings.REDIS_URL.with_path("/1"))
     # ).with_result_backend(result_backend)
 
-    broker: AsyncBroker = AioPikaBroker(
-        str(settings.RABBITMQ_URL),
-    ).with_result_backend(result_backend)
+    broker: AsyncBroker = (
+        AioPikaBroker(
+            str(settings.RABBITMQ_URL),
+        )
+        .with_result_backend(result_backend)
+        .with_middlewares(
+            SimpleRetryMiddleware(default_retry_count=3),
+        )
+    )
+
+    scheduler = TaskiqScheduler(
+        broker=broker,
+        sources=[LabelScheduleSource(broker)],
+    )
 
 taskiq_fastapi.init(broker, "app.api.application:get_app")

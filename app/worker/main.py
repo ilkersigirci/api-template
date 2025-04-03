@@ -3,7 +3,10 @@ import asyncio
 from loguru import logger
 
 from app.worker.broker import broker
-from app.worker.tasks.dummy import add_one
+from app.worker.tasks.dummy import (  # noqa: F401
+    add_one,
+    add_one_with_retry,
+)
 
 
 async def main() -> None:
@@ -11,6 +14,7 @@ async def main() -> None:
 
     # Send the task to the broker.
     task = await add_one.kiq(1)
+    # task = await add_one_with_retry.kiq(1)
 
     # Wait for the result.
     result = await task.wait_result(timeout=2)

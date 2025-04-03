@@ -14,7 +14,7 @@ DOCKER_IMAGE=api-template
 DOCKER_TARGET=development
 
 
-.PHONY: help install test clean build publish pre-commit format lint profile
+.PHONY: help install test publish pre-commit format lint profile
 .DEFAULT_GOAL=help
 
 help:
@@ -91,17 +91,6 @@ test-coverage-parallel:
 test: clean-test test-all ## Cleans and runs all tests
 test-parallel: clean-test test-all-parallel ## Cleans and runs all tests with parallelization
 
-clean-build: ## Clean build dist and egg directories left after install
-	rm -rf ./build ./dist */*.egg-info *.egg-info
-	rm -rf ./pytest_cache
-	rm -rf ./junit
-	find . -type f -iname "*.so" -delete
-	find . -type f -iname '*.pyc' -delete
-	find . -type d -name '*.egg-info' -prune -exec rm -rf {} \;
-	find . -type d -name '__pycache__' -prune -exec rm -rf {} \;
-	find . -type d -name '.ruff_cache' -prune -exec rm -rf {} \;
-	find . -type d -name '.mypy_cache' -prune -exec rm -rf {} \;
-
 clean-test: ## Clean test related files left after test
 	# rm -rf ./htmlcov
 	# rm -rf ./coverage.xml
@@ -110,23 +99,6 @@ clean-test: ## Clean test related files left after test
 	find ${TEST_DIR} -type f -regex '\.\/\.*coverage[^rc].*' -delete
 	find ${TEST_DIR} -type d -name 'htmlcov' -exec rm -r {} +
 	find . -type d -name '.pytest_cache' -prune -exec rm -rf {} \;
-
-clean: clean-build clean-test ## Cleans build and test related files
-
-build: ## Make Python source distribution
-	$(MAKE) clean-build
-	uv build --sdist --out-dir dist
-
-build-wheel: ## Make Python wheel distribution
-	$(MAKE) clean-build
-	uv build --wheel --out-dir dist
-
-publish: ## Builds the project and publish the package to Pypi
-	# $(MAKE) build
-	uv publish dist/*
-	# uv publish --publish-url https://test.pypi.org/legacy/ --username DUMMY --password DUMMY dist/*
-
-
 
 pre-commit-one: ## Run pre-commit with specific files
 	uv lock --locked
@@ -178,14 +150,14 @@ run-dev: ## Run the app in the dev mode
 	# uv run --module uvicorn app.main:app --port 8000
 	uv run --module app.__main__
 
-# run-prod: ## Run the app in the prod mode
-# 	uv run --module fastapi run app/main.py --port 8000
-
 run-ui:
 	uv run --module uvicorn ui.main:app --host 0.0.0.0 --port 5002
 
 run-taskiq-services: # Run taskiq dependent services
 	docker compose up -d redis rabbitmq
+
+run-taskiq-scheduler: # Run taskiq scheduler. Only one scheduler can be run at a time. It only sends tasks to the workers, doesn't execute them
+	uv run --module taskiq scheduler app.worker.broker:scheduler -fsd -tp 'app/worker/tasks/*.py'
 
 run-taskiq-workers: # Run 2 taskiq workers using threadpools ( Default )
 	uv run --module taskiq worker app.worker.broker:broker --workers 2 -fsd -tp 'app/worker/tasks/*.py'
