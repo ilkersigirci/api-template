@@ -9,6 +9,33 @@ members = [
 ]
 
 [[package]]
+name = "aio-pika"
+version = "9.5.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiormq" },
+    { name = "exceptiongroup" },
+    { name = "yarl" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/48/00/5391405f15e85bd6cb859186dbe04d99186ca29410a7cdc52848b55a1d72/aio_pika-9.5.5.tar.gz", hash = "sha256:3d2f25838860fa7e209e21fc95555f558401f9b49a832897419489f1c9e1d6a4", size = 48468 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/71/cf/efa5581760bd08263bce8dbf943f32006b6dfd5bc120f43a26257281b546/aio_pika-9.5.5-py3-none-any.whl", hash = "sha256:94e0ac3666398d6a28b0c3b530c1febf4c6d4ececb345620727cfd7bfe1c02e0", size = 54257 },
+]
+
+[[package]]
+name = "aiormq"
+version = "6.8.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pamqp" },
+    { name = "yarl" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a4/79/5397756a8782bf3d0dce392b48260c3ec81010f16bef8441ff03505dccb4/aiormq-6.8.1.tar.gz", hash = "sha256:a964ab09634be1da1f9298ce225b310859763d5cf83ef3a7eae1a6dc6bd1da1a", size = 30528 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2e/be/1a613ae1564426f86650ff58c351902895aa969f7e537e74bfd568f5c8bf/aiormq-6.8.1-py3-none-any.whl", hash = "sha256:5da896c8624193708f9409ffad0b20395010e2747f22aa4150593837f40aa017", size = 31174 },
+]
+
+[[package]]
 name = "annotated-types"
 version = "0.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -37,6 +64,7 @@ version = "0.0.1"
 source = { virtual = "." }
 dependencies = [
     { name = "fastapi", extra = ["standard"] },
+    { name = "logfire", extra = ["fastapi", "httpx", "redis", "system-metrics"] },
     { name = "loguru" },
     { name = "opentelemetry-distro", extra = ["otlp"] },
     { name = "opentelemetry-instrumentation-fastapi" },
@@ -49,6 +77,10 @@ dependencies = [
     { name = "pyjwt", extra = ["crypto"] },
     { name = "redis", extra = ["hiredis"] },
     { name = "sqlalchemy", extra = ["asyncio"] },
+    { name = "taskiq" },
+    { name = "taskiq-aio-pika" },
+    { name = "taskiq-fastapi" },
+    { name = "taskiq-redis" },
     { name = "yarl" },
 ]
 
@@ -71,6 +103,7 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.11" },
+    { name = "logfire", extras = ["fastapi", "redis", "httpx", "system-metrics"], specifier = ">=3.12.0" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "opentelemetry-distro", extras = ["otlp"], specifier = ">=0.52b0" },
     { name = "opentelemetry-instrumentation-fastapi", specifier = ">=0.52b0" },
@@ -83,6 +116,10 @@ requires-dist = [
     { name = "pyjwt", extras = ["crypto"], specifier = ">=2.10.1" },
     { name = "redis", extras = ["hiredis"], specifier = ">=5.2.1" },
     { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.39" },
+    { name = "taskiq", specifier = ">=0.11.16" },
+    { name = "taskiq-aio-pika", specifier = ">=0.4.1" },
+    { name = "taskiq-fastapi", specifier = ">=0.3.4" },
+    { name = "taskiq-redis", specifier = ">=1.0.4" },
     { name = "yarl", specifier = ">=1.18.3" },
 ]
 
@@ -441,6 +478,15 @@ wheels = [
 ]
 
 [[package]]
+name = "exceptiongroup"
+version = "1.2.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/09/35/2495c4ac46b980e4ca1f6ad6db102322ef3ad2410b79fdde159a4b0f3b92/exceptiongroup-1.2.2.tar.gz", hash = "sha256:47c2edf7c6738fafb49fd34290706d1a1a2f4d1c6df275526b62cbb4aa5393cc", size = 28883 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/02/cc/b7e31358aac6ed1ef2bb790a9746ac2c69bcb3c8588b41616914eb106eaf/exceptiongroup-1.2.2-py3-none-any.whl", hash = "sha256:3111b9d131c238bec2f8f516e123e14ba243563fb135d3fe885990585aa7795b", size = 16453 },
+]
+
+[[package]]
 name = "execnet"
 version = "2.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -777,6 +823,15 @@ wheels = [
 ]
 
 [[package]]
+name = "izulu"
+version = "0.50.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d0/58/6d6335c78b7ade54d8a6c6dbaa589e5c21b3fd916341d5a16f774c72652a/izulu-0.50.0.tar.gz", hash = "sha256:cc8e252d5e8560c70b95380295008eeb0786f7b745a405a40d3556ab3252d5f5", size = 48558 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4a/9f/bf9d33546bbb6e5e80ebafe46f90b7d8b4a77410b7b05160b0ca8978c15a/izulu-0.50.0-py3-none-any.whl", hash = "sha256:4e9ae2508844e7c5f62c468a8b9e2deba2f60325ef63f01e65b39fd9a6b3fab4", size = 18095 },
+]
+
+[[package]]
 name = "jedi"
 version = "0.19.2"
 source = { registry = "https://pypi.org/simple" }
@@ -828,6 +883,38 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/00/11/b56381fa6c3f4cc5d2cf54a7dbf98ad9aa0b339ef7a601d6053538b079a7/jupyter_core-5.7.2.tar.gz", hash = "sha256:aa5f8d32bbf6b431ac830496da7392035d6f61b4f54872f15c4bd2a9c3f536d9", size = 87629 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c9/fb/108ecd1fe961941959ad0ee4e12ee7b8b1477247f30b1fdfd83ceaf017f0/jupyter_core-5.7.2-py3-none-any.whl", hash = "sha256:4f7315d2f6b4bcf2e3e7cb6e46772eba760ae459cd1f59d29eb57b0a01bd7409", size = 28965 },
+]
+
+[[package]]
+name = "logfire"
+version = "3.12.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "executing" },
+    { name = "opentelemetry-exporter-otlp-proto-http" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-sdk" },
+    { name = "protobuf" },
+    { name = "rich" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b6/13/3f8efed24ac44c86831917f06c3f03af156b3dc816dd049c4f9344db3040/logfire-3.12.0.tar.gz", hash = "sha256:1c8c21f33e94a63106c38bdf51c0bad554430d0581f1cfbb0e8bb1741a5bd43b", size = 470112 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/08/04/a46bb34107dbe3ceea5562b0ba1720eeb25c19a10277cbc9c9f9b39d4cc7/logfire-3.12.0-py3-none-any.whl", hash = "sha256:d1812d96e5a88d3aa364947075af7a8bc2791e6e2474893fe02ce57b2a417a69", size = 191451 },
+]
+
+[package.optional-dependencies]
+fastapi = [
+    { name = "opentelemetry-instrumentation-fastapi" },
+]
+httpx = [
+    { name = "opentelemetry-instrumentation-httpx" },
+]
+redis = [
+    { name = "opentelemetry-instrumentation-redis" },
+]
+system-metrics = [
+    { name = "opentelemetry-instrumentation-system-metrics" },
 ]
 
 [[package]]
@@ -1086,6 +1173,22 @@ wheels = [
 ]
 
 [[package]]
+name = "opentelemetry-instrumentation-httpx"
+version = "0.52b0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-semantic-conventions" },
+    { name = "opentelemetry-util-http" },
+    { name = "wrapt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6d/fc/607b483df75f5b5121de46a9b7fd06bfebdbeb0288626b9a65de6708c9f2/opentelemetry_instrumentation_httpx-0.52b0.tar.gz", hash = "sha256:171ae5f68b6fdf56a1eb9524589245c8dfdb73e2da76c10706547904da9c50d8", size = 17699 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0c/54/6c9e6ca8bff3e3fde9f7c368119b540e1c86f32f2e38c3912b4003e1c93c/opentelemetry_instrumentation_httpx-0.52b0-py3-none-any.whl", hash = "sha256:1016464d95a30581fdfcde7779182f4e72dc84c8bd16e4859e856bce1785b770", size = 14107 },
+]
+
+[[package]]
 name = "opentelemetry-instrumentation-logging"
 version = "0.52b0"
 source = { registry = "https://pypi.org/simple" }
@@ -1111,6 +1214,20 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/dd/ce/762aca2a719490d570ca86d78e3e976e8c2a82dde1e2040fc0889584a305/opentelemetry_instrumentation_redis-0.52b0.tar.gz", hash = "sha256:684e1485cee71a2782d048e07c65d5a5020944a694c653eb77f22d199b49882d", size = 11715 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/28/25/5818d4c379f8a9cf7f21acfa995cc821726ae2dc48c57cabb771a1c8e022/opentelemetry_instrumentation_redis-0.52b0-py3-none-any.whl", hash = "sha256:5aac05a4de2e14076d9d7f7b9e687c5d9f003ef4b1427505bd303261e9fd22cc", size = 13019 },
+]
+
+[[package]]
+name = "opentelemetry-instrumentation-system-metrics"
+version = "0.52b0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "psutil" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/01/dd/e69ebc56dfddc8d31f1c70bab58011eedd2f650456c7dbd74a731332a84b/opentelemetry_instrumentation_system_metrics-0.52b0.tar.gz", hash = "sha256:c6db25508341d557d8ee9cc514eb3e676191cefead26be6f22880f0851bc3ad3", size = 15009 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2a/82/3da4434550c771a9cdc9a2dc05c3f3e71195c77d2debd3e5b0ebdcb27a95/opentelemetry_instrumentation_system_metrics-0.52b0-py3-none-any.whl", hash = "sha256:9a060a95780c7b84a81ef095564d421772f16c9645c3d30d4d3b57baf5e31a86", size = 13092 },
 ]
 
 [[package]]
@@ -1168,6 +1285,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d0/63/68dbb6eb2de9cb10ee4c9c14a0148804425e13c4fb20d61cce69f53106da/packaging-24.2.tar.gz", hash = "sha256:c228a6dc5e932d346bc5739379109d49e8853dd8223571c7c5b55260edc0b97f", size = 163950 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/88/ef/eb23f262cca3c0c4eb7ab1933c3b1f03d021f2c48f54763065b6f0e321be/packaging-24.2-py3-none-any.whl", hash = "sha256:09abb1bccd265c01f4a3aa3f7a7db064b36514d2cba19a2f694fe6150451a759", size = 65451 },
+]
+
+[[package]]
+name = "pamqp"
+version = "3.3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/fb/62/35bbd3d3021e008606cd0a9532db7850c65741bbf69ac8a3a0d8cfeb7934/pamqp-3.3.0.tar.gz", hash = "sha256:40b8795bd4efcf2b0f8821c1de83d12ca16d5760f4507836267fd7a02b06763b", size = 30993 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ac/8d/c1e93296e109a320e508e38118cf7d1fc2a4d1c2ec64de78565b3c445eb5/pamqp-3.3.0-py2.py3-none-any.whl", hash = "sha256:c901a684794157ae39b52cbf700db8c9aae7a470f13528b9d7b4e5f7202f8eb0", size = 33848 },
 ]
 
 [[package]]
@@ -1352,6 +1478,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/1d/b2/31537cf4b1ca988837256c910a668b553fceb8f069bedc4b1c826024b52c/pycparser-2.22.tar.gz", hash = "sha256:491c8be9c040f5390f5bf44a5b07752bd07f56edf992381b05c701439eec10f6", size = 172736 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/13/a3/a812df4e2dd5696d1f351d58b8fe16a405b234ad2886a0dab9183fb78109/pycparser-2.22-py3-none-any.whl", hash = "sha256:c3702b6d3dd8c7abc1afa565d7e63d53a1d0bd86cdc24edd75470f4de499cfcc", size = 117552 },
+]
+
+[[package]]
+name = "pycron"
+version = "3.1.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/02/0c/2366dfbb3765662fc9d71d7fa847ddf4f3cd43195dea151bc05a49fda118/pycron-3.1.2.tar.gz", hash = "sha256:114c71bc61002b850a416e33e72a8c6de75b9f5c4228e86d7babd8a7ea232d94", size = 4172 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/60/65/2de047e5396970f3a11b06823d7bcd1108f61787ee21ff33ab7e9fce6635/pycron-3.1.2-py3-none-any.whl", hash = "sha256:30e4a01889dfb471e80cc76a5c0ab87e675146a7f6d2d66a2e4bdb4e2975ef3d", size = 4838 },
 ]
 
 [[package]]
@@ -1544,6 +1679,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f3/87/f44d7c9f274c7ee665a29b885ec97089ec5dc034c7f3fafa03da9e39a09e/python_multipart-0.0.20.tar.gz", hash = "sha256:8dd0cab45b8e23064ae09147625994d090fa46f5b0d1e13af944c331a7fa9d13", size = 37158 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/45/58/38b5afbc1a800eeea951b9285d3912613f2603bdf897a4ab0f4bd7f405fc/python_multipart-0.0.20-py3-none-any.whl", hash = "sha256:8a62d3a8335e06589fe01f2a3e178cdcc632f3fbe0d492ad9ee0ec35aab1f104", size = 24546 },
+]
+
+[[package]]
+name = "pytz"
+version = "2025.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f8/bf/abbd3cdfb8fbc7fb3d4d38d320f2441b1e7cbe29be4f23797b4a2b5d8aac/pytz-2025.2.tar.gz", hash = "sha256:360b9e3dbb49a209c21ad61809c7fb453643e048b38924c765813546746e81c3", size = 320884 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/81/c4/34e93fe5f5429d7570ec1fa436f1986fb1f00c3e0f43a589fe2bbcd22c3f/pytz-2025.2-py2.py3-none-any.whl", hash = "sha256:5ddf76296dd8c44c26eb8f4b6f35488f3ccbf6fbbd7adee0b7262d43f0ec2f00", size = 509225 },
 ]
 
 [[package]]
@@ -1779,6 +1923,74 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/04/1b/52b27f2e13ceedc79a908e29eac426a63465a1a01248e5f24aa36a62aeb3/starlette-0.46.1.tar.gz", hash = "sha256:3c88d58ee4bd1bb807c0d1acb381838afc7752f9ddaec81bbe4383611d833230", size = 2580102 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a0/4b/528ccf7a982216885a1ff4908e886b8fb5f19862d1962f56a3fce2435a70/starlette-0.46.1-py3-none-any.whl", hash = "sha256:77c74ed9d2720138b25875133f3a2dae6d854af2ec37dceb56aef370c1d8a227", size = 71995 },
+]
+
+[[package]]
+name = "taskiq"
+version = "0.11.16"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "importlib-metadata" },
+    { name = "izulu" },
+    { name = "packaging" },
+    { name = "pycron" },
+    { name = "pydantic" },
+    { name = "pytz" },
+    { name = "taskiq-dependencies" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ef/30/13b3ee114a37d87840543137e80e18e3e388e49a12581ca62b9e13902210/taskiq-0.11.16.tar.gz", hash = "sha256:52e73794503c41250e384f9e1a2645fa56fd25ffebbbf512ca708a7a46e728f3", size = 51904 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/17/43/8a48f22129d941055b51a633ad02a1461fe93767db8eba3897624e8fd3cc/taskiq-0.11.16-py3-none-any.whl", hash = "sha256:2cbc458890c0a5544a34ea2489bce255bcbc8459b2a344b62a43f7db51c1389c", size = 76706 },
+]
+
+[[package]]
+name = "taskiq-aio-pika"
+version = "0.4.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aio-pika" },
+    { name = "taskiq" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/30/70/ea02097097b6a2b19ac1bfa64849229aea14a687f64c87422c81df9192df/taskiq_aio_pika-0.4.1.tar.gz", hash = "sha256:97b8eaba1a205c605c89d3a08aa3a43746b41d0485fa997b8316f0e219b85f7a", size = 6201 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6e/7b/af8f4eff889b1e4df9825d9b694764b2699e47e087cb403084a76f28f70f/taskiq_aio_pika-0.4.1-py3-none-any.whl", hash = "sha256:ddd9ef3315f651313581a984ea1c8df83489320d5eff3261dca729b56989ea33", size = 5907 },
+]
+
+[[package]]
+name = "taskiq-dependencies"
+version = "1.5.7"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/47/90/47a627696e53bfdcacabc3e8c05b73bf1424685bcb5f17209cb8b12da1bf/taskiq_dependencies-1.5.7.tar.gz", hash = "sha256:0d3b240872ef152b719153b9526d866d2be978aeeaea6600e878414babc2dcb4", size = 14875 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/99/6d/4a012f2de002c2e93273f5e7d3e3feea02f7fdbb7b75ca2ca1dd10703091/taskiq_dependencies-1.5.7-py3-none-any.whl", hash = "sha256:6fcee5d159bdb035ef915d4d848826169b6f06fe57cc2297a39b62ea3e76036f", size = 13801 },
+]
+
+[[package]]
+name = "taskiq-fastapi"
+version = "0.3.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "fastapi" },
+    { name = "taskiq" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/5d/6c/573b6067c33a07382d4e95cc4c938d887d556c0dfe95c00754a7239056f6/taskiq_fastapi-0.3.4.tar.gz", hash = "sha256:66a8daa5a724923d33decc1abdc3902894630252103f9649ed48884ae524c78b", size = 5030 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/29/89/9d4f2e3169e6d381f9749a6ce7edc715d6df69c4708444e1c586f930d899/taskiq_fastapi-0.3.4-py3-none-any.whl", hash = "sha256:a465f4583014dcc56f207b5463fec693cb15014795e3fbe516da699146acf8cd", size = 5020 },
+]
+
+[[package]]
+name = "taskiq-redis"
+version = "1.0.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "redis" },
+    { name = "taskiq" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b3/b0/b5331c80cf5698d325d6d7e8d4f96428496c4ad3cbb19719fb2647cb02d3/taskiq_redis-1.0.4.tar.gz", hash = "sha256:9b694b8a830cd264b4eaaf5cde71e4231683734b17ff3bb50d39c021eb8cb371", size = 15051 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f8/1a/c4cf9d4f01d996582be78d15626d026e52584846f057e537954cb97b798f/taskiq_redis-1.0.4-py3-none-any.whl", hash = "sha256:ffc151e212cddef7ed73e41aa11b874328433510c685aaf2acee2976b757caf3", size = 19107 },
 ]
 
 [[package]]

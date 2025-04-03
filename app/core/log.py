@@ -5,7 +5,7 @@ from typing import Any, Union
 from loguru import logger
 from opentelemetry.trace import INVALID_SPAN, INVALID_SPAN_CONTEXT, get_current_span
 
-from app.core.config import settings
+from app.core.settings import settings
 
 
 class InterceptHandler(logging.Handler):
@@ -85,6 +85,9 @@ def configure_logging() -> None:  # pragma: no cover
     for logger_name in logging.root.manager.loggerDict:
         if logger_name.startswith("uvicorn."):
             logging.getLogger(logger_name).handlers = []
+
+        if logger_name.startswith("taskiq."):
+            logging.getLogger(logger_name).root.handlers = [intercept_handler]
 
     # change handler for default uvicorn logger
     logging.getLogger("uvicorn").handlers = [intercept_handler]

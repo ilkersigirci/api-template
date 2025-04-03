@@ -9,7 +9,7 @@ from app.api.auth.schemas import TokenPayload
 from app.api.auth.utils import decode_access_token
 from app.api.users.schemas import User
 from app.api.users.service import UserService
-from app.core.config import settings
+from app.core.settings import settings
 from app.dependencies.repositories import get_user_service
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_PREFIX}/auth/login")

@@ -1,0 +1,26 @@
+import asyncio
+
+from loguru import logger
+
+from app.worker.broker import broker
+from app.worker.tasks.dummy import add_one
+
+
+async def main() -> None:
+    await broker.startup()
+
+    # Send the task to the broker.
+    task = await add_one.kiq(1)
+
+    # Wait for the result.
+    result = await task.wait_result(timeout=2)
+    logger.debug(f"Task execution took: {result.execution_time} seconds.")
+    if not result.is_err:
+        logger.debug(f"Returned value: {result.return_value}")
+    else:
+        logger.debug("Error found while executing task.")
+    await broker.shutdown()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
