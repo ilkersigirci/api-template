@@ -188,7 +188,7 @@ run-taskiq-services: # Run taskiq dependent services
 	docker compose up -d redis rabbitmq
 
 run-taskiq-workers: # Run 2 taskiq workers using threadpools ( Default )
-	uv run --module taskiq worker app.worker.broker:broker --workers 2 -fsd -tp ['app/worker/tasks/*.py']
+	uv run --module taskiq worker app.worker.broker:broker --workers 2 -fsd -tp 'app/worker/tasks/*.py'
 
 run-taskiq-workers-processpool: # Run 2 taskiq workers using processpools
 	uv run --module taskiq worker app.worker.broker:broker --use-process-pool --workers 2 -fsd -tp ['app/worker/tasks/*.py']
