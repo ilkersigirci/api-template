@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from loguru import logger
 from redis.asyncio import ConnectionPool, Redis
 from taskiq import TaskiqDepends
@@ -10,7 +12,7 @@ from app.worker.broker import broker
 async def my_redis_task(
     key: str,
     val: str,
-    pool: ConnectionPool = TaskiqDepends(get_redis_pool),  # noqa: B008
+    pool: Annotated[ConnectionPool, TaskiqDepends(get_redis_pool)],
 ):
     async with Redis(connection_pool=pool) as redis:
         await redis.set(name=key, value=val)

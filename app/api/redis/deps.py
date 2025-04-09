@@ -1,4 +1,4 @@
-from typing import AsyncGenerator
+from typing import Annotated, AsyncGenerator
 
 from fastapi import FastAPI
 from redis.asyncio import Redis
@@ -7,7 +7,7 @@ from taskiq import TaskiqDepends
 
 
 async def get_redis_pool(
-    request: Request = TaskiqDepends(),  # noqa: B008
+    request: Annotated[Request, TaskiqDepends()],
 ) -> AsyncGenerator[Redis, None]:
     """
     Returns connection pool.
