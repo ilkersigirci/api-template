@@ -1,4 +1,4 @@
-from typing import Any, Generic, List, Optional, TypeVar
+from typing import Any, Generic, TypeVar
 
 from app.common.base_repository import BaseRepository
 
@@ -6,10 +6,21 @@ T = TypeVar("T")
 
 
 class InMemoryRepository(BaseRepository[T], Generic[T]):
-    def __init__(self, initial_data: Optional[List[T]] = None):
-        self._data = initial_data or []
+    def __init__(self, initial_data: list[T]):
+        """Initialize the in-memory repository with initial data.
 
-    async def get_by_id(self, id: int) -> Optional[T]:
+        NOTE:
+            `initial_data` should be used as pass by reference. It is because, fastapi
+            reinitialize the depencency on each request. So, if we pass by value,
+            it will reset the data. Hence, CRUD operations will not work as expected.
+
+            Actually, this is not a good practice to use in-memory repository as database.
+            This is just for testing purpose. In production, we should use a proper database
+            like PostgreSQL, MySQL, etc.
+        """
+        self._data = initial_data
+
+    async def get_by_id(self, id: int) -> T | None:
         return next(
             (item for item in self._data if getattr(item, "id", None) == id), None
         )
@@ -19,9 +30,9 @@ class InMemoryRepository(BaseRepository[T], Generic[T]):
         skip: int = 0,
         limit: int = 100,
         filters: dict[str, Any] | None = None,
-        sort_by: Optional[str] = None,
-        order: Optional[str] = "asc",
-    ) -> List[T]:
+        sort_by: str | None = None,
+        order: str | None = "asc",
+    ) -> list[T]:
         items = list(self._data)
         if filters:
             for field, value in filters.items():
@@ -41,7 +52,7 @@ class InMemoryRepository(BaseRepository[T], Generic[T]):
         self._data.append(obj)
         return obj
 
-    async def update(self, id: int, obj_in) -> Optional[T]:
+    async def update(self, id: int, obj_in) -> T | None:
         item = await self.get_by_id(id)
         if item:
             update_data = (
@@ -54,15 +65,19 @@ class InMemoryRepository(BaseRepository[T], Generic[T]):
                 if hasattr(item, "model_copy")
                 else item
             )
-            self._data = [
-                i if getattr(i, "id", None) != id else updated_item for i in self._data
-            ]
+            idx = next(
+                (i for i, v in enumerate(self._data) if getattr(v, "id", None) == id),
+                None,
+            )
+            if idx is not None:
+                self._data.pop(idx)
+                self._data.insert(idx, updated_item)
             return updated_item
         return None
 
     async def delete(self, id: int) -> bool:
         item = await self.get_by_id(id)
         if item:
-            self._data = [i for i in self._data if getattr(i, "id", None) != id]
+            self._data.remove(item)
             return True
         return False

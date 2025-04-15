@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FastAPI: Dev",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "app/__main__.py",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+    }
+  ]
+}

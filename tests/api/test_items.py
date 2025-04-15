@@ -163,7 +163,6 @@ async def test_update_nonexistent_item(
     assert response.json()["detail"] == "Item not found"
 
 
-@pytest.mark.skip(reason="Cannot delete the created item somehow, skipping for now")
 @pytest.mark.anyio
 async def test_delete_item(
     fastapi_app: FastAPI,

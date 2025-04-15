@@ -170,7 +170,6 @@ async def test_update_nonexistent_user(
     assert response.json()["detail"] == "User not found"
 
 
-@pytest.mark.skip(reason="Cannot delete the created user somehow, skipping for now")
 @pytest.mark.anyio
 async def test_delete_user(
     fastapi_app: FastAPI,
