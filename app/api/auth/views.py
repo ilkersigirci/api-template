@@ -5,9 +5,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.auth.deps import get_current_user
 from app.api.auth.schemas import Token
+from app.api.users.deps import get_user_service
 from app.api.users.schemas import User, UserCreate
 from app.api.users.service import UserService
-from app.dependencies.repositories import get_user_service
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -20,7 +20,7 @@ async def login_access_token(
     """
     OAuth2 compatible token login, get an access token for future requests
     """
-    auth_result = user_service.authenticate(
+    auth_result = await user_service.authenticate(
         email=form_data.username, password=form_data.password
     )
     return Token(access_token=auth_result["access_token"], token_type="bearer")
@@ -33,7 +33,7 @@ async def register_user(
     """
     Register a new user
     """
-    return user_service.create_user(user_in)
+    return await user_service.create_user(user_in)
 
 
 @router.post("/test-token", response_model=User)

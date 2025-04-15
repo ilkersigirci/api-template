@@ -23,23 +23,23 @@ class BaseRepository(ABC, Generic[T]):
     """Base repository interface for data access operations."""
 
     @abstractmethod
-    def get_by_id(self, id: int) -> Optional[T]:
+    async def get_by_id(self, id: int) -> Optional[T]:
         pass
 
     @abstractmethod
-    def get_all(self) -> List[T]:
+    async def get_all(self) -> List[T]:
         pass
 
     @abstractmethod
-    def create(self, obj_in) -> T:
+    async def create(self, obj_in) -> T:
         pass
 
     @abstractmethod
-    def update(self, id: int, obj_in) -> Optional[T]:
+    async def update(self, id: int, obj_in) -> Optional[T]:
         pass
 
     @abstractmethod
-    def delete(self, id: int) -> bool:
+    async def delete(self, id: int) -> bool:
         pass
 ```
 
@@ -58,7 +58,7 @@ class UserRepository(BaseRepository[User]):
         # In-memory storage for demo purposes
         self._users = [...]
 
-    def get_by_id(self, id: int) -> Optional[User]:
+    async def get_by_id(self, id: int) -> Optional[User]:
         # Implementation...
 
     def get_by_email(self, email: str) -> Optional[UserInDB]:

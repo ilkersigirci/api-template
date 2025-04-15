@@ -9,6 +9,7 @@ from app.core.settings import settings
 password_hash = PasswordHash.recommended()
 
 
+# TODO: Should it be async or not?
 def create_access_token(
     subject: Union[str, Any], expires_delta: Optional[timedelta] = None
 ) -> str:

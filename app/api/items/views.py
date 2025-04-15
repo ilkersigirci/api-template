@@ -2,9 +2,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 
+from app.api.items.deps import get_item_service
 from app.api.items.schemas import Item, ItemCreate, ItemUpdate
 from app.api.items.service import ItemService
-from app.dependencies.repositories import get_item_service
 
 router = APIRouter(prefix="/items", tags=["items"])
 
@@ -23,7 +23,7 @@ async def get_items(  # noqa: PLR0913
     sort_by: Annotated[str | None, Query(description="Field to sort by")] = None,
     order: Annotated[str | None, Query(description="Sort order (asc or desc)")] = "asc",
 ) -> list[Item]:
-    return item_service.get_items(
+    return await item_service.get_items(
         skip=skip,
         limit=limit,
         name=name,
@@ -38,7 +38,7 @@ async def get_item(
     item_id: int,
     item_service: Annotated[ItemService, Depends(get_item_service)],
 ) -> Item:
-    return item_service.get_item(item_id)
+    return await item_service.get_item(item_id)
 
 
 @router.post("/")
@@ -46,7 +46,7 @@ async def create_item(
     item_in: ItemCreate,
     item_service: Annotated[ItemService, Depends(get_item_service)],
 ) -> Item:
-    return item_service.create_item(item_in)
+    return await item_service.create_item(item_in)
 
 
 @router.put("/{item_id}")
@@ -55,7 +55,7 @@ async def update_item(
     item_in: ItemUpdate,
     item_service: Annotated[ItemService, Depends(get_item_service)],
 ) -> Item:
-    return item_service.update_item(item_id, item_in)
+    return await item_service.update_item(item_id, item_in)
 
 
 @router.delete("/{item_id}")
@@ -63,5 +63,5 @@ async def delete_item(
     item_id: int,
     item_service: Annotated[ItemService, Depends(get_item_service)],
 ) -> dict:
-    item_service.delete_item(item_id)
+    await item_service.delete_item(item_id)
     return {"message": "Item deleted successfully"}

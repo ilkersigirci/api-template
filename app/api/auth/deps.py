@@ -7,16 +7,16 @@ from pydantic import ValidationError
 
 from app.api.auth.schemas import TokenPayload
 from app.api.auth.utils import decode_access_token
+from app.api.users.deps import get_user_service
 from app.api.users.schemas import User
 from app.api.users.service import UserService
 from app.core.settings import settings
-from app.dependencies.repositories import get_user_service
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_PREFIX}/auth/login")
 api_key_header = APIKeyHeader(name="X-API-Key")
 
 
-def get_current_user(
+async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
     user_service: Annotated[UserService, Depends(get_user_service)],
 ) -> User:
@@ -38,7 +38,7 @@ def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         ) from e
 
-    user = user_service.get_user(int(token_data.sub))
+    user = await user_service.get_user(int(token_data.sub))
 
     if not user:
         raise HTTPException(
@@ -48,7 +48,7 @@ def get_current_user(
     return user
 
 
-def get_current_user_by_api_key(
+async def get_current_user_by_api_key(
     api_key: Annotated[str, Depends(Security(api_key_header))],
     user_service: Annotated[UserService, Depends(get_user_service)],
 ) -> User:
@@ -60,7 +60,7 @@ def get_current_user_by_api_key(
             detail="Missing or invalid API key",
         )
 
-    user = user_service.get_user_by_api_key(api_key)
+    user = await user_service.get_user_by_api_key(api_key)
 
     if not user:
         raise HTTPException(

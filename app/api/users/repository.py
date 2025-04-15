@@ -30,21 +30,21 @@ class UserRepository(BaseRepository[User]):
             ),
         ]
 
-    def get_by_id(self, id: int) -> Optional[User]:
+    async def get_by_id(self, id: int) -> Optional[User]:
         user = next((user for user in self._users if user.id == id), None)
         if user:
             return User(id=user.id, name=user.name, email=user.email)
         return None
 
-    def get_by_email(self, email: str) -> Optional[UserInDB]:
+    async def get_by_email(self, email: str) -> Optional[UserInDB]:
         return next((user for user in self._users if user.email == email), None)
 
-    def get_all(self) -> List[User]:
+    async def get_all(self) -> List[User]:
         return [
             User(id=user.id, name=user.name, email=user.email) for user in self._users
         ]
 
-    def create(self, user_in: UserCreate) -> User:
+    async def create(self, user_in: UserCreate) -> User:
         new_id = max(user.id for user in self._users) + 1 if self._users else 1
         user = UserInDB(
             id=new_id,
@@ -55,7 +55,7 @@ class UserRepository(BaseRepository[User]):
         self._users.append(user)
         return User(id=user.id, name=user.name, email=user.email)
 
-    def update(self, id: int, user_in: UserUpdate) -> Optional[User]:
+    async def update(self, id: int, user_in: UserUpdate) -> Optional[User]:
         user = next((user for user in self._users if user.id == id), None)
         if user:
             update_data = user_in.model_dump(exclude_unset=True)
@@ -72,15 +72,15 @@ class UserRepository(BaseRepository[User]):
             )
         return None
 
-    def delete(self, id: int) -> bool:
+    async def delete(self, id: int) -> bool:
         user = next((user for user in self._users if user.id == id), None)
         if user:
             self._users = [u for u in self._users if u.id != id]
             return True
         return False
 
-    def authenticate(self, email: str, password: str) -> Optional[User]:
-        user = self.get_by_email(email)
+    async def authenticate(self, email: str, password: str) -> Optional[User]:
+        user = await self.get_by_email(email)
         if not user:
             return None
         if not verify_password(password, user.hashed_password):

@@ -13,13 +13,13 @@ class ItemRepository(BaseRepository[Item]):
             Item(id=2, name="Item 2", price=20.0),
         ]
 
-    def get_by_id(self, id: int) -> Optional[Item]:
+    async def get_by_id(self, id: int) -> Optional[Item]:
         return next((item for item in self._items if item.id == id), None)
 
-    def get_all(self) -> list[Item]:
+    async def get_all(self) -> list[Item]:
         return self._items
 
-    def create(self, item_in: ItemCreate) -> Item:
+    async def create(self, item_in: ItemCreate) -> Item:
         new_id = max(item.id for item in self._items) + 1 if self._items else 1
         item = Item(
             id=new_id,
@@ -30,8 +30,8 @@ class ItemRepository(BaseRepository[Item]):
         self._items.append(item)
         return item
 
-    def update(self, id: int, item_in: ItemUpdate) -> Optional[Item]:
-        item = self.get_by_id(id)
+    async def update(self, id: int, item_in: ItemUpdate) -> Optional[Item]:
+        item = await self.get_by_id(id)
         if item:
             update_data = item_in.model_dump(exclude_unset=True)
             updated_item = item.model_copy(update=update_data)
@@ -39,14 +39,14 @@ class ItemRepository(BaseRepository[Item]):
             return updated_item
         return None
 
-    def delete(self, id: int) -> bool:
-        item = self.get_by_id(id)
+    async def delete(self, id: int) -> bool:
+        item = await self.get_by_id(id)
         if item:
             self._items = [i for i in self._items if i.id != id]
             return True
         return False
 
-    def get_items(
+    async def get_items(
         self,
         skip: int = 0,
         limit: int = 100,

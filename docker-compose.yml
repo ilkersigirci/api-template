@@ -58,7 +58,7 @@ services:
     ports:
       - 16686:16686
 
-  ##### ADVANCED #######
+  ##### AIO #######
   grafana-lgtm:
     image: docker.io/grafana/otel-lgtm:latest
     container_name: grafana-lgtm
