@@ -25,7 +25,7 @@ class ItemService:
         if description:
             filters["description"] = description
 
-        return await self.item_repository.get_items(
+        return await self.item_repository.get_all(
             skip=skip, limit=limit, filters=filters, sort_by=sort_by, order=order
         )
 

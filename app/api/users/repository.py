@@ -1,15 +1,15 @@
-from typing import List, Optional
+from typing import Optional
 
-from app.api.auth.utils import get_password_hash, verify_password
-from app.api.users.schemas import User, UserCreate, UserInDB, UserUpdate
-from app.common.base_repository import BaseRepository
+from app.api.auth.utils import get_password_hash
+from app.api.users.schemas import UserInDB
+from app.common.in_memory_repository import InMemoryRepository
 
 
-class UserRepository(BaseRepository[User]):
+class UserRepository(InMemoryRepository[UserInDB]):
     """Repository for User data access."""
 
     def __init__(self):
-        self._users = [
+        initial_data = [
             UserInDB(
                 id=1,
                 name="John Doe",
@@ -29,60 +29,7 @@ class UserRepository(BaseRepository[User]):
                 hashed_password=get_password_hash("ilker"),
             ),
         ]
-
-    async def get_by_id(self, id: int) -> Optional[User]:
-        user = next((user for user in self._users if user.id == id), None)
-        if user:
-            return User(id=user.id, name=user.name, email=user.email)
-        return None
+        super().__init__(initial_data=initial_data)
 
     async def get_by_email(self, email: str) -> Optional[UserInDB]:
-        return next((user for user in self._users if user.email == email), None)
-
-    async def get_all(self) -> List[User]:
-        return [
-            User(id=user.id, name=user.name, email=user.email) for user in self._users
-        ]
-
-    async def create(self, user_in: UserCreate) -> User:
-        new_id = max(user.id for user in self._users) + 1 if self._users else 1
-        user = UserInDB(
-            id=new_id,
-            name=user_in.name,
-            email=user_in.email,
-            hashed_password=get_password_hash(user_in.password),
-        )
-        self._users.append(user)
-        return User(id=user.id, name=user.name, email=user.email)
-
-    async def update(self, id: int, user_in: UserUpdate) -> Optional[User]:
-        user = next((user for user in self._users if user.id == id), None)
-        if user:
-            update_data = user_in.model_dump(exclude_unset=True)
-
-            # Hash password if it's included in update data
-            if update_data.get("password"):
-                hashed_password = get_password_hash(update_data.pop("password"))
-                update_data["hashed_password"] = hashed_password
-
-            updated_user = user.model_copy(update=update_data)
-            self._users = [u if u.id != id else updated_user for u in self._users]
-            return User(
-                id=updated_user.id, name=updated_user.name, email=updated_user.email
-            )
-        return None
-
-    async def delete(self, id: int) -> bool:
-        user = next((user for user in self._users if user.id == id), None)
-        if user:
-            self._users = [u for u in self._users if u.id != id]
-            return True
-        return False
-
-    async def authenticate(self, email: str, password: str) -> Optional[User]:
-        user = await self.get_by_email(email)
-        if not user:
-            return None
-        if not verify_password(password, user.hashed_password):
-            return None
-        return User(id=user.id, name=user.name, email=user.email)
+        return next((user for user in self._data if user.email == email), None)

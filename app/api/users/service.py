@@ -3,7 +3,7 @@ from typing import List
 
 from fastapi import HTTPException
 
-from app.api.auth.utils import create_access_token
+from app.api.auth.utils import create_access_token, verify_password
 from app.api.users.repository import UserRepository
 from app.api.users.schemas import User, UserCreate, UserUpdate
 from app.core.settings import settings
@@ -43,20 +43,21 @@ class UserService:
             raise HTTPException(status_code=404, detail="User not found")
         return success
 
-    async def authenticate(self, email: str, password: str) -> dict:
-        user = await self.user_repository.authenticate(email, password)
-        if not user:
-            raise HTTPException(status_code=401, detail="Incorrect email or password")
-
-        access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_token = create_access_token(
-            subject=str(user.id), expires_delta=access_token_expires
-        )
-
-        return {"access_token": access_token, "token_type": "bearer", "user": user}
-
     async def get_by_email(self, email: str) -> User:
         user = await self.user_repository.get_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         return User(id=user.id, name=user.name, email=user.email)
+
+    async def authenticate(self, email: str, password: str) -> dict:
+        user_in_db = await self.user_repository.get_by_email(email)
+        if not user_in_db or not verify_password(password, user_in_db.hashed_password):
+            raise HTTPException(status_code=401, detail="Incorrect email or password")
+
+        access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            subject=str(user_in_db.id), expires_delta=access_token_expires
+        )
+
+        user = User(id=user_in_db.id, name=user_in_db.name, email=user_in_db.email)
+        return {"access_token": access_token, "token_type": "bearer", "user": user}
