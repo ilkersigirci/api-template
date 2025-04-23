@@ -105,6 +105,7 @@ addopts = [
 
 env = [
     "ENVIRONMENT=test",
+    "DB_FILE=./db_test.sqlite3", # FIXME: How to make current directory relative?
     # "OTEL_SDK_DISABLED=true", # NOTE: Official env name for disabling OTEL_SDK
     "OLTP_LOG_METHOD=none",
 ]
