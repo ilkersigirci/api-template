@@ -7,7 +7,7 @@ from sqlalchemy.future import select
 from app.common.base_repository import BaseRepository
 from app.db.base import BaseSQLAlchemyModel
 
-T = TypeVar(BaseSQLAlchemyModel)
+T = TypeVar("T", bound=BaseSQLAlchemyModel)
 
 
 class BaseDBRepository(BaseRepository[T], Generic[T]):
