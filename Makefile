@@ -55,9 +55,6 @@ install-test: ## Install only test version of the package
 install-precommit: ## Install pre-commit hooks
 	uv run pre-commit install
 
-install-lint:
-	uv pip install ruff==0.11.0
-
 update-dependencies: ## Updates the lockfiles and installs dependencies. Dependencies are updated if necessary
 	uv sync
 
@@ -167,3 +164,12 @@ run-taskiq-workers-processpool: # Run 2 taskiq workers using processpools
 
 run-taskiq-main: # Run taskiq main to test the workers and the broker
 	uv run --module app.worker.main
+
+run-migration: ## Run migrations
+	uv run --module alembic upgrade head
+
+create-migrations: ## Create migrations
+	uv run --module alembic revision --autogenerate -m "Migration" -o ${PACKAGE}/db/migrations
+
+reset-all-migrations: ## Reset all migrations
+	uv run --module alembic downgrade base

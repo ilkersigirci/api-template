@@ -3,7 +3,7 @@ name = "api_template"
 version = "0.0.1"
 description = "FastAPI Template with Industry Standard Observability"
 readme = "README.md"
-requires-python = ">=3.11, < 3.13"
+requires-python = ">=3.11, < 3.14"
 
 authors = [
     {name = "İlker SIĞIRCI", email = "sigirci.ilker@gmail.com"},
@@ -29,9 +29,12 @@ classifiers = [
     "Operating System :: MacOS",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 
 dependencies = [
+    "aiosqlite>=0.21.0",
+    "alembic>=1.15.2",
     "fastapi[standard]>=0.115.11",
     # "fastapi-users[oauth,sqlalchemy]>=14.0.1",
     "logfire[fastapi,redis,httpx,system-metrics]>=3.12.0",
@@ -103,6 +106,8 @@ addopts = [
 
 env = [
     "ENVIRONMENT=test",
+    "DB_FILE=:memory:",
+    # "DB_FILE=db_test.sqlite3", # NOTE: Doesn't work pytest-parallel
     # "OTEL_SDK_DISABLED=true", # NOTE: Official env name for disabling OTEL_SDK
     "OLTP_LOG_METHOD=none",
 ]

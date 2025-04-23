@@ -9,18 +9,31 @@ on:
       - main
 
 jobs:
-  test:
+  test_matrix:
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+
       - name: Disable Logger Outputs
         run: |
           sed -i "s/log_cli = true/log_cli = false/" pyproject.toml
-      - name: Set up python environment
-        uses: ./.github/actions/setup-python
+
+      - name: Install the latest version of uv and set the python version
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
       - name: Install the Project with Test Dependencies
         run: |
-          make install-test
-      - name: Test the Project
+          uv sync --frozen --only-group test
+
+      - name: Test the Project Sequentially
+        run: |
+          make test-all
+
+      - name: Test the Project in Parallel
         run: |
           make test-all-parallel
