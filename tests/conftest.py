@@ -2,8 +2,10 @@ from typing import Any, AsyncGenerator
 
 import pytest
 from app.api.application import get_app
-from app.api.auth.utils import create_access_token
+from app.api.auth.utils import create_access_token, get_password_hash
+from app.api.items.models import ItemModel
 from app.api.redis.deps import get_redis_pool
+from app.api.users.models import UserModel
 from app.api.users.schemas import User
 from app.core.settings import settings
 from app.db.deps import get_db_session
@@ -13,12 +15,57 @@ from fakeredis.aioredis import FakeConnection
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 from redis.asyncio import ConnectionPool
+from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
+
+
+@pytest.fixture(scope="session")
+def mock_users_data() -> list[dict[str, Any]]:
+    """Provides mock user data."""
+    return [
+        {
+            "id": 1,
+            "name": "John Doe",
+            "email": "john@example.com",
+            "hashed_password": get_password_hash("password"),
+        },
+        {
+            "id": 2,
+            "name": "Jane Doe",
+            "email": "jane@example.com",
+            "hashed_password": get_password_hash("password"),
+        },
+        {
+            "id": 3,
+            "name": "ilker",
+            "email": "ilker@example.com",
+            "hashed_password": get_password_hash("ilker"),
+        },
+    ]
+
+
+@pytest.fixture(scope="session")
+def mock_items_data() -> list[dict[str, Any]]:
+    """Provides mock item data."""
+    return [
+        {
+            "id": 1,
+            "name": "Item 1",
+            "description": "Description for Item 1",
+            "price": 10.5,
+        },
+        {
+            "id": 2,
+            "name": "Item 2",
+            "description": "Description for Item 2",
+            "price": 20.0,
+        },
+    ]
 
 
 @pytest.fixture(scope="session")
@@ -32,8 +79,14 @@ def anyio_backend() -> str:
 
 
 @pytest.fixture(scope="session")
-async def _engine() -> AsyncGenerator[AsyncEngine, None]:
+async def _engine(
+    mock_users_data: list[dict[str, Any]], mock_items_data: list[dict[str, Any]]
+) -> AsyncGenerator[AsyncEngine, None]:
     """Create engine and databases.
+
+    Args:
+        mock_users_data: Fixture providing mock user data.
+        mock_items_data: Fixture providing mock item data.
 
     Yields:
         New db engine.
@@ -47,7 +100,12 @@ async def _engine() -> AsyncGenerator[AsyncEngine, None]:
 
     engine = create_async_engine(str(settings.DB_URL))
     async with engine.begin() as conn:
+        # Create tables
         await conn.run_sync(meta.create_all)
+
+        # Insert mock data using fixtures
+        await conn.execute(insert(UserModel), mock_users_data)
+        await conn.execute(insert(ItemModel), mock_items_data)
 
     try:
         yield engine
