@@ -23,9 +23,9 @@ user_inmemory_data = [
     ),
     UserInMemoryDB(
         id=3,
-        name="ilker",
-        email="ilker@example.com",
-        hashed_password=get_password_hash("ilker"),
+        name="admin",
+        email="admin@mail.com",
+        hashed_password=get_password_hash("admin"),
     ),
 ]
 

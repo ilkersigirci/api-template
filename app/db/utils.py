@@ -13,7 +13,7 @@ async def create_database() -> None:
 
 async def drop_database() -> None:
     """Drop current database."""
-    if settings.DB_FILE.exists():
+    if Path(settings.DB_FILE).exists():
         Path(settings.DB_FILE).unlink()
 
 
@@ -27,7 +27,11 @@ def setup_db(app: FastAPI) -> None:  # pragma: no cover
     Args:
         FastAPI application instance.
     """
-    engine = create_async_engine(str(settings.DB_URL), echo=settings.DB_ECHO)
+    engine = create_async_engine(
+        settings.DB_URL,
+        echo=settings.DB_ECHO,
+        # connect_args={"check_same_thread": True},
+    )
     session_factory = async_sessionmaker(
         engine,
         expire_on_commit=False,

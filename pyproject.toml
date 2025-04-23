@@ -106,7 +106,8 @@ addopts = [
 
 env = [
     "ENVIRONMENT=test",
-    "DB_FILE=./db_test.sqlite3", # FIXME: How to make current directory relative?
+    "DB_FILE=:memory:",
+    # "DB_FILE=db_test.sqlite3", # NOTE: Doesn't work pytest-parallel
     # "OTEL_SDK_DISABLED=true", # NOTE: Official env name for disabling OTEL_SDK
     "OLTP_LOG_METHOD=none",
 ]

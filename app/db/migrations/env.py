@@ -46,7 +46,7 @@ async def run_migrations_offline() -> None:
 
     """
     context.configure(
-        url=str(settings.DB_URL),
+        url=settings.DB_URL,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -75,7 +75,10 @@ async def run_migrations_online() -> None:
     In this scenario we need to create an Engine
     and associate a connection with the context.
     """
-    connectable = create_async_engine(str(settings.DB_URL))
+    connectable = create_async_engine(
+        settings.DB_URL,
+        # connect_args={"check_same_thread": True},
+    )
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)

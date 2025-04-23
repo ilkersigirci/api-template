@@ -30,6 +30,10 @@ jobs:
         run: |
           uv sync --frozen --only-group test
 
-      - name: Test the Project
+      - name: Test the Project Sequentially
+        run: |
+          make test-all
+
+      - name: Test the Project in Parallel
         run: |
           make test-all-parallel

@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     API_V2_STR: str = "/api/v2"
     CORS_ORIGINS: list[str] = ["*"]
     DB_ECHO: bool = False
-    DB_FILE: Path = TEMP_DIR / "api_template_db.sqlite3"
+    DB_FILE: str = "db.sqlite3"
     ENVIRONMENT: Environment = Environment.DEV
     HOST: str = "127.0.0.1"
     LOG_LEVEL: LogLevel = LogLevel.INFO
@@ -81,15 +81,13 @@ class Settings(BaseSettings):
     REDIS_BASE: str | None = None
 
     @property
-    def DB_URL(self) -> URL:
+    def DB_URL(self) -> str:
         """Assemble database URL from settings.
 
         Return:
             Database URL.
         """
-        return URL.build(
-            scheme="sqlite+aiosqlite", path=f"///{self.DB_FILE.resolve()!s}"
-        )
+        return f"sqlite+aiosqlite:///{self.DB_FILE}"
 
     @property
     def REDIS_URL(self) -> URL:

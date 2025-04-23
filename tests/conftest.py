@@ -42,9 +42,9 @@ def mock_users_data() -> list[dict[str, Any]]:
         },
         {
             "id": 3,
-            "name": "ilker",
-            "email": "ilker@example.com",
-            "hashed_password": get_password_hash("ilker"),
+            "name": "admin",
+            "email": "admin@mail.com",
+            "hashed_password": get_password_hash("admin"),
         },
     ]
 
@@ -98,7 +98,10 @@ async def _engine(
 
     await create_database()
 
-    engine = create_async_engine(str(settings.DB_URL))
+    engine = create_async_engine(
+        settings.DB_URL,
+        # connect_args={"check_same_thread": True},
+    )
     async with engine.begin() as conn:
         # Create tables
         await conn.run_sync(meta.create_all)
