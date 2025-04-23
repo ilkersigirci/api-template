@@ -87,7 +87,9 @@ class Settings(BaseSettings):
         Return:
             Database URL.
         """
-        return URL.build(scheme="sqlite+aiosqlite", path=f"///{self.DB_FILE}")
+        return URL.build(
+            scheme="sqlite+aiosqlite", path=f"///{self.DB_FILE.resolve()!s}"
+        )
 
     @property
     def REDIS_URL(self) -> URL:
