@@ -28,7 +28,7 @@ jobs:
 
       - name: Install the Project with Test Dependencies
         run: |
-          uv sync --frozen --only-group test
+          uv sync --only-group test
 
       - name: Test the Project
         run: |
