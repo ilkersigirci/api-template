@@ -167,3 +167,12 @@ run-taskiq-workers-processpool: # Run 2 taskiq workers using processpools
 
 run-taskiq-main: # Run taskiq main to test the workers and the broker
 	uv run --module app.worker.main
+
+run-migration: ## Run migrations
+	uv run --module alembic upgrade head
+
+create-migrations: ## Create migrations
+	uv run --module alembic revision --autogenerate -m "Migration" -o ${PACKAGE}/db/migrations
+
+reset-all-migrations: ## Reset all migrations
+	uv run --module alembic downgrade base

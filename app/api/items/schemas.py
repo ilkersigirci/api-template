@@ -17,12 +17,11 @@ class ItemUpdate(ItemBase):
     pass
 
 
-# TODO: These should be in models folder?
-class ItemInDB(ItemBase):
+class ItemInMemoryDB(ItemBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class Item(ItemInDB):
+class Item(ItemInMemoryDB):
     pass

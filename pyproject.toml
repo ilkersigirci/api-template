@@ -32,6 +32,8 @@ classifiers = [
 ]
 
 dependencies = [
+    "aiosqlite>=0.21.0",
+    "alembic>=1.15.2",
     "fastapi[standard]>=0.115.11",
     # "fastapi-users[oauth,sqlalchemy]>=14.0.1",
     "logfire[fastapi,redis,httpx,system-metrics]>=3.12.0",

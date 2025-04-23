@@ -16,7 +16,7 @@ class UserUpdate(UserBase):
     password: Optional[str] = None
 
 
-class UserInDB(UserBase):
+class UserInMemoryDB(UserBase):
     id: int
     hashed_password: str
 
@@ -29,7 +29,7 @@ class User(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class UserInDBBase(UserBase):
+class UserInMemoryDBBase(UserBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)

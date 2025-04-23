@@ -1,4 +1,6 @@
+from app.api.items.models import ItemModel
 from app.api.items.schemas import Item
+from app.common.base_db_repository import BaseDBRepository
 from app.common.in_memory_repository import InMemoryRepository
 
 # NOTE: Data defined here instead of __init__. It is because, in each request
@@ -9,8 +11,15 @@ item_inmemory_data = [
 ]
 
 
-class ItemRepository(InMemoryRepository[Item]):
+class ItemInMemoryRepository(InMemoryRepository[Item]):
     """Repository for Item data access."""
 
     def __init__(self):
         super().__init__(initial_data=item_inmemory_data)
+
+
+class ItemRepository(BaseDBRepository[ItemModel]):
+    """SQLAlchemy Repository for Item data access."""
+
+    def __init__(self, session):
+        super().__init__(model=ItemModel, session=session)
