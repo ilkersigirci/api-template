@@ -2,7 +2,7 @@ from sqlalchemy import select
 
 from app.api.auth.utils import get_password_hash
 from app.api.users.models import UserModel
-from app.api.users.schemas import UserInMemoryDB
+from app.api.users.schemas import UserCreate, UserInMemoryDB
 from app.common.base_db_repository import BaseDBRepository
 from app.common.in_memory_repository import InMemoryRepository
 
@@ -52,7 +52,7 @@ class UserRepository(BaseDBRepository[UserModel]):
         )
         return result.scalar_one_or_none()
 
-    async def create(self, obj_in) -> UserModel:
+    async def create(self, obj_in: UserCreate) -> UserModel:
         """Create a new user with password hashing"""
         user_data = obj_in.model_dump(exclude={"password"})
         user_data["hashed_password"] = get_password_hash(obj_in.password)

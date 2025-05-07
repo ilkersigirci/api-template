@@ -88,7 +88,7 @@ async def test_get_nonexistent_user(
     url = fastapi_app.url_path_for("get_user", user_id=999)
     response = await client.get(url, headers=normal_user_token_headers)
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json()["detail"] == "User not found"
+    assert response.json()["detail"] == "User with id 999 not found"
 
 
 @pytest.mark.anyio
@@ -167,7 +167,7 @@ async def test_update_nonexistent_user(
         json={"name": "Ghost User", "email": "ghost@example.com"},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json()["detail"] == "User not found"
+    assert response.json()["detail"] == "User with id 999 not found"
 
 
 @pytest.mark.anyio
