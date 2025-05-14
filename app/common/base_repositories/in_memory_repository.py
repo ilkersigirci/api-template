@@ -1,6 +1,6 @@
 from typing import Any, Generic, TypeVar
 
-from app.common.base_repository import BaseRepository
+from app.common.base_repositories.base_repository import BaseRepository
 
 T = TypeVar("T")
 

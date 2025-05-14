@@ -3,8 +3,8 @@ from sqlalchemy import select
 from app.api.auth.utils import get_password_hash
 from app.api.users.models import UserModel
 from app.api.users.schemas import UserCreate, UserInMemoryDB
-from app.common.base_db_repository import BaseDBRepository
-from app.common.in_memory_repository import InMemoryRepository
+from app.common.base_repositories.base_db_repository import BaseDBRepository
+from app.common.base_repositories.in_memory_repository import InMemoryRepository
 
 # NOTE: Data defined here instead of __init__. It is because, in each request
 # init is called and it will reset the data.

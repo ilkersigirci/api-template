@@ -1,7 +1,7 @@
 from app.api.items.models import ItemModel
 from app.api.items.schemas import Item
-from app.common.base_db_repository import BaseDBRepository
-from app.common.in_memory_repository import InMemoryRepository
+from app.common.base_repositories.base_db_repository import BaseDBRepository
+from app.common.base_repositories.in_memory_repository import InMemoryRepository
 
 # NOTE: Data defined here instead of __init__. It is because, in each request
 # init is called and it will reset the data.

@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from app.common.base_repository import BaseRepository
+from app.common.base_repositories.base_repository import BaseRepository
 from app.db.base import BaseSQLAlchemyModel
 
 T = TypeVar("T", bound=BaseSQLAlchemyModel)
