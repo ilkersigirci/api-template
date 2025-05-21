@@ -11,7 +11,7 @@ async def add_one(value: int) -> int:
     return value + 1
 
 
-@broker.task(retry_on_error=True, max_retries=5)
+@broker.task(retry_on_error=True, max_retries=5, delay=15)
 async def add_one_with_retry(value: int) -> int:
     # Randomly fail 50% of the time
     if random.random() < 0.5:  # noqa: PLR2004

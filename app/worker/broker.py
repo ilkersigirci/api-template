@@ -5,7 +5,7 @@ from taskiq import (
     AsyncBroker,
     AsyncResultBackend,
     InMemoryBroker,
-    SimpleRetryMiddleware,
+    SmartRetryMiddleware,
 )
 from taskiq.schedule_sources import LabelScheduleSource
 from taskiq.scheduler.scheduler import TaskiqScheduler
@@ -32,7 +32,13 @@ else:
         )
         .with_result_backend(result_backend)
         .with_middlewares(
-            SimpleRetryMiddleware(default_retry_count=3),
+            SmartRetryMiddleware(
+                default_retry_count=5,
+                default_delay=10,
+                use_jitter=True,
+                use_delay_exponent=True,
+                max_delay_exponent=120,
+            )
         )
     )
 
