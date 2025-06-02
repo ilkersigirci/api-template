@@ -22,13 +22,13 @@ repos:
         args: ["--maxkb=2000"]
 
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.7.3
+    rev: 0.7.9
     hooks:
       # Update the uv lockfile
       - id: uv-lock
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.9
+    rev: v0.11.12
     hooks:
       # Run the Ruff linter.
       - id: ruff
