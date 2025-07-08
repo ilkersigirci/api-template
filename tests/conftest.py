@@ -9,7 +9,8 @@ from app.api.users.models import UserModel
 from app.api.users.schemas import User
 from app.core.settings import settings
 from app.db.deps import get_db_session
-from app.db.utils import create_database, drop_database
+from app.db.meta import meta
+from app.db.utils import create_database, drop_database, load_all_db_models
 from fakeredis import FakeServer
 from fakeredis.aioredis import FakeConnection
 from fastapi import FastAPI
@@ -91,8 +92,6 @@ async def _engine(
     Yields:
         New db engine.
     """
-    from app.db.meta import meta
-    from app.db.utils import load_all_db_models
 
     load_all_db_models()
 
