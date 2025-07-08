@@ -44,7 +44,7 @@ class OLTPLogMethod(StrEnum):
     LOGFIRE = "logfire"
 
 
-def _should_use_http_scheme(self, host: str) -> bool:
+def _should_use_http_scheme(host: str) -> bool:
     """Check if the host should use HTTP scheme instead of HTTPS.
 
     Uses HTTP for:
