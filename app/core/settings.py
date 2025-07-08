@@ -1,3 +1,4 @@
+import ipaddress
 from enum import StrEnum
 from pathlib import Path
 from tempfile import gettempdir
@@ -41,6 +42,31 @@ class OLTPLogMethod(StrEnum):
     NONE = "none"
     MANUAL = "manual"
     LOGFIRE = "logfire"
+
+
+def _should_use_http_scheme(self, host: str) -> bool:
+    """Check if the host should use HTTP scheme instead of HTTPS.
+
+    Uses HTTP for:
+    - IP addresses (IPv4 or IPv6)
+    - Simple hostnames without dots (like docker hostnames: redis, postgres, etc.)
+
+    Uses HTTPS for:
+    - Domain names with dots (like redis.example.com)
+
+    Args:
+        host: The host string to check.
+
+    Returns:
+        True if should use HTTP scheme, False if should use HTTPS.
+    """
+    try:
+        ipaddress.ip_address(host)
+        return True
+    except ValueError:
+        pass
+
+    return "." not in host
 
 
 class Settings(BaseSettings):
@@ -97,9 +123,10 @@ class Settings(BaseSettings):
             Redis URL.
         """
         path = f"/{self.REDIS_BASE}" if self.REDIS_BASE is not None else ""
+        scheme = "redis" if _should_use_http_scheme(self.REDIS_HOST) else "rediss"
 
         return URL.build(
-            scheme="redis",
+            scheme=scheme,
             host=self.REDIS_HOST,
             port=self.REDIS_PORT,
             user=self.REDIS_USER,
@@ -114,8 +141,10 @@ class Settings(BaseSettings):
         Returns:
             RabbitMQ URL.
         """
+        scheme = "amqp" if _should_use_http_scheme(self.RABBITMQ_HOST) else "amqps"
+
         return URL.build(
-            scheme="amqp",
+            scheme=scheme,
             host=self.RABBITMQ_HOST,
             port=self.RABBITMQ_PORT,
             user=self.RABBITMQ_USERNAME,
