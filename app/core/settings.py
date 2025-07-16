@@ -73,12 +73,11 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     ALGORITHM: str = "HS256"
     API_PREFIX: str = "/api/v1"
-    API_V2_STR: str = "/api/v2"
     CORS_ORIGINS: list[str] = ["*"]
     DB_ECHO: bool = False
     DB_FILE: str = "db.sqlite3"
     ENVIRONMENT: Environment = Environment.DEV
-    HOST: str = "127.0.0.1"
+    HOST: str = "0.0.0.0"
     LOG_LEVEL: LogLevel = LogLevel.INFO
     OLTP_LOG_METHOD: OLTPLogMethod = OLTPLogMethod.NONE
     OTLP_ENDPOINT: CustomHttpUrlStr | None = Field(

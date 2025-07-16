@@ -54,7 +54,7 @@ RUN \
 
 RUN chmod +x /app/docker/entrypoint.sh
 ENTRYPOINT ["/app/docker/entrypoint.sh"]
-CMD ["uv", "run", "--module", "fastapi", "run", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "--module", "app.__main__"]
 
 
 #
