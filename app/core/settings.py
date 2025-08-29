@@ -104,6 +104,12 @@ class Settings(BaseSettings):
     REDIS_USER: str | None = None
     REDIS_PASS: str | None = None
     REDIS_BASE: str | None = None
+    REDIS_TASK_DB: int = Field(
+        default=1,
+        ge=1,
+        le=16,
+        description="Redis database number for taskiq result backend. Must be between 1-16.",
+    )
 
     @property
     def DB_URL(self) -> str:

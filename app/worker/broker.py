@@ -19,7 +19,7 @@ if settings.ENVIRONMENT == Environment.TEST:
     broker: AsyncBroker = InMemoryBroker()
 else:
     result_backend: AsyncResultBackend[Any] = RedisAsyncResultBackend(
-        redis_url=str(settings.REDIS_URL.with_path("/1")),
+        redis_url=str(settings.REDIS_URL.with_path(f"/{settings.REDIS_TASK_DB}")),
     )
 
     # broker: AsyncBroker = ListQueueBroker(
