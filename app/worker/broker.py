@@ -8,13 +8,13 @@ from taskiq import (
     SmartRetryMiddleware,
 )
 from taskiq.instrumentation import TaskiqInstrumentor
-from taskiq.middlewares.taskiq_admin_middleware import TaskiqAdminMiddleware
 from taskiq.schedule_sources import LabelScheduleSource
 from taskiq.scheduler.scheduler import TaskiqScheduler
 from taskiq_aio_pika import AioPikaBroker
 from taskiq_redis import RedisAsyncResultBackend
 
 from app.core.settings import Environment, OLTPLogMethod, settings
+from app.worker.middlewares import CustomDashboardMiddleware
 
 if settings.OLTP_LOG_METHOD != OLTPLogMethod.NONE:
     TaskiqInstrumentor().instrument()
@@ -39,10 +39,10 @@ else:
 
     if settings.TASKIQ_DASHBOARD_URL:
         middlewares.append(
-            TaskiqAdminMiddleware(
+            CustomDashboardMiddleware(
                 url=settings.TASKIQ_DASHBOARD_URL,
                 api_token=settings.TASKIQ_DASHBOARD_API_TOKEN,
-                taskiq_broker_name=settings.TASKIQ_BROKER_NAME,
+                broker_name=settings.TASKIQ_BROKER_NAME,
             )
         )
 
