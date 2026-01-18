@@ -128,7 +128,7 @@ async def test_create_item_missing_required_fields(
         url,
         json={"price": 15.99},
     )
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     data = response.json()
     assert "detail" in data
     assert any("name" in error["loc"] for error in data["detail"])
@@ -138,7 +138,7 @@ async def test_create_item_missing_required_fields(
         url,
         json={"name": "Missing Price Item"},
     )
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     data = response.json()
     assert "detail" in data
     assert any("price" in error["loc"] for error in data["detail"])
