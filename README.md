@@ -43,6 +43,19 @@ make run-taskiq-main
 make run-taskiq-scheduler
 ```
 
+### Taskiq Dashboard
+
+Task statuses
+
+Let's assume we have a task do_smth, there are all states it can embrace:
+
+queued - the task has been sent to the queue without an error;
+running - the task is grabbed by a worker and is being processed;
+success - the task is fully processed without any errors;
+failure - an error occurred during the task processing;
+abandoned - taskiq dashboard was shut down while the task was still in queued or running state, so it probably missed an event on task success/failure.
+
+
 ## Migrations
 
 If you want to migrate your database, you should run following commands:

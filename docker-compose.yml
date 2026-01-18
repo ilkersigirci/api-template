@@ -8,90 +8,62 @@ networks:
       config:
         - subnet: 192.168.10.0/24
 
+x-app-common: &app-common
+  image: api-template-dev:latest
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+    target: development
+  networks:
+    - api-template-network
+  restart: "no"
+  tty: true
+  develop:
+    watch:
+      # Sync the working directory with the `/app` directory in the container
+      - action: sync
+        path: .
+        target: /app
+        # Exclude the project virtual environment
+        ignore:
+          - .venv/
+
+      # Rebuild the image on changes to the `pyproject.toml`
+      - action: rebuild
+        path: ./pyproject.toml
+  env_file:
+    - .env
+
 services:
-  api-template-dev:
-    image: api-template-dev:latest
-    container_name: api-template-dev
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-      target: development
-    networks:
-      - api-template-network
+  api-template-head:
+    <<: *app-common
+    container_name: api-template-head
     ports:
       - 8000:8000
-    # command: ["tail", "-f", "/dev/null"] # NOTE: For testing the container
-    restart: "no"
-    develop:
-      watch:
-        # Sync the working directory with the `/app` directory in the container
-        - action: sync
-          path: .
-          target: /app
-          # Exclude the project virtual environment
-          ignore:
-            - .venv/
-
-        # Rebuild the image on changes to the `pyproject.toml`
-        - action: rebuild
-          path: ./pyproject.toml
-
-  ########## OpenTelemetry ##########
-
-  ##### SIMPLE #####
-  otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.53.0
-    container_name: otel-collector
-    networks:
-      - api-template-network
-    ports:
-      - "4317:4317"
-    volumes:
-      - ./docker/otel-collector-config.yml:/config.yml
-    command: --config config.yml
-
-  jaeger:
-    image: jaegertracing/all-in-one:1.35
-    hostname: jaeger
-    networks:
-      - api-template-network
-    ports:
-      - 16686:16686
-
-  ##### AIO #######
-  grafana-lgtm:
-    image: docker.io/grafana/otel-lgtm:latest
-    container_name: grafana-lgtm
-    networks:
-      - api-template-network
-    ports:
-      - 3000:3000 # Grafana
-      - 4317:4317 # gRPC
-      - 4318:4318 # HTTP
+    command: ["uv", "run", "--module", "app.__main__"]
     environment:
-      - GF_PATHS_DATA=/data/grafana
-    volumes:
-      - ./docker/volumes/grafana:/data/grafana
-      - ./docker/volumes/prometheus:/data/prometheus
-      - ./docker/volumes/loki:/data/loki
+      - INSTANCE_TYPE=HEAD
 
-  ########## Other Services ##########
-  # migrator:
-  #   image: api_template:${api_template_VERSION:-latest}
-  #   restart: "no"
-  #   command: alembic upgrade head
-  #   environment:
-  #     api_template_DB_FILE: /db_data/db.sqlite3
-  #   volumes:
-  #     - api_template-db-data:/db_data/
+  api-template-worker:
+    <<: *app-common
+    container_name: api-template-worker
+    command:
+      - "uv"
+      - "run"
+      - "--module"
+      - "taskiq"
+      - "worker"
+      - "app.worker.broker:broker"
+      - "--use-process-pool"
+      - "--workers"
+      - "5"
+      - "-fsd"
+      - "-tp"
+      - "[app/worker/tasks/*.py]"
+    environment:
+      - INSTANCE_TYPE=WORKER
 
-  # taskiq-worker:
-  #   <<: *main_app
-  #   labels: []
-  #   command:
-  #     - taskiq
-  #     - worker
-  #     - app.worker.main:broker
+  ########## Taskiq Services ##########
 
   redis:
     image: redis:8
@@ -101,10 +73,10 @@ services:
     networks:
       - api-template-network
     ports:
-      - "REDIS_PORT:6379"
-    command: redis-server --requirepass "${REDIS_PASSWORD}"
+      - "$REDIS_PORT:6379"
+    command: redis-server --requirepass "${REDIS_PASS}"
     healthcheck:
-      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD}", "ping"]
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASS}", "ping"]
       interval: 1s
       timeout: 3s
       retries: 50
@@ -124,6 +96,22 @@ services:
       RABBITMQ_DEFAULT_PASS: $RABBITMQ_PASSWORD
       RABBITMQ_DEFAULT_VHOST: $RABBITMQ_VHOST
       RABBITMQ_DISK_FREE_ABSOLUTE_LIMIT: 2GB
+
+  taskiq-dashboard:
+    image: ghcr.io/danfimov/taskiq-dashboard:latest
+    container_name: taskiq-dashboard
+    restart: "unless-stopped"
+    networks:
+      - api-template-network
+    ports:
+      - "$TASKIQ_DASHBOARD_PORT:8000"
+    environment:
+      TASKIQ_DASHBOARD__API__PORT: 8000
+      TASKIQ_DASHBOARD__API__TOKEN: $TASKIQ_DASHBOARD_API_TOKEN
+      TASKIQ_DASHBOARD__STORAGE_TYPE: sqlite
+      TASKIQ_DASHBOARD__SQLITE__DSN: sqlite+aiosqlite:///taskiq_dashboard.db
+    volumes:
+      - ./docker/volumes/taskiq_dashboard/dashboard.db:/app/taskiq_dashboard.db
 
   # kafka:
   #   image: apache/kafka:latest
