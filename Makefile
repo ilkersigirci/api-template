@@ -151,7 +151,7 @@ run-ui:
 	uv run --module uvicorn ui.main:app --host 0.0.0.0 --port 5002
 
 run-taskiq-services: # Run taskiq dependent services
-	docker compose up -d redis rabbitmq
+	docker compose up -d redis rabbitmq taskiq-dashboard
 
 run-taskiq-scheduler: # Run taskiq scheduler. Only one scheduler can be run at a time. It only sends tasks to the workers, doesn't execute them
 	uv run --module taskiq scheduler app.worker.broker:scheduler -fsd -tp 'app/worker/tasks/*.py'

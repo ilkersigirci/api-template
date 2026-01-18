@@ -110,6 +110,22 @@ class Settings(BaseSettings):
         le=16,
         description="Redis database number for taskiq result backend. Must be between 1-16.",
     )
+    TASKIQ_DASHBOARD_HOST: str | None = None
+    TASKIQ_DASHBOARD_PORT: int = 8001
+    TASKIQ_DASHBOARD_API_TOKEN: str = "supersecret"
+    TASKIQ_BROKER_NAME: str = "api-template-worker"
+
+    @property
+    def TASKIQ_DASHBOARD_URL(self) -> str | None:
+        """Assemble Taskiq Dashboard URL from settings.
+
+        Returns:
+            Taskiq Dashboard URL.
+        """
+        if self.TASKIQ_DASHBOARD_HOST is None:
+            return None
+
+        return f"http://{self.TASKIQ_DASHBOARD_HOST}:{self.TASKIQ_DASHBOARD_PORT}"
 
     @property
     def DB_URL(self) -> str:
