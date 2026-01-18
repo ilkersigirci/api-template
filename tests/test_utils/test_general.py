@@ -18,6 +18,6 @@ def test_is_module_installed_nonexisting():
 
     # With throw_error=True should raise ImportError
     with pytest.raises(
-        ImportError, match="Module nonexistent_module_xyz123 is not installed."
+        ImportError, match=r"Module nonexistent_module_xyz123 is not installed\."
     ):
         is_module_installed("nonexistent_module_xyz123", throw_error=True)
