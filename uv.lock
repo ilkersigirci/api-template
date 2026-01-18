@@ -203,7 +203,7 @@ dependencies = [
     { name = "pyjwt", extra = ["crypto"] },
     { name = "redis", extra = ["hiredis"] },
     { name = "sqlalchemy", extra = ["asyncio"] },
-    { name = "taskiq" },
+    { name = "taskiq", extra = ["opentelemetry"] },
     { name = "taskiq-aio-pika" },
     { name = "taskiq-fastapi" },
     { name = "taskiq-redis" },
@@ -244,7 +244,7 @@ requires-dist = [
     { name = "pyjwt", extras = ["crypto"], specifier = ">=2.10.1" },
     { name = "redis", extras = ["hiredis"], specifier = ">=5.2.1" },
     { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.39" },
-    { name = "taskiq", specifier = ">=0.11.16" },
+    { name = "taskiq", extras = ["opentelemetry"], specifier = ">=0.12.1" },
     { name = "taskiq-aio-pika", specifier = ">=0.4.1" },
     { name = "taskiq-fastapi", specifier = ">=0.3.4" },
     { name = "taskiq-redis", specifier = ">=1.0.4" },
@@ -2763,6 +2763,13 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/92/cf/c4a47be05d85754f3e0ecc7b72131249adc067ea37517054459e94268fb1/taskiq-0.12.1.tar.gz", hash = "sha256:338dcf58eaca327e511a9380b2185bfa6a415dd79a5cf144546a2dbb95459298", size = 60536, upload-time = "2025-12-07T16:07:43.561Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4c/e4/a2fda3bcbb8b61108dc8e9db1a2d19a23578953db73e981f66b9d44f1207/taskiq-0.12.1-py3-none-any.whl", hash = "sha256:a8ade45e2e23edbadb972a88dec44e68c7daef83383d01fa3af48594a24a712a", size = 90668, upload-time = "2025-12-07T16:07:42.296Z" },
+]
+
+[package.optional-dependencies]
+opentelemetry = [
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-semantic-conventions" },
 ]
 
 [[package]]

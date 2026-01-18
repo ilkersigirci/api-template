@@ -7,12 +7,15 @@ from taskiq import (
     InMemoryBroker,
     SmartRetryMiddleware,
 )
+from taskiq.instrumentation import TaskiqInstrumentor
 from taskiq.schedule_sources import LabelScheduleSource
 from taskiq.scheduler.scheduler import TaskiqScheduler
 from taskiq_aio_pika import AioPikaBroker
 from taskiq_redis import ListQueueBroker, RedisAsyncResultBackend  # noqa: F401
 
 from app.core.settings import Environment, settings
+
+TaskiqInstrumentor().instrument()
 
 if settings.ENVIRONMENT == Environment.TEST:
     # NOTE: By default uses InMemoryResultBackend
