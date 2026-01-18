@@ -273,4 +273,3 @@ public
 .sesskey
 
 docker/volumes/*
-!docker/volumes/taskiq_dashboard

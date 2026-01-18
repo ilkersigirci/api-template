@@ -14,9 +14,10 @@ from taskiq.scheduler.scheduler import TaskiqScheduler
 from taskiq_aio_pika import AioPikaBroker
 from taskiq_redis import RedisAsyncResultBackend
 
-from app.core.settings import Environment, settings
+from app.core.settings import Environment, OLTPLogMethod, settings
 
-TaskiqInstrumentor().instrument()
+if settings.OLTP_LOG_METHOD != OLTPLogMethod.NONE:
+    TaskiqInstrumentor().instrument()
 
 # NOTE: Test uses InMemoryResultBackend
 if settings.ENVIRONMENT == Environment.TEST:
