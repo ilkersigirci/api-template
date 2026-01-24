@@ -14,9 +14,7 @@ from taskiq_aio_pika import AioPikaBroker
 from taskiq_redis import RedisAsyncResultBackend
 
 from app.core.settings import Environment, OLTPLogMethod, settings
-from app.worker.middlewares import CustomDashboardMiddleware
 
-# FIXME: When worker code is separated from app, opentelemetry instrumentation doesn't work in the worker.
 if settings.OLTP_LOG_METHOD != OLTPLogMethod.NONE:
     TaskiqInstrumentor().instrument()
 
@@ -39,6 +37,8 @@ else:
     ]
 
     if settings.TASKIQ_DASHBOARD_URL:
+        from app.worker.middlewares import CustomDashboardMiddleware
+
         middlewares.append(
             CustomDashboardMiddleware(
                 url=settings.TASKIQ_DASHBOARD_URL,

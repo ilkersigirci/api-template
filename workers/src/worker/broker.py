@@ -13,8 +13,10 @@ from taskiq_aio_pika import AioPikaBroker
 from taskiq_redis import RedisAsyncResultBackend
 
 from worker.core.settings import Environment, OLTPLogMethod, settings
+from worker.telemetry import setup_opentelemetry_worker
 
-# FIXME: When worker code is separated from app, opentelemetry instrumentation doesn't work in the worker.
+setup_opentelemetry_worker()
+
 if settings.OLTP_LOG_METHOD != OLTPLogMethod.NONE:
     TaskiqInstrumentor().instrument()
 

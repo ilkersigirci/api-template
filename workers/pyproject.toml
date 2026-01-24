@@ -5,15 +5,18 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "opentelemetry-distro[otlp]>=0.52b0",
+    "opentelemetry-instrumentation-logging>=0.52b0",
+    "opentelemetry-instrumentation-redis>=0.52b0",
     "taskiq[opentelemetry]>=0.12.1",
     "taskiq-aio-pika>=0.4.1",
-    # "taskiq-fastapi>=0.3.4",
     # "taskiq-dashboard>=0.4.0rc0",
     "taskiq-redis>=1.0.4",
+    "logfire[redis,httpx,system-metrics]>=3.12.0",
     "pydantic-settings>=2.8.1",
     "pandas>=3.0.0",
-    "httpx>=0.28.1",
     "loguru>=0.7.3",
+    "httpx>=0.28.1",
 ]
 
 [build-system]
