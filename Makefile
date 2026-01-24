@@ -55,6 +55,10 @@ install-test: ## Install only test version of the package
 install-precommit: ## Install pre-commit hooks
 	uv run pre-commit install
 
+python-version: ## Checks the python version used in the environment
+	uv lock --locked
+	uv run python --version
+
 update-dependencies: ## Updates the lockfiles and installs dependencies. Dependencies are updated if necessary
 	uv sync
 
@@ -147,24 +151,6 @@ run-dev: ## Run the app in the dev mode
 	# uv run --module uvicorn app.main:app --port 8000
 	uv run --module app.__main__
 
-run-ui:
-	uv run --module uvicorn ui.main:app --host 0.0.0.0 --port 5002
-
-run-taskiq-services: # Run taskiq dependent services
-	docker compose up -d redis rabbitmq taskiq-dashboard
-
-run-taskiq-scheduler: # Run taskiq scheduler. Only one scheduler can be run at a time. It only sends tasks to the workers, doesn't execute them
-	uv run --module taskiq scheduler app.worker.broker:scheduler -fsd -tp 'app/worker/tasks/*.py'
-
-run-taskiq-workers: # Run 2 taskiq workers using threadpools ( Default )
-	uv run --module taskiq worker app.worker.broker:broker --workers 2 -fsd -tp 'app/worker/tasks/*.py'
-
-run-taskiq-workers-processpool: # Run 2 taskiq workers using processpools
-	uv run --module taskiq worker app.worker.broker:broker --use-process-pool --workers 2 -fsd -tp ['app/worker/tasks/*.py']
-
-run-taskiq-main: # Run taskiq main to test the workers and the broker
-	uv run --module app.worker.main
-
 run-migration: ## Run migrations
 	uv run --module alembic upgrade head
 
@@ -173,3 +159,27 @@ create-migrations: ## Create migrations
 
 reset-all-migrations: ## Reset all migrations
 	uv run --module alembic downgrade base
+
+run-taskiq-docker-services: # Run required taskiq docker services
+	docker compose up -d redis rabbitmq
+	# docker compose up -d redis rabbitmq taskiq-dashboard
+
+##### EXTERNAL MAKEFILE CALLS #####
+
+run-ui: ## Run the fasthtml UI server using the ui Makefile
+	$(MAKE) -C ui run-ui
+
+workers-python-version: ## Checks the python version used in the worker environment
+	$(MAKE) -C workers python-version
+
+run-taskiq-scheduler: ## Run taskiq scheduler using the worker Makefile
+	$(MAKE) -C workers run-taskiq-scheduler
+
+run-taskiq-workers: ## Run taskiq workers using the worker Makefile
+	$(MAKE) -C workers run-taskiq-workers
+
+run-taskiq-workers-processpool: ## Run taskiq workers using processpools via the worker Makefile
+	$(MAKE) -C workers run-taskiq-workers-processpool
+
+run-taskiq-main: ## Run taskiq main to test workers and broker via the worker Makefile
+	$(MAKE) -C workers run-taskiq-main

@@ -80,9 +80,6 @@ test = [
 [tool.uv]
 default-groups = ["dev", "test"]
 
-[tool.uv.workspace]
-members = ["ui"]
-
 
 [tool.pytest.ini_options]
 minversion = "7.0.0"

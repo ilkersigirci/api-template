@@ -1,6 +1,5 @@
 from typing import Any
 
-import taskiq_fastapi
 from taskiq import (
     AsyncBroker,
     AsyncResultBackend,
@@ -13,8 +12,7 @@ from taskiq.scheduler.scheduler import TaskiqScheduler
 from taskiq_aio_pika import AioPikaBroker
 from taskiq_redis import RedisAsyncResultBackend
 
-from app.core.settings import Environment, OLTPLogMethod, settings
-from app.worker.middlewares import CustomDashboardMiddleware
+from worker.core.settings import Environment, OLTPLogMethod, settings
 
 # FIXME: When worker code is separated from app, opentelemetry instrumentation doesn't work in the worker.
 if settings.OLTP_LOG_METHOD != OLTPLogMethod.NONE:
@@ -39,6 +37,8 @@ else:
     ]
 
     if settings.TASKIQ_DASHBOARD_URL:
+        from worker.middlewares import CustomDashboardMiddleware
+
         middlewares.append(
             CustomDashboardMiddleware(
                 url=settings.TASKIQ_DASHBOARD_URL,
@@ -60,4 +60,4 @@ else:
         sources=[LabelScheduleSource(broker)],
     )
 
-taskiq_fastapi.init(broker, "app.api.application:get_app")
+# taskiq_fastapi.init(broker, "app.api.application:get_app")

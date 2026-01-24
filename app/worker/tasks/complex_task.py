@@ -1,7 +1,3 @@
-import asyncio
-from time import time
-
-from loguru import logger
 from pydantic import BaseModel
 
 from app.worker.broker import broker
@@ -14,23 +10,8 @@ class LongRunningProcessResult(BaseModel):
     status: str
 
 
-@broker.task
-async def long_running_process(duration: int = 5) -> LongRunningProcessResult:
+@broker.task(task_name="long_running_process")
+async def long_running_process_placeholder(duration: int = 5) -> None:
     """
     Simulates a long-running process by sleeping.
     """
-    start_time = time()
-    logger.info(f"Starting long running process for {duration} seconds.")
-
-    await asyncio.sleep(duration)
-
-    end_time = time()
-    elapsed = end_time - start_time
-    logger.info(f"Finished long running process. Elapsed: {elapsed:.2f}s")
-
-    return LongRunningProcessResult(
-        start_time=start_time,
-        end_time=end_time,
-        elapsed=elapsed,
-        status="completed",
-    )

@@ -32,6 +32,7 @@ def main() -> None:
         host=settings.HOST,
         port=settings.PORT,
         reload=settings.RELOAD,
+        reload_dirs=[str(Path(__file__).parent)],
         log_level=settings.LOG_LEVEL.value.lower(),
         factory=True,
     )
