@@ -35,6 +35,7 @@ run-taskiq-workers: # Run 2 taskiq workers using threadpools ( Default )
 run-taskiq-workers-processpool: # Run 2 taskiq workers using processpools
 	uv lock --locked
 	uv run --module taskiq worker worker.broker:broker --use-process-pool --workers 2 -fsd -tp ['src/worker/tasks/*.py']
+
 run-taskiq-main: # Run taskiq main to test the workers and the broker
 	uv lock --locked
 	uv run --module main

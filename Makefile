@@ -161,8 +161,8 @@ reset-all-migrations: ## Reset all migrations
 	uv run --module alembic downgrade base
 
 run-taskiq-docker-services: # Run required taskiq docker services
-	docker compose up -d redis rabbitmq
-	# docker compose up -d redis rabbitmq taskiq-dashboard
+	# docker compose up -d redis rabbitmq
+	docker compose up -d redis rabbitmq taskiq-dashboard
 
 ##### EXTERNAL MAKEFILE CALLS #####
 

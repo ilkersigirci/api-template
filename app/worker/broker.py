@@ -37,10 +37,10 @@ else:
     ]
 
     if settings.TASKIQ_DASHBOARD_URL:
-        from app.worker.middlewares import CustomDashboardMiddleware
+        from app.worker.middlewares import DashboardMiddleware
 
         middlewares.append(
-            CustomDashboardMiddleware(
+            DashboardMiddleware(
                 url=settings.TASKIQ_DASHBOARD_URL,
                 api_token=settings.TASKIQ_DASHBOARD_API_TOKEN,
                 broker_name=settings.TASKIQ_BROKER_NAME,
