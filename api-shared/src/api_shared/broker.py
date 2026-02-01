@@ -19,7 +19,7 @@ from api_shared.core.settings import (
 )
 
 if settings.TASKIQ_DASHBOARD_URL:
-    from api_shared.middlewares import DashboardMiddleware
+    from api_shared.middlewares.dashboard import DashboardMiddleware
 
 if settings.OLTP_LOG_METHOD != OLTPLogMethod.NONE:
     TaskiqInstrumentor().instrument()
