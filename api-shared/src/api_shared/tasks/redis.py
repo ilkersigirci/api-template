@@ -5,7 +5,7 @@ from loguru import logger
 from redis.asyncio import ConnectionPool, Redis
 from taskiq import TaskiqDepends
 
-from api_template_shared.broker import broker
+from api_shared.broker import broker
 
 
 @broker.task

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from api_template_shared.broker import broker
+from api_shared.broker import broker
 
 
 class LongRunningProcessResult(BaseModel):

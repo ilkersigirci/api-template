@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "api-template-shared",
+    "api-shared",
     "pandas>=3.0.0",
 ]
 
@@ -28,11 +28,11 @@ test = [
 
 [tool.uv]
 default-groups = ["dev", "test"]
-workspace = { members = ["../api-template-shared"] }
+workspace = { members = ["../api-shared"] }
 
 
 [tool.uv.sources]
-api-template-shared = { workspace = true }
+api-shared = { workspace = true }
 
 [build-system]
 requires = ["uv_build>=0.9,<0.14"]

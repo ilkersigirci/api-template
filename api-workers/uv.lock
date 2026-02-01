@@ -15,7 +15,7 @@ resolution-markers = [
 
 [manifest]
 members = [
-    "api-template-shared",
+    "api-shared",
     "worker",
 ]
 
@@ -192,9 +192,9 @@ wheels = [
 ]
 
 [[package]]
-name = "api-template-shared"
+name = "api-shared"
 version = "0.0.1"
-source = { editable = "../api-template-shared" }
+source = { editable = "../api-shared" }
 dependencies = [
     { name = "httpx" },
     { name = "logfire", extra = ["httpx", "redis", "system-metrics"] },
@@ -2443,7 +2443,7 @@ name = "worker"
 version = "0.0.1"
 source = { editable = "." }
 dependencies = [
-    { name = "api-template-shared" },
+    { name = "api-shared" },
     { name = "pandas" },
 ]
 
@@ -2465,7 +2465,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "api-template-shared", editable = "../api-template-shared" },
+    { name = "api-shared", editable = "../api-shared" },
     { name = "pandas", specifier = ">=3.0.0" },
 ]
 

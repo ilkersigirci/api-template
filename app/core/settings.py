@@ -2,7 +2,7 @@ from enum import StrEnum
 from pathlib import Path
 from tempfile import gettempdir
 
-from api_template_shared.core.settings import RunMode, SharedBaseSettings
+from api_shared.core.settings import RunMode, SharedBaseSettings
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 

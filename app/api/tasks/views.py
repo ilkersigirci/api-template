@@ -1,7 +1,7 @@
 from typing import cast
 
-from api_template_shared.tasks.complex_task import long_running_process
-from api_template_shared.tasks.failing_task import failing_process
+from api_shared.tasks.complex_task import long_running_process
+from api_shared.tasks.failing_task import failing_process
 from fastapi import APIRouter, HTTPException
 from taskiq import ResultGetError
 from taskiq_redis import RedisAsyncResultBackend

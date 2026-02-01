@@ -35,7 +35,7 @@ classifiers = [
 dependencies = [
     "aiosqlite>=0.21.0",
     "alembic>=1.15.2",
-    "api-template-shared",
+    "api-shared",
     # "fastapi-users[oauth,sqlalchemy]>=14.0.1",
     "fastapi[standard]>=0.115.11",
     "logfire[fastapi]>=3.12.0",
@@ -68,10 +68,10 @@ test = [
 
 [tool.uv]
 default-groups = ["dev", "test"]
-workspace = { members = ["./api-template-shared"] }
+workspace = { members = ["./api-shared"] }
 
 [tool.uv.sources]
-api-template-shared = { workspace = true }
+api-shared = { workspace = true }
 
 [tool.pytest.ini_options]
 minversion = "7.0.0"

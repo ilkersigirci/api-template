@@ -12,14 +12,14 @@ from taskiq.scheduler.scheduler import TaskiqScheduler
 from taskiq_aio_pika import AioPikaBroker
 from taskiq_redis import RedisAsyncResultBackend
 
-from api_template_shared.core.settings import (
+from api_shared.core.settings import (
     Environment,
     OLTPLogMethod,
     settings,
 )
 
 if settings.TASKIQ_DASHBOARD_URL:
-    from api_template_shared.middlewares import DashboardMiddleware
+    from api_shared.middlewares import DashboardMiddleware
 
 if settings.OLTP_LOG_METHOD != OLTPLogMethod.NONE:
     TaskiqInstrumentor().instrument()

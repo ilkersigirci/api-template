@@ -1,5 +1,5 @@
 [project]
-name = "api_template_shared"
+name = "api_shared"
 version = "0.0.1"
 description = "Shared dependencies for both api and the worker services."
 readme = "README.md"

@@ -139,7 +139,7 @@ class SharedBaseSettings(BaseSettings):
         description="API token for Taskiq dashboard authentication.",
     )
     TASKIQ_BROKER_NAME: str = Field(
-        default="api-template-shared",
+        default="api-shared",
         description="Name identifier for the Taskiq broker instance.",
     )
 

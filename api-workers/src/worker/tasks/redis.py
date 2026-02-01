@@ -5,7 +5,7 @@
 # from taskiq import TaskiqDepends
 
 # from app.api.redis.deps import get_redis_pool
-# from api_template_shared.broker import broker
+# from api_shared.broker import broker
 
 
 # @broker.task

@@ -1,5 +1,5 @@
 import logfire
-from api_template_shared.core.settings import OLTPLogMethod
+from api_shared.core.settings import OLTPLogMethod
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.logging import LoggingInstrumentor

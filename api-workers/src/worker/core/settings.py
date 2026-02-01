@@ -1,4 +1,4 @@
-from api_template_shared.core.settings import RunMode, SharedBaseSettings
+from api_shared.core.settings import RunMode, SharedBaseSettings
 from pydantic_settings import SettingsConfigDict
 
 

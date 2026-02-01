@@ -12,8 +12,8 @@ resolution-markers = [
 
 [manifest]
 members = [
+    "api-shared",
     "api-template",
-    "api-template-shared",
 ]
 
 [[package]]
@@ -187,13 +187,44 @@ wheels = [
 ]
 
 [[package]]
+name = "api-shared"
+version = "0.0.1"
+source = { editable = "api-shared" }
+dependencies = [
+    { name = "httpx" },
+    { name = "logfire", extra = ["httpx", "redis", "system-metrics"] },
+    { name = "loguru" },
+    { name = "opentelemetry-distro", extra = ["otlp"] },
+    { name = "opentelemetry-instrumentation-logging" },
+    { name = "opentelemetry-instrumentation-redis" },
+    { name = "pydantic-settings" },
+    { name = "taskiq", extra = ["opentelemetry"] },
+    { name = "taskiq-aio-pika" },
+    { name = "taskiq-redis" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "httpx", specifier = ">=0.28.1" },
+    { name = "logfire", extras = ["redis", "httpx", "system-metrics"], specifier = ">=3.12.0" },
+    { name = "loguru", specifier = ">=0.7.3" },
+    { name = "opentelemetry-distro", extras = ["otlp"], specifier = ">=0.52b0" },
+    { name = "opentelemetry-instrumentation-logging", specifier = ">=0.52b0" },
+    { name = "opentelemetry-instrumentation-redis", specifier = ">=0.52b0" },
+    { name = "pydantic-settings", specifier = ">=2.8.1" },
+    { name = "taskiq", extras = ["opentelemetry"], specifier = ">=0.12.1" },
+    { name = "taskiq-aio-pika", specifier = ">=0.4.1" },
+    { name = "taskiq-redis", specifier = ">=1.0.4" },
+]
+
+[[package]]
 name = "api-template"
 version = "0.0.1"
 source = { virtual = "." }
 dependencies = [
     { name = "aiosqlite" },
     { name = "alembic" },
-    { name = "api-template-shared" },
+    { name = "api-shared" },
     { name = "fastapi", extra = ["standard"] },
     { name = "logfire", extra = ["fastapi"] },
     { name = "prometheus-client" },
@@ -226,7 +257,7 @@ test = [
 requires-dist = [
     { name = "aiosqlite", specifier = ">=0.21.0" },
     { name = "alembic", specifier = ">=1.15.2" },
-    { name = "api-template-shared", editable = "api-template-shared" },
+    { name = "api-shared", editable = "api-shared" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.11" },
     { name = "logfire", extras = ["fastapi"], specifier = ">=3.12.0" },
     { name = "prometheus-client", specifier = ">=0.21.1" },
@@ -253,37 +284,6 @@ test = [
     { name = "pytest-env", specifier = ">=1.1.5" },
     { name = "pytest-rerunfailures", specifier = ">=14.0" },
     { name = "pytest-xdist", specifier = ">=3.6.1" },
-]
-
-[[package]]
-name = "api-template-shared"
-version = "0.0.1"
-source = { editable = "api-template-shared" }
-dependencies = [
-    { name = "httpx" },
-    { name = "logfire", extra = ["httpx", "redis", "system-metrics"] },
-    { name = "loguru" },
-    { name = "opentelemetry-distro", extra = ["otlp"] },
-    { name = "opentelemetry-instrumentation-logging" },
-    { name = "opentelemetry-instrumentation-redis" },
-    { name = "pydantic-settings" },
-    { name = "taskiq", extra = ["opentelemetry"] },
-    { name = "taskiq-aio-pika" },
-    { name = "taskiq-redis" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "httpx", specifier = ">=0.28.1" },
-    { name = "logfire", extras = ["redis", "httpx", "system-metrics"], specifier = ">=3.12.0" },
-    { name = "loguru", specifier = ">=0.7.3" },
-    { name = "opentelemetry-distro", extras = ["otlp"], specifier = ">=0.52b0" },
-    { name = "opentelemetry-instrumentation-logging", specifier = ">=0.52b0" },
-    { name = "opentelemetry-instrumentation-redis", specifier = ">=0.52b0" },
-    { name = "pydantic-settings", specifier = ">=2.8.1" },
-    { name = "taskiq", extras = ["opentelemetry"], specifier = ">=0.12.1" },
-    { name = "taskiq-aio-pika", specifier = ">=0.4.1" },
-    { name = "taskiq-redis", specifier = ">=1.0.4" },
 ]
 
 [[package]]

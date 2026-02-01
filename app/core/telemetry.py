@@ -1,5 +1,5 @@
 import logfire
-from api_template_shared.core.settings import OLTPLogMethod
+from api_shared.core.settings import OLTPLogMethod
 from fastapi import FastAPI
 from loguru import logger  # noqa: F401
 from opentelemetry import trace
