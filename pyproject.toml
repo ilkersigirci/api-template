@@ -35,26 +35,17 @@ classifiers = [
 dependencies = [
     "aiosqlite>=0.21.0",
     "alembic>=1.15.2",
-    "fastapi[standard]>=0.115.11",
+    "api-template-shared",
     # "fastapi-users[oauth,sqlalchemy]>=14.0.1",
-    "logfire[fastapi,redis,httpx,system-metrics]>=3.12.0",
-    "loguru>=0.7.3",
-    "opentelemetry-distro[otlp]>=0.52b0",
-    # "opentelemetry-instrumentation-celery>=0.52b0",
-    "opentelemetry-instrumentation-fastapi>=0.52b0",
-    "opentelemetry-instrumentation-logging>=0.52b0",
-    "opentelemetry-instrumentation-redis>=0.52b0",
+    "fastapi[standard]>=0.115.11",
+    "logfire[fastapi]>=3.12.0",
     "prometheus-client>=0.21.1",
     "prometheus-fastapi-instrumentator>=7.0.2",
     "pwdlib[argon2]>=0.2.1",
-    "pydantic-settings>=2.8.1",
     "pyjwt[crypto]>=2.10.1",
     "redis[hiredis]>=5.2.1",
     "sqlalchemy[asyncio]>=2.0.39",
-    "taskiq[opentelemetry]>=0.12.1",
-    "taskiq-aio-pika>=0.4.1",
     "taskiq-fastapi>=0.3.4",
-    "taskiq-redis>=1.0.4",
     "yarl>=1.18.3",
 ]
 
@@ -63,22 +54,24 @@ dev = [
     "ipykernel>=6.29.5",
     "pre-commit>=4.0.1",
     "ruff>=0.12.2",
-    # "scalene~=1.5.21.2",
 ]
 
 test = [
+    "anyio>=4.8.0",
+    "fakeredis>=2.27.0",
     "pytest-cov>=5.0.0",
+    "pytest-env>=1.1.5",
     "pytest-rerunfailures>=14.0",
     "pytest-xdist>=3.6.1",
     "pytest>=8.3.3",
-    "fakeredis>=2.27.0",
-    "anyio>=4.8.0",
-    "pytest-env>=1.1.5",
 ]
 
 [tool.uv]
 default-groups = ["dev", "test"]
+workspace = { members = ["./api-template-shared"] }
 
+[tool.uv.sources]
+api-template-shared = { workspace = true }
 
 [tool.pytest.ini_options]
 minversion = "7.0.0"

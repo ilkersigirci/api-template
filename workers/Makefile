@@ -26,15 +26,15 @@ python-version: ## Checks the python version used in the environment
 
 run-taskiq-scheduler: # Run taskiq scheduler. Only one scheduler can be run at a time. It only sends tasks to the workers, doesn't execute them
 	uv lock --locked
-	uv run --module taskiq scheduler worker.broker:scheduler -fsd -tp 'src/worker/tasks/*.py'
+	uv run --module taskiq scheduler api_template_shared.broker:scheduler -fsd -tp 'src/worker/tasks/*.py'
 
 run-taskiq-workers: # Run 2 taskiq workers using threadpools ( Default )
 	uv lock --locked
-	uv run --module taskiq worker worker.broker:broker --workers 2 -fsd -tp 'src/worker/tasks/*.py'
+	RUN_MODE=worker uv run --module taskiq worker api_template_shared.broker:broker --workers 2 -fsd -tp 'src/worker/tasks/*.py'
 
 run-taskiq-workers-processpool: # Run 2 taskiq workers using processpools
 	uv lock --locked
-	uv run --module taskiq worker worker.broker:broker --use-process-pool --workers 2 -fsd -tp ['src/worker/tasks/*.py']
+	RUN_MODE=worker uv run --module taskiq worker api_template_shared.broker:broker --use-process-pool --workers 2 -fsd -tp ['src/worker/tasks/*.py']
 
 run-taskiq-main: # Run taskiq main to test the workers and the broker
 	uv lock --locked

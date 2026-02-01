@@ -1,17 +1,9 @@
 import asyncio
 from time import time
 
+from api_template_shared.broker import broker
+from api_template_shared.tasks.complex_task import LongRunningProcessResult
 from loguru import logger
-from pydantic import BaseModel
-
-from worker.broker import broker
-
-
-class LongRunningProcessResult(BaseModel):
-    start_time: float
-    end_time: float
-    elapsed: float
-    status: str
 
 
 @broker.task(task_name="long_running_process")

@@ -1,8 +1,8 @@
-from app.worker.broker import broker
+from api_template_shared.broker import broker
 
 
 @broker.task(task_name="failing_process")
-async def failing_process_placeholder(
+async def failing_process(
     error_message: str = "This is a deliberate error",
 ) -> None:
     """

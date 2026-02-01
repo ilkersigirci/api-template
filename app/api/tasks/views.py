@@ -1,13 +1,13 @@
 from typing import cast
 
+from api_template_shared.tasks.complex_task import long_running_process
+from api_template_shared.tasks.failing_task import failing_process
 from fastapi import APIRouter, HTTPException
 from taskiq import ResultGetError
 from taskiq_redis import RedisAsyncResultBackend
 
 from app.api.tasks.schemas import FailingTaskParams, TaskOut, TaskParams, TaskResult
-from app.worker.broker import broker
-from app.worker.tasks.complex_task import long_running_process_placeholder
-from app.worker.tasks.failing_task import failing_process_placeholder
+from app.core.broker import broker
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
@@ -17,7 +17,7 @@ async def trigger_task(params: TaskParams) -> TaskOut:
     """
     Trigger a long-running task.
     """
-    task = await long_running_process_placeholder.kiq(duration=params.duration)
+    task = await long_running_process.kiq(duration=params.duration)
     return TaskOut(task_id=task.task_id)
 
 
@@ -26,7 +26,7 @@ async def trigger_failing_task(params: FailingTaskParams) -> TaskOut:
     """
     Trigger a task that will fail.
     """
-    task = await failing_process_placeholder.kiq(error_message=params.error_message)
+    task = await failing_process.kiq(error_message=params.error_message)
     return TaskOut(task_id=task.task_id)
 
 

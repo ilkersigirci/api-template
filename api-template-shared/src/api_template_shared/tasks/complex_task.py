@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from app.worker.broker import broker
+from api_template_shared.broker import broker
 
 
 class LongRunningProcessResult(BaseModel):
@@ -11,7 +11,7 @@ class LongRunningProcessResult(BaseModel):
 
 
 @broker.task(task_name="long_running_process")
-async def long_running_process_placeholder(duration: int = 5) -> None:
+async def long_running_process(duration: int = 5) -> None:
     """
     Simulates a long-running process by sleeping.
     """

@@ -1,9 +1,8 @@
 import random
 from datetime import datetime
 
+from api_template_shared.broker import broker
 from loguru import logger
-
-from worker.broker import broker
 
 
 @broker.task

@@ -5,19 +5,34 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "opentelemetry-distro[otlp]>=0.52b0",
-    "opentelemetry-instrumentation-logging>=0.52b0",
-    "opentelemetry-instrumentation-redis>=0.52b0",
-    "taskiq[opentelemetry]>=0.12.1",
-    "taskiq-aio-pika>=0.4.1",
-    # "taskiq-dashboard>=0.4.0rc0",
-    "taskiq-redis>=1.0.4",
-    "logfire[redis,httpx,system-metrics]>=3.12.0",
-    "pydantic-settings>=2.8.1",
+    "api-template-shared",
     "pandas>=3.0.0",
-    "loguru>=0.7.3",
-    "httpx>=0.28.1",
 ]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+    "pre-commit>=4.0.1",
+    "ruff>=0.12.2",
+]
+
+test = [
+    "anyio>=4.8.0",
+    "fakeredis>=2.27.0",
+    "pytest-cov>=5.0.0",
+    "pytest-env>=1.1.5",
+    "pytest-rerunfailures>=14.0",
+    "pytest-xdist>=3.6.1",
+    "pytest>=8.3.3",
+]
+
+[tool.uv]
+default-groups = ["dev", "test"]
+workspace = { members = ["../api-template-shared"] }
+
+
+[tool.uv.sources]
+api-template-shared = { workspace = true }
 
 [build-system]
 requires = ["uv_build>=0.9,<0.14"]
