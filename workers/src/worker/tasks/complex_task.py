@@ -1,9 +1,10 @@
 import asyncio
 from time import time
 
-from api_template_shared.broker import broker
 from api_template_shared.tasks.complex_task import LongRunningProcessResult
 from loguru import logger
+
+from worker.broker import broker
 
 
 @broker.task(task_name="long_running_process")

@@ -4,7 +4,6 @@ from pydantic_settings import SettingsConfigDict
 
 class Settings(SharedBaseSettings):
     RUN_MODE: RunMode = RunMode.WORKER
-    WORKERS: int = 1
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -1,8 +1,8 @@
 import asyncio
 
-from api_template_shared.broker import broker
 from loguru import logger
 
+from worker.broker import broker
 from worker.tasks.dummy import (  # noqa: F401
     add_one,
     add_one_with_retry,

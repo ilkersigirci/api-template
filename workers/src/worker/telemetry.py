@@ -1,4 +1,5 @@
 import logfire
+from api_template_shared.core.settings import OLTPLogMethod
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
@@ -12,7 +13,7 @@ from opentelemetry.sdk.resources import (
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from worker.core.settings import OLTPLogMethod, settings
+from worker.core.settings import settings
 
 
 def setup_opentelemetry_worker():

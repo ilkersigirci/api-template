@@ -15,16 +15,11 @@ from taskiq_redis import RedisAsyncResultBackend
 from api_template_shared.core.settings import (
     Environment,
     OLTPLogMethod,
-    RunMode,
     settings,
 )
-from api_template_shared.telemetry import setup_opentelemetry_worker
 
 if settings.TASKIQ_DASHBOARD_URL:
     from api_template_shared.middlewares import DashboardMiddleware
-
-if settings.RUN_MODE == RunMode.WORKER:
-    setup_opentelemetry_worker()
 
 if settings.OLTP_LOG_METHOD != OLTPLogMethod.NONE:
     TaskiqInstrumentor().instrument()
