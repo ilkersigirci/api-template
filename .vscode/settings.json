@@ -13,6 +13,7 @@
       },
     ],
   },
+  "python.envFile": "", // Disable auto importing .env file values
   "python.languageServer": "None",
   // "python.analysis.autoImportCompletions": true,
   "ruff.nativeServer": "on",
