@@ -44,6 +44,7 @@ services:
     build:
         context: api-workers
         dockerfile: Dockerfile
+        # target: development
         target: production
         additional_contexts:
           api-shared: api-shared

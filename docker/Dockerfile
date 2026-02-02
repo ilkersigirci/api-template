@@ -1,7 +1,8 @@
 #
 # Stage: builder
 #
-FROM ghcr.io/astral-sh/uv:python3.11-trixie-slim AS builder
+ARG PYTHON_VERSION=3.11
+FROM ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-trixie-slim AS builder
 
 ENV \
     UV_COMPILE_BYTECODE=1 \
@@ -33,7 +34,8 @@ CMD ["uv", "run", "--module", "app.__main__"]
 #
 # Stage: production
 #
-FROM python:3.11-slim-trixie AS production
+ARG PYTHON_VERSION=3.11
+FROM python:${PYTHON_VERSION}-slim-trixie AS production
 
 ENV \
     PYTHONDONTWRITEBYTECODE=1 \
