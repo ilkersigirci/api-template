@@ -11,8 +11,6 @@ ENV \
 
 WORKDIR /app
 
-# Install the project's dependencies using the lockfile and settings
-# Replace workspace api-shared with the wheel
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
@@ -46,7 +44,6 @@ ENV \
     PYTHONFAULTHANDLER=1 \
     PATH="/app/.venv/bin:$PATH"
 
-# Setup a non-root user
 RUN groupadd --system --gid 999 nonroot \
     && useradd --system --gid 999 --uid 999 --create-home nonroot
 
