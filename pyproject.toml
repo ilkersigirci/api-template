@@ -96,10 +96,15 @@ addopts = [
 
 env = [
     "ENVIRONMENT=test",
+    "RUN_MODE=api",
     "DB_FILE=:memory:",
     # "DB_FILE=db_test.sqlite3", # NOTE: Doesn't work pytest-parallel
     # "OTEL_SDK_DISABLED=true", # NOTE: Official env name for disabling OTEL_SDK
     "OLTP_LOG_METHOD=none",
+    # NOTE: Since tests uses taskiq InMemoryBroker, we don't need RabbitMQ/Redis
+    "RABBITMQ_USERNAME=DUMMY",
+    "RABBITMQ_PASSWORD=DUMMY",
+    "REDIS_PASS=DUMMY",
 ]
 
 testpaths = ["tests"]
