@@ -11,7 +11,8 @@ class LongRunningProcessResult(BaseModel):
 
 
 @broker.task(task_name="long_running_process")
-async def long_running_process(duration: int = 5) -> None:
+async def long_running_process(duration: int = 5) -> LongRunningProcessResult:
     """
     Simulates a long-running process by sleeping.
     """
+    raise NotImplementedError("This task is implemented in the worker package")

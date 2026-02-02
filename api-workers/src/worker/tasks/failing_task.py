@@ -10,6 +10,4 @@ async def failing_process(error_message: str = "This is a deliberate error") -> 
     """
     logger.info(f"Starting failing process with message: {error_message}")
 
-    # Simulate some work slightly before failing? Not strictly necessary.
-
     raise RuntimeError(error_message)

@@ -8,3 +8,4 @@ async def failing_process(
     """
     A task that intentionally fails to demonstrate error handling.
     """
+    raise NotImplementedError("This task is implemented in the worker package")
