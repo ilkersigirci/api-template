@@ -2,11 +2,22 @@ from typing import cast
 
 from api_shared.tasks.complex_task import long_running_process
 from api_shared.tasks.failing_task import failing_process
+from api_shared.tasks.pydantic_parse_task import (
+    NestedModel,
+    PydanticParseInput,
+    pydantic_parse_check,
+)
 from fastapi import APIRouter, HTTPException
 from taskiq import ResultGetError
 from taskiq_redis import RedisAsyncResultBackend
 
-from app.api.tasks.schemas import FailingTaskParams, TaskOut, TaskParams, TaskResult
+from app.api.tasks.schemas import (
+    FailingTaskParams,
+    PydanticParseParams,
+    TaskOut,
+    TaskParams,
+    TaskResult,
+)
 from app.core.broker import broker
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
@@ -27,6 +38,24 @@ async def trigger_failing_task(params: FailingTaskParams) -> TaskOut:
     Trigger a task that will fail.
     """
     task = await failing_process.kiq(error_message=params.error_message)
+    return TaskOut(task_id=task.task_id)
+
+
+@router.post("/pydantic", response_model=TaskOut)
+async def trigger_pydantic_parse(params: PydanticParseParams) -> TaskOut:
+    """
+    Trigger a task that tests Pydantic BaseModel parsing.
+    """
+    input_data = PydanticParseInput(
+        text=params.text,
+        count=params.count,
+        nested=NestedModel(
+            name=params.nested.name,
+            value=params.nested.value,
+            tags=params.nested.tags,
+        ),
+    )
+    task = await pydantic_parse_check.kiq(data=input_data)
     return TaskOut(task_id=task.task_id)
 
 
