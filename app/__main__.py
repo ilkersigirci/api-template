@@ -28,10 +28,11 @@ def main() -> None:
 
     uvicorn.run(
         "app.api.application:get_app",
-        workers=settings.WORKERS,
+        workers=settings.UVICORN_WORKERS,
         host=settings.HOST,
         port=settings.PORT,
         reload=settings.RELOAD,
+        reload_dirs=[str(Path(__file__).parent)],
         log_level=settings.LOG_LEVEL.value.lower(),
         factory=True,
     )

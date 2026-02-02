@@ -1,11 +1,11 @@
 from typing import Annotated
 
+from app.api.redis.deps import get_redis_pool
 from loguru import logger
 from redis.asyncio import ConnectionPool, Redis
 from taskiq import TaskiqDepends
 
-from app.api.redis.deps import get_redis_pool
-from app.worker.broker import broker
+from api_shared.broker import broker
 
 
 @broker.task

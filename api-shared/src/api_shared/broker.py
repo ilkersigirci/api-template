@@ -1,6 +1,5 @@
 from typing import Any
 
-import taskiq_fastapi
 from taskiq import (
     AsyncBroker,
     AsyncResultBackend,
@@ -13,8 +12,14 @@ from taskiq.scheduler.scheduler import TaskiqScheduler
 from taskiq_aio_pika import AioPikaBroker
 from taskiq_redis import RedisAsyncResultBackend
 
-from app.core.settings import Environment, OLTPLogMethod, settings
-from app.worker.middlewares import CustomDashboardMiddleware
+from api_shared.core.settings import (
+    Environment,
+    OLTPLogMethod,
+    settings,
+)
+
+if settings.TASKIQ_DASHBOARD_URL:
+    from api_shared.middlewares.dashboard import DashboardMiddleware
 
 if settings.OLTP_LOG_METHOD != OLTPLogMethod.NONE:
     TaskiqInstrumentor().instrument()
@@ -39,7 +44,7 @@ else:
 
     if settings.TASKIQ_DASHBOARD_URL:
         middlewares.append(
-            CustomDashboardMiddleware(
+            DashboardMiddleware(
                 url=settings.TASKIQ_DASHBOARD_URL,
                 api_token=settings.TASKIQ_DASHBOARD_API_TOKEN,
                 broker_name=settings.TASKIQ_BROKER_NAME,
@@ -58,5 +63,3 @@ else:
         broker=broker,
         sources=[LabelScheduleSource(broker)],
     )
-
-taskiq_fastapi.init(broker, "app.api.application:get_app")
