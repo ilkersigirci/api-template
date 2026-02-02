@@ -12,15 +12,18 @@ ENV \
 WORKDIR /app
 
 # Install the project's dependencies using the lockfile and settings
+# Replace workspace api-shared with the wheel
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    --mount=type=bind,source=api-shared,target=api-shared \
+    --mount=type=bind,from=api-shared,target=../api-shared \
     uv sync --locked --no-install-project --no-default-groups
 
+COPY --from=api-shared . /app/../api-shared
 COPY . /app
 
 RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,from=api-shared,target=../api-shared \
     uv sync --locked --no-default-groups
 
 #
@@ -28,8 +31,9 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 #
 FROM builder AS development
 
-# ENTRYPOINT []
-CMD ["uv", "run", "--module", "app.__main__"]
+
+CMD ["uv", "run", "--module", "taskiq", "worker", "worker.broker:broker", "--use-process-pool", "--workers", "5", "-fsd", "-tp", "src/worker/tasks/*.py"]
+
 
 #
 # Stage: production
@@ -46,10 +50,11 @@ ENV \
 RUN groupadd --system --gid 999 nonroot \
     && useradd --system --gid 999 --uid 999 --create-home nonroot
 
+COPY --from=builder --chown=nonroot:nonroot /api-shared /api-shared
 COPY --from=builder --chown=nonroot:nonroot /app /app
 
 USER nonroot
 
 WORKDIR /app
 
-CMD ["python", "-m", "app.__main__"]
+CMD ["python", "-m", "taskiq", "worker", "worker.broker:broker", "--use-process-pool", "--workers", "5", "-fsd", "-tp", "src/worker/tasks/*.py"]
