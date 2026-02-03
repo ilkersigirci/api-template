@@ -8,66 +8,79 @@ networks:
       config:
         - subnet: 192.168.10.0/24
 
-x-app-common: &app-common
-  image: api-template-dev:latest
-  build:
-    context: .
-    dockerfile: docker/Dockerfile
-    target: development
-  networks:
-    - api-template-network
-  restart: "no"
-  tty: true
-  develop:
-    watch:
-      # Sync the working directory with the `/app` directory in the container
-      - action: sync
-        path: .
-        target: /app
-        # Exclude the project virtual environment
-        ignore:
-          - .venv/
-
-      # Rebuild the image on changes to the `pyproject.toml`
-      - action: rebuild
-        path: ./pyproject.toml
-  env_file:
-    - .env
-
 services:
-  api-template-head:
-    <<: *app-common
-    container_name: api-template-head
+  api-template-app:
+    image: api-template-app:latest
+    container_name: api-template-app
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      # target: development
+      target: production
+    networks:
+      - api-template-network
     ports:
       - 8000:8000
-    command: ["uv", "run", "--module", "app.__main__"]
+    restart: "no"
+    depends_on:
+      api-template-redis:
+        condition: service_healthy
+      api-template-rabbitmq:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    tty: true
+    command: ["python", "-m", "app.__main__"]
+    env_file:
+      - .env
     environment:
-      - INSTANCE_TYPE=HEAD
+      - RUN_MODE=api
+      - PORT=8000
+      - RELOAD=False
 
   api-template-worker:
-    <<: *app-common
+    image: api-template-worker:latest
     container_name: api-template-worker
+    build:
+        context: api-workers
+        dockerfile: Dockerfile
+        # target: development
+        target: production
+        additional_contexts:
+          api-shared: api-shared
+    networks:
+        - api-template-network
+    restart: "no"
+    depends_on:
+      api-template-redis:
+        condition: service_healthy
+      api-template-rabbitmq:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    tty: true
     command:
-      - "uv"
-      - "run"
-      - "--module"
+      - "python"
+      - "-m"
       - "taskiq"
       - "worker"
-      - "app.worker.broker:broker"
+      - "worker.broker:broker"
       - "--use-process-pool"
       - "--workers"
-      - "5"
+      - "${WORKER_COUNT:-5}"
       - "-fsd"
       - "-tp"
-      - "[app/worker/tasks/*.py]"
+      - "src/worker/tasks/*.py"
+    env_file:
+      - .env
     environment:
-      - INSTANCE_TYPE=WORKER
+      - RUN_MODE=worker
 
   ########## Taskiq Services ##########
 
-  redis:
+  api-template-redis:
     image: redis:8
-    container_name: redis
+    container_name: api-template-redis
     restart: "unless-stopped"
     hostname: "api-template-redis"
     networks:
@@ -77,13 +90,13 @@ services:
     command: redis-server --requirepass "${REDIS_PASS}"
     healthcheck:
       test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASS}", "ping"]
-      interval: 1s
-      timeout: 3s
-      retries: 50
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
-  rabbitmq:
+  api-template-rabbitmq:
     image: rabbitmq:4-management
-    container_name: rabbitmq
+    container_name: api-template-rabbitmq
     restart: "unless-stopped"
     hostname: "api-template-rabbitmq"
     networks:
@@ -96,10 +109,15 @@ services:
       RABBITMQ_DEFAULT_PASS: $RABBITMQ_PASSWORD
       RABBITMQ_DEFAULT_VHOST: $RABBITMQ_VHOST
       RABBITMQ_DISK_FREE_ABSOLUTE_LIMIT: 2GB
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  taskiq-dashboard:
+  api-template-taskiq-dashboard:
     image: ghcr.io/danfimov/taskiq-dashboard:latest
-    container_name: taskiq-dashboard
+    container_name: api-template-taskiq-dashboard
     restart: "unless-stopped"
     networks:
       - api-template-network
@@ -112,25 +130,3 @@ services:
       TASKIQ_DASHBOARD__SQLITE__DSN: sqlite+aiosqlite:///taskiq_dashboard.db
     volumes:
       - ./docker/volumes/taskiq_dashboard/dashboard.db:/app/taskiq_dashboard.db
-
-  # kafka:
-  #   image: apache/kafka:latest
-  #   hostname: "api-template-kafka"
-  #   environment:
-  #     KAFKA_NODE_ID: "0"
-  #     KAFKA_PROCESS_ROLES: "controller,broker"
-  #     KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094"
-  #     KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094"
-  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT"
-  #     KAFKA_CONTROLLER_QUORUM_VOTERS: "0@api_template-kafka:9093"
-  #     KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
-  #     KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
-  #   # Uncomment it to connect from localhost.
-  #   # ports:
-  #   #   - 9094:9094
-  #   healthcheck:
-  #     test: kafka-topics.sh --list --bootstrap-server localhost:9092
-  #     interval: 1s
-  #     timeout: 3s
-  #     retries: 30

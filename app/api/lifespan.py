@@ -4,9 +4,9 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 
 from app.api.redis.utils import init_redis, shutdown_redis
+from app.core.broker import broker
 from app.core.telemetry import setup_opentelemetry, setup_prometheus, stop_opentelemetry
 from app.db.utils import setup_db
-from app.worker.broker import broker
 
 
 @asynccontextmanager

@@ -1,5 +1,5 @@
 import pytest
-from app.worker.tasks.dummy import add_one
+from api_shared.tasks.dummy import add_one
 
 
 @pytest.mark.anyio
