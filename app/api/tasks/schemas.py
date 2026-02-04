@@ -37,3 +37,18 @@ class TaskResult(BaseModel):
     status: str
     result: dict | None = None
     error: str | None = None
+
+
+class MLInferenceParams(BaseModel):
+    """Parameters for ML inference task."""
+
+    model_id: str = Field(..., description="ID of the ML model to use for inference")
+    input_data: dict = Field(..., description="Input data for the inference")
+
+
+class MLTrainingParams(BaseModel):
+    """Parameters for ML training task."""
+
+    dataset_id: str = Field(..., description="ID of the dataset to use for training")
+    model_configuration: dict = Field(..., description="Configuration for the ML model")
+    hyperparameters: dict = Field(..., description="Hyperparameters for training")

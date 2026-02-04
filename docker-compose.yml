@@ -76,6 +76,44 @@ services:
     environment:
       - RUN_MODE=worker
 
+  api-template-worker-ml:
+    image: api-template-worker-ml:latest
+    container_name: api-template-worker-ml
+    build:
+        context: api-workers-ml
+        dockerfile: Dockerfile
+        # target: development
+        target: production
+        additional_contexts:
+          api-shared: api-shared
+    networks:
+        - api-template-network
+    restart: "no"
+    depends_on:
+      api-template-redis:
+        condition: service_healthy
+      api-template-rabbitmq:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    tty: true
+    command:
+      - "python"
+      - "-m"
+      - "taskiq"
+      - "worker"
+      - "worker.broker:broker"
+      - "--use-process-pool"
+      - "--workers"
+      - "${ML_WORKER_COUNT:-3}"
+      - "-fsd"
+      - "-tp"
+      - "src/worker/tasks/*.py"
+    env_file:
+      - .env
+    environment:
+      - RUN_MODE=worker
+
   ########## Taskiq Services ##########
 
   api-template-redis:

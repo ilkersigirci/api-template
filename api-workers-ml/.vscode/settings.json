@@ -1,0 +1,28 @@
+{
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      // "source.fixAll": "always",
+      "source.organizeImports": "explicit",
+    },
+    "editor.rulers": [
+      {
+        "column": 88,
+        "color": "#57565651"
+      },
+    ],
+  },
+  "python.envFile": "", // Disable auto importing .env file values
+  "python.languageServer": "None",
+  "ruff.nativeServer": "on",
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  // "python.testing.pytestArgs": [],
+  "notebook.formatOnSave.enabled": true,
+  "notebook.codeActionsOnSave": {
+    // "notebook.source.fixAll": "always",
+    "notebook.source.organizeImports": "explicit",
+  },
+  "evenBetterToml.formatter.reorderKeys": true,
+}

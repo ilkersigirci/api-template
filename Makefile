@@ -161,8 +161,8 @@ reset-all-migrations: ## Reset all migrations
 	uv run --module alembic downgrade base
 
 run-taskiq-docker-services: # Run required taskiq docker services
-	# docker compose up -d redis rabbitmq
-	docker compose up -d redis rabbitmq taskiq-dashboard
+	# docker compose up -d api-template-redis api-template-rabbitmq
+	docker compose up -d api-template-redis api-template-rabbitmq api-template-taskiq-dashboard
 
 ##### EXTERNAL MAKEFILE CALLS #####
 
@@ -183,3 +183,12 @@ run-taskiq-workers-processpool: ## Run taskiq workers using processpools via the
 
 run-taskiq-main: ## Run taskiq main to test workers and broker via the worker Makefile
 	$(MAKE) -C api-workers run-taskiq-main
+
+run-taskiq-workers-ml: ## Run ML taskiq workers using the ML worker Makefile
+	$(MAKE) -C api-workers-ml run-taskiq-workers
+
+run-taskiq-workers-ml-processpool: ## Run ML taskiq workers using processpools via the ML worker Makefile
+	$(MAKE) -C api-workers-ml run-taskiq-workers-processpool
+
+run-taskiq-main-ml: ## Run taskiq main to test ML workers and broker via the ML worker Makefile
+	$(MAKE) -C api-workers-ml run-taskiq-main

@@ -142,6 +142,31 @@ class SharedBaseSettings(BaseSettings):
         default="api-shared",
         description="Name identifier for the Taskiq broker instance.",
     )
+    # Broker configurations for multiple worker types
+    TASKIQ_WORKERS_QUEUE: str = Field(
+        default="taskiq_workers",
+        description="Queue name for regular worker tasks.",
+    )
+    TASKIQ_WORKERS_ROUTING_KEY: str = Field(
+        default="#",
+        description="Routing key pattern for regular worker tasks. Use '#' wildcard for topic exchanges.",
+    )
+    TASKIQ_WORKERS_EXCHANGE: str = Field(
+        default="taskiq_workers_exchange",
+        description="Exchange name for regular worker tasks.",
+    )
+    TASKIQ_ML_QUEUE: str = Field(
+        default="taskiq_ml",
+        description="Queue name for ML worker tasks.",
+    )
+    TASKIQ_ML_ROUTING_KEY: str = Field(
+        default="#",
+        description="Routing key pattern for ML worker tasks. Use '#' wildcard for topic exchanges.",
+    )
+    TASKIQ_ML_EXCHANGE: str = Field(
+        default="taskiq_ml_exchange",
+        description="Exchange name for ML worker tasks.",
+    )
 
     @property
     def TASKIQ_DASHBOARD_URL(self) -> str | None:

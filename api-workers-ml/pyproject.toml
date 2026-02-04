@@ -1,0 +1,201 @@
+[project]
+name = "worker"
+version = "0.0.1"
+description = "FastAPI Template Worker Service"
+readme = "README.md"
+requires-python = ">=3.11, <3.14"
+
+authors = [
+    {name = "İlker SIĞIRCI", email = "sigirci.ilker@gmail.com"},
+]
+maintainers = [
+    {name = "İlker SIĞIRCI", email = "sigirci.ilker@gmail.com"},
+]
+
+keywords = [
+    "api-template-worker"
+]
+
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Topic :: Software Development",
+    "Topic :: Scientific/Engineering",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+dependencies = [
+    "api-shared",
+    "pandas>=3.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+    "pre-commit>=4.0.1",
+    "ruff>=0.14.14",
+]
+
+test = [
+    "anyio>=4.8.0",
+    "fakeredis>=2.27.0",
+    "pytest-cov>=5.0.0",
+    "pytest-env>=1.1.5",
+    "pytest-rerunfailures>=14.0",
+    "pytest-xdist>=3.6.1",
+    "pytest>=8.3.3",
+]
+
+[tool.uv]
+default-groups = ["dev", "test"]
+workspace = { members = ["../api-shared"] }
+
+[tool.uv.sources]
+api-shared = { workspace = true }
+
+[tool.pytest.ini_options]
+minversion = "7.0.0"
+addopts = [
+    "--import-mode=importlib",
+    "--color=yes",
+    "--verbose",
+#    "--durations=0",
+#    "--strict-markers",
+#    "--doctest-modules",
+    # NOTE: cov is not working with pycharm debugger. Enable it later!
+#    "--cov api_template",
+#    "--cov-report=xml",
+#    "--cov-report html",
+]
+
+# filterwarnings = [
+#     "error",
+#     "ignore::DeprecationWarning",
+#     "ignore:.*unclosed.*:ResourceWarning",
+# ]
+
+env = [
+    "ENVIRONMENT=test",
+    "OLTP_LOG_METHOD=none",
+]
+
+testpaths = ["tests"]
+
+# TODO: Make them inherit from yaml file
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)-20s :: %(name)-8s :: %(levelname)-8s :: %(filename)s:%(lineno)d - (%(funcName)s) :: %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+src = ["app"]
+respect-gitignore = true
+
+# extend-include = []
+
+extend-exclude = [
+    "docs",
+    "ui",
+]
+
+# Ignore `E402` (import violations) in all `__init__.py` files, and in `path/to/file.py`.
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401"]
+"tests/*.py" = ["T20", "PLR2004"]
+# "*.ipynb" = ["E501"]  # disable line-too-long in notebooks
+
+# "path/to/file.py" = ["E402"]
+# 'api_template/__init__.py' = ['F405', 'F403']
+
+# [tool.ruff.flake8-quotes]
+# inline-quotes = "single"
+# multiline-quotes = "double"
+# docstring-quotes = "double"
+
+[tool.ruff.format]
+skip-magic-trailing-comma = false
+# indent-style = "space"
+# preview = true
+
+[tool.ruff.lint]
+
+select = [
+    "B",  # flake8-bugbear
+    "C",  # flake8-comprehensions
+    "C9",  # mccabe
+    "E",  # pycodestyle errors (default)
+    "F",  # pyflakes (default)
+    "I",  # isort
+    "PD", # pandas-vet
+    "PIE", # pie
+    "PL",  # pylint
+    "PTH", # pathlib
+    "Q",  # flake8-quotes
+    "RET", # return
+    "RUF", # Enable all ruff-specific checks
+    "SIM", # simplify
+    "S307", # eval
+    "T20",  # (disallow print statements) keep debugging statements out of the codebase
+    "W",  # pycodestyle warnings
+    "ASYNC" # async
+]
+
+ignore = [
+    "E501",  # Line too long, handled by ruff formatter
+    "D107", # "Missing docstring in __init__",
+    # "PLR2004", #
+]
+
+unfixable = [
+    "F401" # Unused imports.
+]
+
+#extend-select = []
+
+# [tool.ruff.lint.flake8-import-conventions.extend-aliases]
+# some_alias = ""
+
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+# force-wrap-aliases = true
+# known-first-party = ["SomeLibrary"]
+# known-third-party = ["SomeLibrary"]
+
+[tool.coverage.run]
+source = ['app']
+branch = true
+context = '${CONTEXT}'
+
+[tool.coverage.report]
+precision = 2
+exclude_lines = [
+    'pragma: no cover',
+    'raise NotImplementedError',
+    'if TYPE_CHECKING:',
+    '@overload',
+]
+# show_missing = True
+
+# [tool.coverage.paths]
+# source = [
+#     'app/',
+# ]
+
+
+[build-system]
+requires = ["uv_build>=0.9,<0.14"]
+build-backend = "uv_build"
