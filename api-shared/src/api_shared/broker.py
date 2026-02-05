@@ -74,12 +74,17 @@ class BrokerManager:
             FileNotFoundError: If the broker config file doesn't exist.
             ValidationError: If the YAML structure is invalid.
         """
-        config_path = Path(settings.TASKIQ_BROKERS_CONFIG_FILE)
+        if settings.TASKIQ_BROKERS_CONFIG_FILE:
+            config_path = Path(settings.TASKIQ_BROKERS_CONFIG_FILE)
+        else:
+            config_path = (
+                Path(__file__).parent.parent.parent / "configs" / "brokers.yml"
+            )
 
         if not config_path.exists():
             raise FileNotFoundError(
                 f"Broker configuration file not found: {config_path}. "
-                f"Create a '{settings.TASKIQ_BROKERS_CONFIG_FILE}' file or set TASKIQ_BROKERS_CONFIG_FILE environment variable."
+                f"Create the file or set TASKIQ_BROKERS_CONFIG_FILE environment variable."
             )
 
         with config_path.open("r") as f:
@@ -176,7 +181,7 @@ class BrokerManager:
         broker = self._brokers.get(name)
         if broker is None:
             raise RuntimeError(
-                f"Broker '{name}' is not enabled. Enable it in {settings.TASKIQ_BROKERS_CONFIG_FILE}."
+                f"Broker '{name}' is not enabled. Enable it in the broker configuration file."
             )
         return broker
 

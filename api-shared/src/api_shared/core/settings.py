@@ -144,8 +144,8 @@ class SharedBaseSettings(BaseSettings):
         default="supersecret",
         description="API token for Taskiq dashboard authentication.",
     )
-    TASKIQ_BROKERS_CONFIG_FILE: str = Field(
-        default="brokers.yml",
+    TASKIQ_BROKERS_CONFIG_FILE: str | None = Field(
+        default=None,
         description="Path to YAML file containing broker configurations.",
     )
 
