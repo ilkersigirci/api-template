@@ -67,7 +67,7 @@ services:
       - "worker.broker:broker"
       - "--use-process-pool"
       - "--workers"
-      - "${WORKER_COUNT:-5}"
+      - "${GENERAL_WORKER_COUNT:-5}"
       - "-fsd"
       - "-tp"
       - "src/worker/tasks/*.py"
