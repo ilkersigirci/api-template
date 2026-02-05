@@ -4,7 +4,7 @@ ML training task implementation.
 This module contains the actual implementation of ML training tasks defined in api_shared.
 """
 
-from api_shared.tasks.ml_tasks import MLTrainingResult
+from api_shared.tasks.ml import MLTrainingResult
 from loguru import logger
 
 from worker.broker import broker

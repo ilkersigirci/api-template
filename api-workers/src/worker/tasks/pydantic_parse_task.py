@@ -1,4 +1,4 @@
-from api_shared.tasks.pydantic_parse_task import (
+from api_shared.tasks.workers import (
     PydanticParseInput,
     PydanticParseResult,
 )

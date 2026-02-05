@@ -1,4 +1,6 @@
-from api_shared.broker import broker
+from api_shared.broker import broker_manager
+
+broker = broker_manager.get_broker("workers")
 
 
 @broker.task(task_name="failing_process")

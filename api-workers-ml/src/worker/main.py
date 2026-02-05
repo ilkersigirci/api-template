@@ -1,6 +1,6 @@
 import asyncio
 
-from api_shared.tasks.ml_tasks import ml_inference_task
+from api_shared.tasks.ml import ml_inference_task
 from loguru import logger
 
 from worker.broker import broker

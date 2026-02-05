@@ -2,7 +2,13 @@ import ipaddress
 from enum import StrEnum
 from typing import Annotated
 
-from pydantic import AfterValidator, AnyHttpUrl, Field, PlainValidator, TypeAdapter
+from pydantic import (
+    AfterValidator,
+    AnyHttpUrl,
+    Field,
+    PlainValidator,
+    TypeAdapter,
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
 
@@ -138,34 +144,13 @@ class SharedBaseSettings(BaseSettings):
         default="supersecret",
         description="API token for Taskiq dashboard authentication.",
     )
+    TASKIQ_BROKERS_CONFIG_FILE: str = Field(
+        default="brokers.yml",
+        description="Path to YAML file containing broker configurations.",
+    )
     TASKIQ_BROKER_NAME: str = Field(
         default="api-shared",
         description="Name identifier for the Taskiq broker instance.",
-    )
-    # Broker configurations for multiple worker types
-    TASKIQ_WORKERS_QUEUE: str = Field(
-        default="taskiq_workers",
-        description="Queue name for regular worker tasks.",
-    )
-    TASKIQ_WORKERS_ROUTING_KEY: str = Field(
-        default="#",
-        description="Routing key pattern for regular worker tasks. Use '#' wildcard for topic exchanges.",
-    )
-    TASKIQ_WORKERS_EXCHANGE: str = Field(
-        default="taskiq_workers_exchange",
-        description="Exchange name for regular worker tasks.",
-    )
-    TASKIQ_ML_QUEUE: str = Field(
-        default="taskiq_ml",
-        description="Queue name for ML worker tasks.",
-    )
-    TASKIQ_ML_ROUTING_KEY: str = Field(
-        default="#",
-        description="Routing key pattern for ML worker tasks. Use '#' wildcard for topic exchanges.",
-    )
-    TASKIQ_ML_EXCHANGE: str = Field(
-        default="taskiq_ml_exchange",
-        description="Exchange name for ML worker tasks.",
     )
 
     @property

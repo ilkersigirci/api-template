@@ -6,7 +6,9 @@ This module defines ML tasks that are implemented in the ML worker package.
 
 from pydantic import BaseModel
 
-from api_shared.broker import ml_broker
+from api_shared.broker import broker_manager
+
+ml_broker = broker_manager.get_broker("ml")
 
 
 class MLInferenceResult(BaseModel):

@@ -4,7 +4,7 @@ ML inference task implementation.
 This module contains the actual implementation of ML inference tasks defined in api_shared.
 """
 
-from api_shared.tasks.ml_tasks import MLInferenceResult
+from api_shared.tasks.ml import MLInferenceResult
 from loguru import logger
 
 from worker.broker import broker
