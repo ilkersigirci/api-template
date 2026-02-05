@@ -148,10 +148,6 @@ class SharedBaseSettings(BaseSettings):
         default="brokers.yml",
         description="Path to YAML file containing broker configurations.",
     )
-    TASKIQ_BROKER_NAME: str = Field(
-        default="api-shared",
-        description="Name identifier for the Taskiq broker instance.",
-    )
 
     @property
     def TASKIQ_DASHBOARD_URL(self) -> str | None:

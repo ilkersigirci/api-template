@@ -125,7 +125,7 @@ class BrokerManager:
                 DashboardMiddleware(
                     url=settings.TASKIQ_DASHBOARD_URL,
                     api_token=settings.TASKIQ_DASHBOARD_API_TOKEN,
-                    broker_name=f"{settings.TASKIQ_BROKER_NAME}-{broker_name}",
+                    broker_name=broker_name,
                 )
             )
 
