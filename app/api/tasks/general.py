@@ -2,7 +2,7 @@
 
 from typing import cast
 
-from api_shared.tasks.workers import (
+from api_shared.tasks.general import (
     NestedModel,
     PydanticParseInput,
     failing_process,
@@ -22,9 +22,9 @@ from app.api.tasks.schemas import (
 )
 from app.core.broker import broker_manager
 
-router = APIRouter(prefix="/tasks", tags=["tasks"])
+router = APIRouter(prefix="/tasks/general", tags=["tasks"])
 
-workers_broker = broker_manager.get_broker("workers")
+workers_broker = broker_manager.get_broker("general")
 
 
 @router.post("/", response_model=TaskOut)

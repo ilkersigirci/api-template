@@ -1,7 +1,7 @@
 import asyncio
 from time import time
 
-from api_shared.tasks.workers import LongRunningProcessResult
+from api_shared.tasks.general import LongRunningProcessResult
 from loguru import logger
 
 from worker.broker import broker

@@ -12,7 +12,7 @@ setup_opentelemetry_worker()
 
 from api_shared.broker import broker_manager  # noqa: E402
 
-broker = broker_manager.get_broker("workers")
+broker = broker_manager.get_broker("general")
 scheduler = broker_manager.scheduler
 
 __all__ = ["broker", "scheduler"]

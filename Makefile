@@ -170,19 +170,19 @@ run-ui: ## Run the fasthtml UI server using the ui Makefile
 	$(MAKE) -C ui run-ui
 
 workers-python-version: ## Checks the python version used in the worker environment
-	$(MAKE) -C api-workers python-version
+	$(MAKE) -C api-workers-general python-version
 
 run-taskiq-scheduler: ## Run taskiq scheduler using the worker Makefile
-	$(MAKE) -C api-workers run-taskiq-scheduler
+	$(MAKE) -C api-workers-general run-taskiq-scheduler
 
-run-taskiq-workers: ## Run taskiq workers using the worker Makefile
-	$(MAKE) -C api-workers run-taskiq-workers
+run-taskiq-workers-general: ## Run taskiq workers using the worker Makefile
+	$(MAKE) -C api-workers-general run-taskiq-workers
 
-run-taskiq-workers-processpool: ## Run taskiq workers using processpools via the worker Makefile
-	$(MAKE) -C api-workers run-taskiq-workers-processpool
+run-taskiq-workers-general-processpool: ## Run taskiq workers using processpools via the worker Makefile
+	$(MAKE) -C api-workers-general run-taskiq-workers-processpool
 
-run-taskiq-main: ## Run taskiq main to test workers and broker via the worker Makefile
-	$(MAKE) -C api-workers run-taskiq-main
+run-taskiq-workers-general-main: ## Run taskiq main to test workers and broker via the worker Makefile
+	$(MAKE) -C api-workers-general run-taskiq-main
 
 run-taskiq-workers-ml: ## Run ML taskiq workers using the ML worker Makefile
 	$(MAKE) -C api-workers-ml run-taskiq-workers
@@ -190,5 +190,5 @@ run-taskiq-workers-ml: ## Run ML taskiq workers using the ML worker Makefile
 run-taskiq-workers-ml-processpool: ## Run ML taskiq workers using processpools via the ML worker Makefile
 	$(MAKE) -C api-workers-ml run-taskiq-workers-processpool
 
-run-taskiq-main-ml: ## Run taskiq main to test ML workers and broker via the ML worker Makefile
+run-taskiq-workers-ml-main: ## Run taskiq main to test ML workers and broker via the ML worker Makefile
 	$(MAKE) -C api-workers-ml run-taskiq-main

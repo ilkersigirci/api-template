@@ -38,11 +38,11 @@ services:
       - PORT=8000
       - RELOAD=False
 
-  api-template-worker:
-    image: api-template-worker:latest
-    container_name: api-template-worker
+  api-workers-general:
+    image: api-workers-general:latest
+    container_name: api-workers-general
     build:
-        context: api-workers
+        context: api-workers-general
         dockerfile: Dockerfile
         # target: development
         target: production
@@ -76,9 +76,9 @@ services:
     environment:
       - RUN_MODE=worker
 
-  api-template-worker-ml:
-    image: api-template-worker-ml:latest
-    container_name: api-template-worker-ml
+  api-workers-ml:
+    image: api-workers-ml:latest
+    container_name: api-workers-ml
     build:
         context: api-workers-ml
         dockerfile: Dockerfile

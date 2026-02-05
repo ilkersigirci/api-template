@@ -20,5 +20,5 @@ venv
 
 docs
 tests
-api-workers
+api-workers-general
 api-workers-ml

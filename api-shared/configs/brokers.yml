@@ -12,10 +12,10 @@
 
 brokers:
   # Primary workers broker - handles general async tasks
-  workers:
-    queue: taskiq_workers
+  general:
+    queue: taskiq_general
     routing_key: "#"  # Wildcard for topic exchanges
-    exchange: taskiq_workers_exchange
+    exchange: taskiq_general_exchange
     description: "General purpose worker tasks (email, file processing, etc.)"
 
   # ML workers broker - handles machine learning tasks

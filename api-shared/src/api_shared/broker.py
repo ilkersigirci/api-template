@@ -154,7 +154,7 @@ class BrokerManager:
                 )
 
         if settings.ENVIRONMENT != Environment.TEST:
-            workers_broker = self._brokers.get("workers")
+            workers_broker = self._brokers.get("general")
             if workers_broker:
                 self._scheduler = TaskiqScheduler(
                     broker=workers_broker,
