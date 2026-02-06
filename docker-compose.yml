@@ -8,6 +8,15 @@ networks:
       config:
         - subnet: 192.168.10.0/24
 
+x-deploy: &gpu-deploy
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
 services:
   api-template-app:
     image: api-template-app:latest
@@ -96,6 +105,7 @@ services:
         condition: service_healthy
     security_opt:
       - no-new-privileges:true
+    <<: *gpu-deploy
     tty: true
     command:
       - "python"
@@ -128,9 +138,10 @@ services:
     command: redis-server --requirepass "${REDIS_PASS}"
     healthcheck:
       test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASS}", "ping"]
-      interval: 30s
-      timeout: 10s
+      interval: 10s
+      timeout: 3s
       retries: 5
+      start_period: 5s
 
   api-template-rabbitmq:
     image: rabbitmq:4-management
@@ -151,7 +162,8 @@ services:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 5
+      start_period: 20s
 
   api-template-taskiq-dashboard:
     image: ghcr.io/danfimov/taskiq-dashboard:latest

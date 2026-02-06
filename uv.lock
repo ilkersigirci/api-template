@@ -198,6 +198,7 @@ dependencies = [
     { name = "opentelemetry-instrumentation-logging" },
     { name = "opentelemetry-instrumentation-redis" },
     { name = "pydantic-settings" },
+    { name = "pyyaml" },
     { name = "taskiq", extra = ["opentelemetry"] },
     { name = "taskiq-aio-pika" },
     { name = "taskiq-redis" },
@@ -212,6 +213,7 @@ requires-dist = [
     { name = "opentelemetry-instrumentation-logging", specifier = ">=0.52b0" },
     { name = "opentelemetry-instrumentation-redis", specifier = ">=0.52b0" },
     { name = "pydantic-settings", specifier = ">=2.8.1" },
+    { name = "pyyaml", specifier = ">=6.0.1" },
     { name = "taskiq", extras = ["opentelemetry"], specifier = ">=0.12.1" },
     { name = "taskiq-aio-pika", specifier = ">=0.4.1" },
     { name = "taskiq-redis", specifier = ">=1.0.4" },
@@ -244,7 +246,6 @@ dev = [
     { name = "ruff" },
 ]
 test = [
-    { name = "anyio" },
     { name = "fakeredis" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -277,7 +278,6 @@ dev = [
     { name = "ruff", specifier = ">=0.15.0" },
 ]
 test = [
-    { name = "anyio", specifier = ">=4.8.0" },
     { name = "fakeredis", specifier = ">=2.27.0" },
     { name = "pytest", specifier = ">=8.3.3" },
     { name = "pytest-cov", specifier = ">=5.0.0" },

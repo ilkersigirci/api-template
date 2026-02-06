@@ -1,9 +1,3 @@
-"""
-ML inference task definitions.
-
-This module defines ML tasks that are implemented in the ML worker package.
-"""
-
 from pydantic import BaseModel
 
 from api_shared.broker import broker_manager
@@ -12,10 +6,8 @@ ml_broker = broker_manager.get_broker("ml")
 
 
 class MLInferenceResult(BaseModel):
-    """Result model for ML inference tasks."""
-
     model_id: str
-    predictions: list
+    predictions: list[float]
     confidence: float
     status: str
 
@@ -39,11 +31,9 @@ async def ml_inference_task(model_id: str, input_data: dict) -> MLInferenceResul
 
 
 class MLTrainingResult(BaseModel):
-    """Result model for ML training tasks."""
-
     dataset_id: str
     model_id: str
-    training_metrics: dict
+    training_metrics: dict[str, float | int]
     status: str
 
 
