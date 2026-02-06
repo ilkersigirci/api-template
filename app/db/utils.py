@@ -1,6 +1,7 @@
 import importlib
 from pathlib import Path
 
+import anyio
 from fastapi import FastAPI
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
@@ -13,8 +14,9 @@ async def create_database() -> None:
 
 async def drop_database() -> None:
     """Drop current database."""
-    if Path(settings.DB_FILE).exists():
-        Path(settings.DB_FILE).unlink()
+    db_path = anyio.Path(settings.DB_FILE)
+    if await db_path.exists():
+        await db_path.unlink()
 
 
 def setup_db(app: FastAPI) -> None:  # pragma: no cover

@@ -2,6 +2,7 @@
 # chain commands together with semicolon
 .ONESHELL:
 SHELL=/bin/bash
+PACKAGE=src
 
 .PHONY: help python-version
 .DEFAULT_GOAL=help
@@ -23,6 +24,16 @@ install: ## Installs the development version of the package
 python-version: ## Checks the python version used in the environment
 	uv lock --locked
 	uv run python --version
+
+lint: ## Lint code with ruff
+	uv lock --locked
+	uv run --module ruff format ${PACKAGE} --check --diff
+	uv run --module ruff check ${PACKAGE}
+
+format: ## Run ruff for all package files. CHANGES CODE
+	uv lock --locked
+	uv run --module ruff format ${PACKAGE}
+	uv run --module ruff check ${PACKAGE} --fix --show-fixes
 
 run-taskiq-scheduler: # Run taskiq ML scheduler. Only one scheduler can be run at a time.
 	uv lock --locked
