@@ -12,7 +12,7 @@ ENV \
 
 WORKDIR /app
 
-RUN --mount=type=cache,target=/root/.cache/uv \
+RUN --mount=type=cache,target=/root/.cache/uv,sharing=locked \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=api-shared,target=api-shared \
@@ -20,7 +20,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 COPY . /app
 
-RUN --mount=type=cache,target=/root/.cache/uv \
+RUN --mount=type=cache,target=/root/.cache/uv,sharing=locked \
     uv sync --locked --no-default-groups
 
 #
