@@ -19,6 +19,7 @@ x-deploy: &gpu-deploy
 
 services:
   api-template-app:
+    # image: ghcr.io/ilkersigirci/api-template-app:latest
     image: api-template-app:latest
     container_name: api-template-app
     build:
@@ -40,14 +41,18 @@ services:
       - no-new-privileges:true
     tty: true
     command: ["python", "-m", "app.__main__"]
+    volumes:
+      - .logfire:/app/.logfire
     env_file:
       - .env
     environment:
       - RUN_MODE=api
       - PORT=8000
       - RELOAD=False
+      - OLTP_LOG_METHOD=logfire
 
   api-workers-general:
+    # image: ghcr.io/ilkersigirci/api-workers-general:latest
     image: api-workers-general:latest
     container_name: api-workers-general
     build:
@@ -80,12 +85,16 @@ services:
       - "-fsd"
       - "-tp"
       - "src/worker/tasks/*.py"
+    volumes:
+      - ./api-workers-general/.logfire:/app/.logfire
     env_file:
       - .env
     environment:
       - RUN_MODE=worker
+      - OLTP_LOG_METHOD=logfire
 
   api-workers-ml:
+    # image: ghcr.io/ilkersigirci/api-workers-ml:latest
     image: api-workers-ml:latest
     container_name: api-workers-ml
     build:
@@ -119,10 +128,13 @@ services:
       - "-fsd"
       - "-tp"
       - "src/worker/tasks/*.py"
+    volumes:
+      - ./api-workers-ml/.logfire:/app/.logfire
     env_file:
       - .env
     environment:
       - RUN_MODE=worker
+      - OLTP_LOG_METHOD=logfire
 
   ########## Taskiq Services ##########
 
