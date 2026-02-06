@@ -1,8 +1,7 @@
 import torch
-import torch.nn as nn
-import torch.optim as optim
 from api_shared.tasks.ml import MLTrainingResult
 from loguru import logger
+from torch import nn, optim
 
 from worker.broker import broker
 

@@ -1,7 +1,7 @@
 import torch
-import torch.nn as nn
 from api_shared.tasks.ml import MLInferenceResult
 from loguru import logger
+from torch import nn
 
 from worker.broker import broker
 
