@@ -2,7 +2,7 @@
 # Stage: builder
 #
 ARG PYTHON_VERSION=3.11
-FROM ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-trixie-slim AS builder
+FROM ghcr.io/astral-sh/uv:0.10.0-python${PYTHON_VERSION}-trixie-slim AS builder
 
 ENV \
     UV_COMPILE_BYTECODE=1 \
