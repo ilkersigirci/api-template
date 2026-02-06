@@ -33,14 +33,14 @@ logfire projects use api-template
 # Run Redis and RabbitMQ in docker
 make run-taskiq-services
 
-# Run the taskiq workers
-make run-taskiq-workers
+# RUn the fastapi
+make run-dev
 
-# Test the taskiq workers
-make run-taskiq-main
+# Run the taskiq general workers
+make run-taskiq-workers-general
 
-# (Optional) Run taskiq scheduler for periodic tasks
-make run-taskiq-scheduler
+# Run the taskiq ml workers
+make run-taskiq-workers-ml
 ```
 
 ### Taskiq Dashboard
@@ -92,7 +92,7 @@ alembic revision
 
 Regular Task Request
 ```bash
-curl -X POST http://localhost:8000/api/v1/tasks/ \
+curl -X POST http://localhost:8000/api/v1/tasks/general \
   -H "Content-Type: application/json" \
   -d '{"duration": 5}'
 ```
