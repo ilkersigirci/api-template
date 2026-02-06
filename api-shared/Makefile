@@ -39,19 +39,3 @@ format-unsafe: ## Run ruff for all package files. CHANGES CODE
 	uv lock --locked
 	uv run --module ruff format ${PACKAGE}
 	uv run --module ruff check ${PACKAGE} --fix --unsafe-fixes --show-fixes
-
-run-taskiq-scheduler: # Run taskiq ML scheduler. Only one scheduler can be run at a time.
-	uv lock --locked
-	uv run --module taskiq scheduler worker.broker:scheduler -fsd -tp 'src/worker/tasks/*.py'
-
-run-taskiq-workers: # Run ML taskiq workers using threadpools ( Default )
-	uv lock --locked
-	RUN_MODE=worker uv run --module taskiq worker worker.broker:broker --workers 3 -fsd -tp 'src/worker/tasks/*.py'
-
-run-taskiq-workers-processpool: # Run ML taskiq workers using processpools
-	uv lock --locked
-	RUN_MODE=worker uv run --module taskiq worker worker.broker:broker --use-process-pool --workers 3 -fsd -tp ['src/worker/tasks/*.py']
-
-run-taskiq-main: # Run taskiq main to test the workers and the broker
-	uv lock --locked
-	uv run --module main

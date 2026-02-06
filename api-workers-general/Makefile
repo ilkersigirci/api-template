@@ -35,6 +35,11 @@ format: ## Run ruff for all package files. CHANGES CODE
 	uv run --module ruff format ${PACKAGE}
 	uv run --module ruff check ${PACKAGE} --fix --show-fixes
 
+format-unsafe: ## Run ruff for all package files. CHANGES CODE
+	uv lock --locked
+	uv run --module ruff format ${PACKAGE}
+	uv run --module ruff check ${PACKAGE} --fix --unsafe-fixes --show-fixes
+
 run-taskiq-scheduler: # Run taskiq scheduler. Only one scheduler can be run at a time. It only sends tasks to the workers, doesn't execute them
 	uv lock --locked
 	uv run --module taskiq scheduler worker.broker:scheduler -fsd -tp 'src/worker/tasks/*.py'
