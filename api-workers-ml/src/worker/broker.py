@@ -5,10 +5,12 @@ This module ensures that OpenTelemetry is set up before the broker is initialize
 Import the broker from this module in ML worker code.
 """
 
-from worker.core.telemetry import setup_opentelemetry_worker
+from api_shared.core.telemetry import setup_opentelemetry_worker
+
+from worker.core.settings import settings
 
 # NOTE: Should be called before importing the broker
-setup_opentelemetry_worker()
+setup_opentelemetry_worker(settings)
 
 from api_shared.broker import broker_manager  # noqa: E402
 

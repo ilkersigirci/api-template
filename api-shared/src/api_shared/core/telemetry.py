@@ -1,5 +1,4 @@
 import logfire
-from api_shared.core.settings import OLTPLogMethod
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
@@ -13,10 +12,10 @@ from opentelemetry.sdk.resources import (
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from worker.core.settings import settings
+from api_shared.core.settings import OLTPLogMethod
 
 
-def setup_opentelemetry_worker():
+def setup_opentelemetry_worker(settings):
     """Setup OpenTelemetry instrumentation for worker."""
     if settings.OLTP_LOG_METHOD == OLTPLogMethod.NONE:
         return
@@ -50,7 +49,7 @@ def setup_opentelemetry_worker():
 
 
 # TODO: Does this need in the worker?
-def stop_opentelemetry() -> None:  # pragma: no cover
+def stop_opentelemetry(settings) -> None:  # pragma: no cover
     """Disables opentelemetry instrumentation."""
     if settings.OLTP_LOG_METHOD in [OLTPLogMethod.NONE, OLTPLogMethod.LOGFIRE]:
         return
