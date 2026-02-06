@@ -2,7 +2,7 @@
 # Stage: builder
 #
 ARG PYTHON_VERSION=3.11
-FROM ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-trixie-slim AS builder
+FROM ghcr.io/astral-sh/uv:0.10.0-python${PYTHON_VERSION}-trixie-slim AS builder
 
 ENV \
     UV_COMPILE_BYTECODE=1 \
@@ -12,7 +12,7 @@ ENV \
 
 WORKDIR /app
 
-RUN --mount=type=cache,target=/root/.cache/uv \
+RUN --mount=type=cache,target=/root/.cache/uv,sharing=locked \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,from=api-shared,target=../api-shared \
@@ -21,7 +21,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 COPY --from=api-shared . /app/../api-shared
 COPY . /app
 
-RUN --mount=type=cache,target=/root/.cache/uv \
+RUN --mount=type=cache,target=/root/.cache/uv,sharing=locked \
     --mount=type=bind,from=api-shared,target=../api-shared \
     uv sync --locked --no-default-groups
 

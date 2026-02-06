@@ -87,3 +87,25 @@ alembic revision --autogenerate
 # For empty file generation.
 alembic revision
 ```
+
+## Example API Requests
+
+Regular Task Request
+```bash
+curl -X POST http://localhost:8000/api/v1/tasks/ \
+  -H "Content-Type: application/json" \
+  -d '{"duration": 5}'
+```
+
+ML Requests
+```bash
+# ML Inference
+curl -X POST http://localhost:8000/api/v1/tasks/ml/inference \
+  -H "Content-Type: application/json" \
+  -d '{"model_id": "test-model", "input_data": {"features": [1, 2, 3]}}'
+
+# ML Training
+curl -X POST http://localhost:8000/api/v1/tasks/ml/training \
+  -H "Content-Type: application/json" \
+  -d '{"dataset_id": "dataset-123", "model_configuration": {"layers": 3}, "hyperparameters": {"lr": 0.001}}'
+```

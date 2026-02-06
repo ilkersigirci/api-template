@@ -1,35 +1,71 @@
-#
-name: Build and publish a Docker image to ghcr.io
-on:
+name: Build and publish Docker images to ghcr.io
 
-  # publish on releases, e.g. v2.1.13 (image tagged as "2.1.13" - "v" prefix is removed)
+on:
   release:
     types: [ published ]
 
-  # publish on pushes to the main branch (image tagged as "latest")
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
 
 jobs:
   docker_publish:
-    runs-on: "ubuntu-22.04"
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
 
+    strategy:
+      matrix:
+        include:
+          - image_name: api-template-app
+            dockerfile: ./docker/Dockerfile
+            context: .
+          - image_name: api-workers-general
+            dockerfile: ./api-workers-general/Dockerfile
+            context: ./api-workers-general
+          - image_name: api-workers-ml
+            dockerfile: ./api-workers-ml/Dockerfile
+            context: ./api-workers-ml
+
     steps:
       - uses: actions/checkout@v4
 
-      # https://github.com/marketplace/actions/push-to-ghcr
-      - name: Build and publish a Docker image for ${{ github.repository }}
-        uses: macbre/push-to-ghcr@master
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          image_name: ${{ github.repository }}  # it will be lowercased internally
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          dockerfile: ./docker/Dockerfile
-          # optionally push to the Docker Hub (docker.io)
-          # docker_io_token: ${{ secrets.DOCKER_IO_ACCESS_TOKEN }}  # see https://hub.docker.com/settings/security
-          # customize the username to be used when pushing to the Docker Hub
-          # docker_io_user: foobar  # see https://github.com/macbre/push-to-ghcr/issues/14
-#
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ matrix.image_name }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-contexts: |
+            api-shared=./api-shared

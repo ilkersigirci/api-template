@@ -2,7 +2,13 @@ import ipaddress
 from enum import StrEnum
 from typing import Annotated
 
-from pydantic import AfterValidator, AnyHttpUrl, Field, PlainValidator, TypeAdapter
+from pydantic import (
+    AfterValidator,
+    AnyHttpUrl,
+    Field,
+    PlainValidator,
+    TypeAdapter,
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
 
@@ -10,7 +16,7 @@ AnyHttpUrlAdapter = TypeAdapter(AnyHttpUrl)
 
 CustomHttpUrlStr = Annotated[
     str,
-    PlainValidator(lambda x: AnyHttpUrlAdapter.validate_strings(x)),
+    PlainValidator(AnyHttpUrlAdapter.validate_strings),
     AfterValidator(lambda x: str(x).rstrip("/")),
 ]
 
@@ -138,9 +144,9 @@ class SharedBaseSettings(BaseSettings):
         default="supersecret",
         description="API token for Taskiq dashboard authentication.",
     )
-    TASKIQ_BROKER_NAME: str = Field(
-        default="api-shared",
-        description="Name identifier for the Taskiq broker instance.",
+    TASKIQ_BROKERS_CONFIG_FILE: str | None = Field(
+        default=None,
+        description="Path to YAML file containing broker configurations.",
     )
 
     @property

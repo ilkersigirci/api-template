@@ -3,7 +3,9 @@ from datetime import datetime
 
 from loguru import logger
 
-from api_shared.broker import broker
+from api_shared.broker import broker_manager
+
+broker = broker_manager.get_broker("general")
 
 
 @broker.task

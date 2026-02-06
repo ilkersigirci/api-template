@@ -37,3 +37,26 @@ class TaskResult(BaseModel):
     status: str
     result: dict | None = None
     error: str | None = None
+
+
+class MLInferenceParams(BaseModel):
+    model_id: str = Field(..., description="ID of the ML model to use for inference")
+    input_data: dict = Field(
+        ...,
+        description="Input data with 'features' (list of floats) and optional 'num_classes' (int)",
+        examples=[{"features": [1.0, 2.0, 3.0], "num_classes": 3}],
+    )
+
+
+class MLTrainingParams(BaseModel):
+    dataset_id: str = Field(..., description="ID of the dataset to use for training")
+    model_configuration: dict = Field(
+        ...,
+        description="Model config with 'input_size' and 'output_size'",
+        examples=[{"input_size": 10, "output_size": 1}],
+    )
+    hyperparameters: dict = Field(
+        ...,
+        description="Training hyperparameters: 'epochs', 'learning_rate', 'batch_size'",
+        examples=[{"epochs": 5, "learning_rate": 0.01, "batch_size": 32}],
+    )

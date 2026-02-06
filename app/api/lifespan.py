@@ -4,7 +4,7 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 
 from app.api.redis.utils import init_redis, shutdown_redis
-from app.core.broker import broker
+from app.core.broker import broker_manager
 from app.core.telemetry import setup_opentelemetry, setup_prometheus, stop_opentelemetry
 from app.db.utils import setup_db
 
@@ -25,8 +25,7 @@ async def lifespan_setup(
 
     app.middleware_stack = None
 
-    if not broker.is_worker_process:
-        await broker.startup()
+    await broker_manager.startup_all()
 
     setup_db(app)
 
@@ -37,8 +36,7 @@ async def lifespan_setup(
 
     yield
 
-    if not broker.is_worker_process:
-        await broker.shutdown()
+    await broker_manager.shutdown_all()
 
     await app.state.db_engine.dispose()
 

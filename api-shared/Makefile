@@ -2,6 +2,7 @@
 # chain commands together with semicolon
 .ONESHELL:
 SHELL=/bin/bash
+PACKAGE=src
 
 .PHONY: help python-version
 .DEFAULT_GOAL=help
@@ -24,18 +25,17 @@ python-version: ## Checks the python version used in the environment
 	uv lock --locked
 	uv run python --version
 
-run-taskiq-scheduler: # Run taskiq scheduler. Only one scheduler can be run at a time. It only sends tasks to the workers, doesn't execute them
+lint: ## Lint code with ruff
 	uv lock --locked
-	uv run --module taskiq scheduler worker.broker:scheduler -fsd -tp 'src/worker/tasks/*.py'
+	uv run --module ruff format ${PACKAGE} --check --diff
+	uv run --module ruff check ${PACKAGE}
 
-run-taskiq-workers: # Run 2 taskiq workers using threadpools ( Default )
+format: ## Run ruff for all package files. CHANGES CODE
 	uv lock --locked
-	RUN_MODE=worker uv run --module taskiq worker worker.broker:broker --workers 2 -fsd -tp 'src/worker/tasks/*.py'
+	uv run --module ruff format ${PACKAGE}
+	uv run --module ruff check ${PACKAGE} --fix --show-fixes
 
-run-taskiq-workers-processpool: # Run 2 taskiq workers using processpools
+format-unsafe: ## Run ruff for all package files. CHANGES CODE
 	uv lock --locked
-	RUN_MODE=worker uv run --module taskiq worker worker.broker:broker --use-process-pool --workers 2 -fsd -tp ['src/worker/tasks/*.py']
-
-run-taskiq-main: # Run taskiq main to test the workers and the broker
-	uv lock --locked
-	uv run --module main
+	uv run --module ruff format ${PACKAGE}
+	uv run --module ruff check ${PACKAGE} --fix --unsafe-fixes --show-fixes

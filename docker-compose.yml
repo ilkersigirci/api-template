@@ -8,6 +8,15 @@ networks:
       config:
         - subnet: 192.168.10.0/24
 
+x-deploy: &gpu-deploy
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
 services:
   api-template-app:
     image: api-template-app:latest
@@ -38,11 +47,11 @@ services:
       - PORT=8000
       - RELOAD=False
 
-  api-template-worker:
-    image: api-template-worker:latest
-    container_name: api-template-worker
+  api-workers-general:
+    image: api-workers-general:latest
+    container_name: api-workers-general
     build:
-        context: api-workers
+        context: api-workers-general
         dockerfile: Dockerfile
         # target: development
         target: production
@@ -67,7 +76,46 @@ services:
       - "worker.broker:broker"
       - "--use-process-pool"
       - "--workers"
-      - "${WORKER_COUNT:-5}"
+      - "${GENERAL_WORKER_COUNT:-5}"
+      - "-fsd"
+      - "-tp"
+      - "src/worker/tasks/*.py"
+    env_file:
+      - .env
+    environment:
+      - RUN_MODE=worker
+
+  api-workers-ml:
+    image: api-workers-ml:latest
+    container_name: api-workers-ml
+    build:
+        context: api-workers-ml
+        dockerfile: Dockerfile
+        # target: development
+        target: production
+        additional_contexts:
+          api-shared: api-shared
+    networks:
+        - api-template-network
+    restart: "no"
+    depends_on:
+      api-template-redis:
+        condition: service_healthy
+      api-template-rabbitmq:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    <<: *gpu-deploy
+    tty: true
+    command:
+      - "python"
+      - "-m"
+      - "taskiq"
+      - "worker"
+      - "worker.broker:broker"
+      - "--use-process-pool"
+      - "--workers"
+      - "${ML_WORKER_COUNT:-3}"
       - "-fsd"
       - "-tp"
       - "src/worker/tasks/*.py"
@@ -90,9 +138,10 @@ services:
     command: redis-server --requirepass "${REDIS_PASS}"
     healthcheck:
       test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASS}", "ping"]
-      interval: 30s
-      timeout: 10s
+      interval: 10s
+      timeout: 3s
       retries: 5
+      start_period: 5s
 
   api-template-rabbitmq:
     image: rabbitmq:4-management
@@ -113,7 +162,8 @@ services:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 5
+      start_period: 20s
 
   api-template-taskiq-dashboard:
     image: ghcr.io/danfimov/taskiq-dashboard:latest
