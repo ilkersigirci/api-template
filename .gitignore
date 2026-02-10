@@ -273,3 +273,4 @@ public
 .sesskey
 
 docker/volumes/*
+.github/prompts
