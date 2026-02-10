@@ -128,6 +128,10 @@ class SharedBaseSettings(BaseSettings):
         le=16,
         description="Redis database number for taskiq result backend. Must be between 1-16.",
     )
+    TASKIQ_RESULT_EX_TIME: int = Field(
+        default=86400 * 2,
+        description="TTL for taskiq results and task monitoring data in Redis (in seconds). Defaults to 2 days.",
+    )
     RUN_MODE: RunMode = Field(
         default=RunMode.NONE,
         description="Application run mode api or worker).",

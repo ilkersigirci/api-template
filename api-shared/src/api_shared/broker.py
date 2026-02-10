@@ -25,14 +25,7 @@ if settings.OLTP_LOG_METHOD != OLTPLogMethod.NONE:
 
 
 class BrokerConfigSchema(BaseModel):
-    """Pydantic model for broker configuration validation.
-
-    Attributes:
-        queue: Queue name for this broker's tasks.
-        routing_key: Routing key pattern for message routing.
-        exchange: Exchange name for this broker.
-        description: Optional description of the broker's purpose.
-    """
+    """Pydantic model for broker configuration validation."""
 
     queue: str = Field(..., description="Queue name for this broker's tasks")
     routing_key: str = Field(
@@ -45,11 +38,7 @@ class BrokerConfigSchema(BaseModel):
 
 
 class BrokersConfigSchema(BaseModel):
-    """Pydantic model for the complete brokers YAML file.
-
-    Attributes:
-        brokers: Dictionary mapping broker names to their configurations.
-    """
+    """Pydantic model for the complete brokers YAML file."""
 
     brokers: dict[str, BrokerConfigSchema] = Field(
         ..., description="Broker configurations"
@@ -113,6 +102,7 @@ class BrokerManager:
         """
         result_backend: AsyncResultBackend[Any] = RedisAsyncResultBackend(
             redis_url=str(settings.REDIS_URL.with_path(f"/{settings.REDIS_TASK_DB}")),
+            result_ex_time=settings.TASKIQ_RESULT_EX_TIME,
         )
 
         middlewares = [
