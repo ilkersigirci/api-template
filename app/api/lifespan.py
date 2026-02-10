@@ -1,9 +1,10 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
+from api_shared.services.redis.deps import redis_state
+from api_shared.services.redis.lifespan import close_redis_pool, init_redis_pool
 from fastapi import FastAPI
 
-from app.api.redis.utils import init_redis, shutdown_redis
 from app.core.broker import broker_manager
 from app.core.telemetry import setup_opentelemetry, setup_prometheus, stop_opentelemetry
 from app.db.utils import setup_db
@@ -30,7 +31,10 @@ async def lifespan_setup(
     setup_db(app)
 
     setup_opentelemetry(app)
-    init_redis(app)
+
+    # Initialize Redis connection pool
+    redis_state.redis_pool = await init_redis_pool()
+
     setup_prometheus(app)
     app.middleware_stack = app.build_middleware_stack()
 
@@ -40,5 +44,6 @@ async def lifespan_setup(
 
     await app.state.db_engine.dispose()
 
-    await shutdown_redis(app)
+    await close_redis_pool(redis_state.redis_pool)
+
     stop_opentelemetry(app)

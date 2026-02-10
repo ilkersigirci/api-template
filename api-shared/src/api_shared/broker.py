@@ -8,6 +8,7 @@ from taskiq import (
     AsyncResultBackend,
     InMemoryBroker,
     SmartRetryMiddleware,
+    TaskiqEvents,
 )
 from taskiq.instrumentation import TaskiqInstrumentor
 from taskiq.schedule_sources import LabelScheduleSource
@@ -16,6 +17,8 @@ from taskiq_aio_pika import AioPikaBroker
 from taskiq_redis import RedisAsyncResultBackend
 
 from api_shared.core.settings import Environment, OLTPLogMethod, settings
+from api_shared.middlewares.task_status import TaskStatusMiddleware
+from api_shared.utils.worker_lifespan import worker_shutdown, worker_startup
 
 if settings.TASKIQ_DASHBOARD_URL:
     from api_shared.middlewares.dashboard import DashboardMiddleware
@@ -101,7 +104,7 @@ class BrokerManager:
             Configured AsyncBroker instance.
         """
         result_backend: AsyncResultBackend[Any] = RedisAsyncResultBackend(
-            redis_url=str(settings.REDIS_URL.with_path(f"/{settings.REDIS_TASK_DB}")),
+            redis_url=settings.REDIS_URL,
             result_ex_time=settings.TASKIQ_RESULT_EX_TIME,
         )
 
@@ -112,6 +115,11 @@ class BrokerManager:
                 use_jitter=True,
                 use_delay_exponent=True,
                 max_delay_exponent=120,
+            ),
+            TaskStatusMiddleware(
+                redis_url=settings.REDIS_URL,
+                max_connection_pool_size=settings.REDIS_MAX_CONNECTION_POOL_SIZE,
+                retry_on_timeout=True,
             ),
         ]
 
@@ -126,7 +134,7 @@ class BrokerManager:
 
         return (
             AioPikaBroker(
-                str(settings.RABBITMQ_URL),
+                settings.RABBITMQ_URL,
                 queue_name=broker_config.queue,
                 routing_key=broker_config.routing_key,
                 exchange_name=broker_config.exchange,
@@ -213,3 +221,8 @@ class BrokerManager:
 
 # Create singleton instance
 broker_manager = BrokerManager()
+
+# TODO: Add this to only worker broker part.
+for _, broker_instance in broker_manager.get_all_brokers().items():
+    broker_instance.add_event_handler(TaskiqEvents.WORKER_STARTUP, worker_startup)
+    broker_instance.add_event_handler(TaskiqEvents.WORKER_SHUTDOWN, worker_shutdown)

@@ -1,20 +1,14 @@
-from typing import Annotated
-
+from api_shared.services.redis.deps import get_redis_pool
 from fastapi import APIRouter
-from fastapi.param_functions import Depends
-from redis.asyncio import ConnectionPool, Redis
+from redis.asyncio import Redis
 
-from app.api.redis.deps import get_redis_pool
 from app.api.redis.schemas import RedisValueDTO
 
 router = APIRouter(prefix="/redis", tags=["redis"])
 
 
 @router.get("/", response_model=RedisValueDTO)
-async def get_redis_value(
-    key: str,
-    redis_pool: Annotated[ConnectionPool, Depends(get_redis_pool)],
-) -> RedisValueDTO:
+async def get_redis_value(key: str) -> RedisValueDTO:
     """
     Get value from redis.
 
@@ -22,6 +16,8 @@ async def get_redis_value(
     :param redis_pool: redis connection pool.
     :returns: information from redis.
     """
+    redis_pool = await get_redis_pool()
+
     async with Redis(connection_pool=redis_pool) as redis:
         redis_value = await redis.get(key)
     return RedisValueDTO(
@@ -33,7 +29,6 @@ async def get_redis_value(
 @router.put("/")
 async def set_redis_value(
     redis_value: RedisValueDTO,
-    redis_pool: Annotated[ConnectionPool, Depends(get_redis_pool)],
 ) -> None:
     """
     Set value in redis.
@@ -42,5 +37,6 @@ async def set_redis_value(
     :param redis_pool: redis connection pool.
     """
     if redis_value.value is not None:
+        redis_pool = await get_redis_pool()
         async with Redis(connection_pool=redis_pool) as redis:
             await redis.set(name=redis_value.key, value=redis_value.value)

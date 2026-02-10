@@ -2,6 +2,7 @@
 
 from typing import cast
 
+from api_shared.services.redis.deps import get_redis_pool
 from api_shared.tasks.general import (
     NestedModel,
     PydanticParseInput,
@@ -9,7 +10,9 @@ from api_shared.tasks.general import (
     long_running_process,
     pydantic_parse_check,
 )
+from api_shared.utils.task_status_manager import TaskStatus, TaskStatusManager
 from fastapi import APIRouter, HTTPException
+from redis.asyncio import Redis
 from taskiq import ResultGetError
 from taskiq_redis import RedisAsyncResultBackend
 
@@ -69,35 +72,54 @@ async def get_task_result(task_id: str) -> TaskResult:
     Get the status and result of a task.
     """
     try:
-        # Check if the result backend is configured
-        if not workers_broker.result_backend:
+        redis_pool = await get_redis_pool()
+        async with Redis.from_pool(redis_pool) as redis_client:
+            metadata = await TaskStatusManager.get_task_metadata(task_id, redis_client)
+
+        if not metadata:
             raise HTTPException(
-                status_code=500, detail="Result backend is not configured"
+                status_code=404, detail="Task not found or result expired"
             )
 
-        # Assume usage of Redis backend
-        backend = cast(RedisAsyncResultBackend, workers_broker.result_backend)
+        status = metadata.get("status", TaskStatus.QUEUED)
+        result_data = None
+        error_msg = metadata.get("error")
 
-        if await backend.is_result_ready(task_id):
-            result = await backend.get_result(task_id)
-
-            status = "completed"
-            if result.is_err:
-                status = "failed"
-
+        # Early return for non-completed tasks
+        if status not in (TaskStatus.FINISHED, TaskStatus.FAILED):
             return TaskResult(
                 task_id=task_id,
                 status=status,
-                result=result.return_value if not result.is_err else None,
-                error=str(result.error) if result.is_err else None,
+                result=None,
+                error=error_msg,
             )
+
+        # Task is finished or failed, try to get result
+        backend = cast(RedisAsyncResultBackend, workers_broker.result_backend)
+
+        if not await backend.is_result_ready(task_id):
+            return TaskResult(
+                task_id=task_id,
+                status=status,
+                result=None,
+                error=error_msg,
+            )
+
+        # Result is ready, fetch it
+        result = await backend.get_result(task_id)
+        result_data = result.return_value if not result.is_err else None
+        if result.is_err and not error_msg:
+            error_msg = str(result.error)
+
         return TaskResult(
             task_id=task_id,
-            status="pending",
-            result=None,
-            error=None,
+            status=status,
+            result=result_data,
+            error=error_msg,
         )
 
+    except HTTPException:
+        raise
     except ResultGetError as exc:
         raise HTTPException(
             status_code=404, detail="Task not found or result expired"

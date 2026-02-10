@@ -90,11 +90,16 @@ alembic revision
 
 ## Example API Requests
 
-Regular Task Request
+General Task Request
 ```bash
-curl -X POST http://localhost:8000/api/v1/tasks/general \
+# Send request and capture task_id
+TASK_ID=$(curl -X POST http://localhost:8000/api/v1/tasks/general/ \
   -H "Content-Type: application/json" \
-  -d '{"duration": 5}'
+  -d '{"duration": 30}' \
+  -s | jq -r '.task_id')
+
+# Check status of task
+curl -X GET http://localhost:8000/api/v1/tasks/general/$TASK_ID
 ```
 
 ML Requests
