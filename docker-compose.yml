@@ -177,18 +177,19 @@ services:
       retries: 5
       start_period: 20s
 
-  api-template-taskiq-dashboard:
-    image: ghcr.io/danfimov/taskiq-dashboard:latest
-    container_name: api-template-taskiq-dashboard
-    restart: "unless-stopped"
-    networks:
-      - api-template-network
-    ports:
-      - "$TASKIQ_DASHBOARD_PORT:8000"
-    environment:
-      TASKIQ_DASHBOARD__API__PORT: 8000
-      TASKIQ_DASHBOARD__API__TOKEN: $TASKIQ_DASHBOARD_API_TOKEN
-      TASKIQ_DASHBOARD__STORAGE_TYPE: sqlite
-      TASKIQ_DASHBOARD__SQLITE__DSN: sqlite+aiosqlite:///taskiq_dashboard.db
-    volumes:
-      - ./docker/volumes/taskiq_dashboard/dashboard.db:/app/taskiq_dashboard.db
+  ## Optional: Taskiq Dashboard for task monitoring
+  # api-template-taskiq-dashboard:
+  #   image: ghcr.io/danfimov/taskiq-dashboard:latest
+  #   container_name: api-template-taskiq-dashboard
+  #   restart: "unless-stopped"
+  #   networks:
+  #     - api-template-network
+  #   ports:
+  #     - "$TASKIQ_DASHBOARD_PORT:8000"
+  #   environment:
+  #     TASKIQ_DASHBOARD__API__PORT: 8000
+  #     TASKIQ_DASHBOARD__API__TOKEN: $TASKIQ_DASHBOARD_API_TOKEN
+  #     TASKIQ_DASHBOARD__STORAGE_TYPE: sqlite
+  #     TASKIQ_DASHBOARD__SQLITE__DSN: sqlite+aiosqlite:///taskiq_dashboard.db
+  #   volumes:
+  #     - ./docker/volumes/taskiq_dashboard/dashboard.db:/app/taskiq_dashboard.db

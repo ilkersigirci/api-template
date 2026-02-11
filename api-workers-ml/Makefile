@@ -46,11 +46,11 @@ run-taskiq-scheduler: # Run taskiq ML scheduler. Only one scheduler can be run a
 
 run-taskiq-workers: # Run ML taskiq workers using threadpools ( Default )
 	uv lock --locked
-	RUN_MODE=worker uv run --module taskiq worker worker.broker:broker --workers 3 -fsd -tp 'src/worker/tasks/*.py'
+	RUN_MODE=worker uv run --module taskiq worker worker.broker:broker --workers 2 -fsd -tp 'src/worker/tasks/*.py'
 
 run-taskiq-workers-processpool: # Run ML taskiq workers using processpools
 	uv lock --locked
-	RUN_MODE=worker uv run --module taskiq worker worker.broker:broker --use-process-pool --workers 3 -fsd -tp ['src/worker/tasks/*.py']
+	RUN_MODE=worker uv run --module taskiq worker worker.broker:broker --use-process-pool --workers 2 -fsd -tp 'src/worker/tasks/*.py'
 
 run-taskiq-main: # Run taskiq main to test the workers and the broker
 	uv lock --locked
