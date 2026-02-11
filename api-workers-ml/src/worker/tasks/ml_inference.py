@@ -47,7 +47,6 @@ async def ml_inference_task(model_id: str, input_data: dict) -> MLInferenceResul
         model_id=model_id,
         predictions=predictions,
         confidence=confidence,
-        status="success",
     )
 
     logger.info("ML inference completed")

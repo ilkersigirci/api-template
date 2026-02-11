@@ -22,7 +22,6 @@ class PydanticParseResult(BaseModel):
     received_count: int
     received_nested: NestedModel
     doubled_count: int
-    status: str
 
 
 @broker.task(task_name="pydantic_parse_check")

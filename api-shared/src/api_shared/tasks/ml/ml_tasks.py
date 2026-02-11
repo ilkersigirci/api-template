@@ -9,7 +9,6 @@ class MLInferenceResult(BaseModel):
     model_id: str
     predictions: list[float]
     confidence: float
-    status: str
 
 
 @ml_broker.task(task_name="ml_inference")
@@ -34,7 +33,6 @@ class MLTrainingResult(BaseModel):
     dataset_id: str
     model_id: str
     training_metrics: dict[str, float | int]
-    status: str
 
 
 @ml_broker.task(task_name="train_model")
