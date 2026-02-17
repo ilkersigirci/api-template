@@ -1,3 +1,4 @@
+from api_shared.utils.task_status_manager import TaskStatus
 from pydantic import BaseModel, Field
 
 
@@ -34,7 +35,7 @@ class TaskOut(BaseModel):
 
 class TaskResult(BaseModel):
     task_id: str
-    status: str
+    status: TaskStatus
     result: dict | None = None
     error: str | None = None
 

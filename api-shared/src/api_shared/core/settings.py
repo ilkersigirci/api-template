@@ -128,6 +128,14 @@ class SharedBaseSettings(BaseSettings):
         le=16,
         description="Redis database number for taskiq result backend. Must be between 1-16.",
     )
+    REDIS_MAX_CONNECTION_POOL_SIZE: int | None = Field(
+        default=None,
+        description="Maximum number of connections in Redis connection pool.",
+    )
+    TASKIQ_RESULT_EX_TIME: int = Field(
+        default=86400 * 2,
+        description="TTL for taskiq results and task monitoring data in Redis (in seconds). Defaults to 2 days.",
+    )
     RUN_MODE: RunMode = Field(
         default=RunMode.NONE,
         description="Application run mode api or worker).",
@@ -162,7 +170,7 @@ class SharedBaseSettings(BaseSettings):
         return f"http://{self.TASKIQ_DASHBOARD_HOST}:{self.TASKIQ_DASHBOARD_PORT}"
 
     @property
-    def REDIS_URL(self) -> URL:
+    def REDIS_URL(self) -> str:
         """Assemble REDIS URL from settings.
 
         Returns:
@@ -171,7 +179,7 @@ class SharedBaseSettings(BaseSettings):
         path = f"/{self.REDIS_BASE}" if self.REDIS_BASE is not None else ""
         scheme = "redis" if _should_use_http_scheme(self.REDIS_HOST) else "rediss"
 
-        return URL.build(
+        base_url = URL.build(
             scheme=scheme,
             host=self.REDIS_HOST,
             port=self.REDIS_PORT,
@@ -180,8 +188,10 @@ class SharedBaseSettings(BaseSettings):
             path=path,
         )
 
+        return str(base_url.with_path(f"/{settings.REDIS_TASK_DB}"))
+
     @property
-    def RABBITMQ_URL(self) -> URL:
+    def RABBITMQ_URL(self) -> str:
         """Assemble RabbitMQ URL from settings.
 
         Returns:
@@ -189,13 +199,15 @@ class SharedBaseSettings(BaseSettings):
         """
         scheme = "amqp" if _should_use_http_scheme(self.RABBITMQ_HOST) else "amqps"
 
-        return URL.build(
-            scheme=scheme,
-            host=self.RABBITMQ_HOST,
-            port=self.RABBITMQ_PORT,
-            user=self.RABBITMQ_USERNAME,
-            password=self.RABBITMQ_PASSWORD,
-            path=self.RABBITMQ_VHOST,
+        return str(
+            URL.build(
+                scheme=scheme,
+                host=self.RABBITMQ_HOST,
+                port=self.RABBITMQ_PORT,
+                user=self.RABBITMQ_USERNAME,
+                password=self.RABBITMQ_PASSWORD,
+                path=self.RABBITMQ_VHOST,
+            )
         )
 
     model_config = SettingsConfigDict(

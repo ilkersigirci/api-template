@@ -20,7 +20,6 @@ async def pydantic_parse_check(data: PydanticParseInput) -> PydanticParseResult:
         received_count=data.count,
         received_nested=data.nested,
         doubled_count=data.count * 2,
-        status="success",
     )
 
     logger.info(f"Returning Pydantic result: {result}")

@@ -65,7 +65,6 @@ async def train_model_task(
             "epochs": epochs,
             "learning_rate": lr,
         },
-        status="completed",
     )
 
     logger.info("Model training completed")

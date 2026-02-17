@@ -9,7 +9,6 @@ class LongRunningProcessResult(BaseModel):
     start_time: float
     end_time: float
     elapsed: float
-    status: str
 
 
 @broker.task(task_name="long_running_process")

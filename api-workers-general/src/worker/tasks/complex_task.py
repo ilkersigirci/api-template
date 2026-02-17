@@ -25,5 +25,4 @@ async def long_running_process(duration: int = 5) -> LongRunningProcessResult:
         start_time=start_time,
         end_time=end_time,
         elapsed=elapsed,
-        status="completed",
     )
