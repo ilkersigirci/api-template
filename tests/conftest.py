@@ -1,10 +1,10 @@
-from typing import Any, AsyncGenerator
+from typing import Any, AsyncGenerator, Generator
 
 import pytest
+from api_shared.services.redis.deps import redis_state
 from app.api.application import get_app
 from app.api.auth.utils import create_access_token, get_password_hash
 from app.api.items.models import ItemModel
-from app.api.redis.deps import get_redis_pool
 from app.api.users.models import UserModel
 from app.api.users.schemas import User
 from app.core.settings import settings
@@ -168,7 +168,7 @@ async def fake_redis_pool() -> AsyncGenerator[ConnectionPool, None]:
 def fastapi_app(
     dbsession: AsyncSession,
     fake_redis_pool: ConnectionPool,
-) -> FastAPI:
+) -> Generator[FastAPI, None, None]:
     """Fixture for creating FastAPI app.
 
     Returns:
@@ -176,8 +176,11 @@ def fastapi_app(
     """
     application = get_app()
     application.dependency_overrides[get_db_session] = lambda: dbsession
-    application.dependency_overrides[get_redis_pool] = lambda: fake_redis_pool
-    return application
+    redis_state.redis_pool = fake_redis_pool
+    try:
+        yield application
+    finally:
+        redis_state.redis_pool = None
 
 
 @pytest.fixture
