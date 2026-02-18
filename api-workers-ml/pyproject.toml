@@ -95,7 +95,7 @@ log_cli_format = "%(asctime)-20s :: %(name)-8s :: %(levelname)-8s :: %(filename)
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py313"
 line-length = 88
 src = ["app"]
 respect-gitignore = true

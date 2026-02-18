@@ -1,7 +1,7 @@
 #
 # Stage: builder
 #
-ARG PYTHON_VERSION=3.11
+ARG PYTHON_VERSION=3.13
 FROM ghcr.io/astral-sh/uv:0.10.0-python${PYTHON_VERSION}-trixie-slim AS builder
 
 ENV \
@@ -34,7 +34,7 @@ CMD ["uv", "run", "--module", "app.__main__"]
 #
 # Stage: production
 #
-ARG PYTHON_VERSION=3.11
+ARG PYTHON_VERSION=3.13
 FROM python:${PYTHON_VERSION}-slim-trixie AS production
 
 ENV \
