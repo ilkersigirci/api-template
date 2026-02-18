@@ -160,8 +160,8 @@ create-migrations: ## Create migrations
 reset-all-migrations: ## Reset all migrations
 	uv run --module alembic downgrade base
 
-run-taskiq-docker-services: # Run required taskiq docker services
-	docker compose up -d api-template-redis api-template-rabbitmq
+run-docker-services: # Run required docker services
+	docker compose up -d api-template-app api-workers-general api-workers-ml
 
 ##### EXTERNAL MAKEFILE CALLS #####
 
@@ -171,23 +171,22 @@ run-ui: ## Run the fasthtml UI server using the ui Makefile
 workers-python-version: ## Checks the python version used in the worker environment
 	$(MAKE) -C api-workers-general python-version
 
-run-taskiq-scheduler: ## Run taskiq scheduler using the worker Makefile
-	$(MAKE) -C api-workers-general run-taskiq-scheduler
+run-workers-general: ## Run Hatchet general worker using the worker Makefile
+	$(MAKE) -C api-workers-general run-worker
 
-run-taskiq-workers-general: ## Run taskiq workers using the worker Makefile
-	$(MAKE) -C api-workers-general run-taskiq-workers
+run-workers-ml: ## Run Hatchet ML worker using the ML worker Makefile
+	$(MAKE) -C api-workers-ml run-worker
 
-run-taskiq-workers-general-processpool: ## Run taskiq workers using processpools via the worker Makefile
-	$(MAKE) -C api-workers-general run-taskiq-workers-processpool
+test-hatchet-api: ## Run Hatchet API/status mapping tests
+	$(MAKE) -C api-shared test
 
-run-taskiq-workers-general-main: ## Run taskiq main to test workers and broker via the worker Makefile
-	$(MAKE) -C api-workers-general run-taskiq-main
+test-workers-general: ## Run general worker Hatchet task-logic tests
+	$(MAKE) -C api-workers-general test-task-logic
 
-run-taskiq-workers-ml: ## Run ML taskiq workers using the ML worker Makefile
-	$(MAKE) -C api-workers-ml run-taskiq-workers
+test-workers-ml: ## Run ML worker Hatchet task-logic tests
+	$(MAKE) -C api-workers-ml test-task-logic
 
-run-taskiq-workers-ml-processpool: ## Run ML taskiq workers using processpools via the ML worker Makefile
-	$(MAKE) -C api-workers-ml run-taskiq-workers-processpool
-
-run-taskiq-workers-ml-main: ## Run taskiq main to test ML workers and broker via the ML worker Makefile
-	$(MAKE) -C api-workers-ml run-taskiq-main
+test-hatchet-all: ## Run all Hatchet-focused tests (api + workers)
+	$(MAKE) test-hatchet-api
+	$(MAKE) test-workers-general
+	$(MAKE) test-workers-ml

@@ -45,7 +45,6 @@ dev = [
 ]
 
 test = [
-    "fakeredis>=2.27.0",
     "pytest-cov>=5.0.0",
     "pytest-env>=1.1.5",
     "pytest-rerunfailures>=14.0",
@@ -164,7 +163,6 @@ unfixable = [
 # [tool.ruff.lint.flake8-import-conventions.extend-aliases]
 # some_alias = ""
 
-
 [tool.ruff.lint.mccabe]
 max-complexity = 10
 
@@ -193,7 +191,6 @@ exclude_lines = [
 # source = [
 #     'app/',
 # ]
-
 
 [build-system]
 requires = ["uv_build>=0.9,<0.14"]

@@ -1,8 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from api_shared.broker import broker_manager
-
-broker = broker_manager.get_broker("general")
+PYDANTIC_PARSE_CHECK_TASK = "pydantic_parse_check"
 
 
 class NestedModel(BaseModel):
@@ -12,9 +10,11 @@ class NestedModel(BaseModel):
 
 
 class PydanticParseInput(BaseModel):
-    text: str
-    count: int
-    nested: NestedModel
+    text: str = Field(default="test", description="Text to send")
+    count: int = Field(default=5, ge=1, description="Count to send")
+    nested: NestedModel = Field(
+        default_factory=lambda: NestedModel(name="default", value=42, tags=["a", "b"])
+    )
 
 
 class PydanticParseResult(BaseModel):
@@ -22,11 +22,3 @@ class PydanticParseResult(BaseModel):
     received_count: int
     received_nested: NestedModel
     doubled_count: int
-
-
-@broker.task(task_name="pydantic_parse_check")
-async def pydantic_parse_check(data: PydanticParseInput) -> PydanticParseResult:
-    """
-    Tests taskiq's ability to parse and serialize Pydantic BaseModels.
-    """
-    raise NotImplementedError("This task is implemented in the worker package")

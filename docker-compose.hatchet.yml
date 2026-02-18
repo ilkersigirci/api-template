@@ -1,0 +1,72 @@
+name: api-template
+
+networks:
+  api-template-network:
+    name: api-template-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24
+
+services:
+  # Default user / pass is admin@example.com / Admin123!!
+  hatchet-db:
+    image: postgres:16.4
+    container_name: hatchet-db
+    command: postgres -c "max_connections=200"
+    restart: ${RESTART_POLICY_PROGRAMMING:-unless-stopped}
+    profiles:
+      - programming
+      - hatchet
+    environment:
+      PGDATA: /pgdata
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    networks:
+      - api-template-network
+    expose:
+      - "5432"
+    volumes:
+      - ./docker/volumes/hatchet-db:/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  hatchet-lite:
+    image: ghcr.io/hatchet-dev/hatchet/hatchet-lite:latest
+    container_name: hatchet-lite
+    restart: ${RESTART_POLICY_PROGRAMMING:-unless-stopped}
+    depends_on:
+      hatchet-db:
+        condition: service_healthy
+    profiles:
+      - programming
+      - hatchet
+    networks:
+      - api-template-network
+    expose:
+      - "8888" # HTTP UI
+      - "7077" # gRPC API
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./docker/configs/hatchet-lite:/config
+    environment:
+      # Refer to https://docs.hatchet.run/self-hosting/configuration-options
+      DATABASE_URL: "postgresql://postgres:postgres@hatchet-db:5432/postgres?sslmode=disable"
+      SERVER_AUTH_COOKIE_DOMAIN: ${DOMAINNAME:-localhost}
+      SERVER_AUTH_COOKIE_INSECURE: "t"
+      SERVER_GRPC_BIND_ADDRESS: "0.0.0.0"
+      SERVER_GRPC_INSECURE: "t"
+      SERVER_GRPC_BROADCAST_ADDRESS: ${HATCHET_GRPC_BROADCAST_ADDRESS:-hatchet-lite:7077}
+      SERVER_GRPC_PORT: "7077"
+      SERVER_URL: ${HATCHET_SERVER_URL:-http://hatchet-lite:8888}
+      SERVER_AUTH_SET_EMAIL_VERIFIED: "t"
+      SERVER_DEFAULT_ENGINE_VERSION: "V1"
+      SERVER_INTERNAL_CLIENT_INTERNAL_GRPC_BROADCAST_ADDRESS: "localhost:7077"
+      SERVER_LIMITS_DEFAULT_TENANT_RETENTION_PERIOD: "720h" # 30 days
+

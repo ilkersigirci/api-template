@@ -1,30 +1,19 @@
-import asyncio
-
-from loguru import logger
-
-from worker.broker import broker
-from worker.tasks.dummy import (  # noqa: F401
-    add_one,
-    add_one_with_retry,
-)
+from worker.runner import build_worker
+from worker.tasks.complex_task import long_running_process
+from worker.tasks.failing_task import failing_process
+from worker.tasks.pydantic_parse_task import pydantic_parse_check
 
 
-async def main() -> None:
-    await broker.startup()
-
-    # Send the task to the broker.
-    task = await add_one.kiq(1)
-    # task = await add_one_with_retry.kiq(1)
-
-    # Wait for the result.
-    result = await task.wait_result(timeout=2)
-    logger.debug(f"Task execution took: {result.execution_time} seconds.")
-    if not result.is_err:
-        logger.debug(f"Returned value: {result.return_value}")
-    else:
-        logger.debug("Error found while executing task.")
-    await broker.shutdown()
+def main() -> None:
+    worker = build_worker(
+        workflows=[
+            long_running_process,
+            failing_process,
+            pydantic_parse_check,
+        ]
+    )
+    worker.start()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

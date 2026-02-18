@@ -30,7 +30,6 @@ class InterceptHandler(logging.Handler):
         except ValueError:
             level = record.levelno
 
-        # Find caller from where originated the logged message
         frame, depth = logging.currentframe(), 2
         while frame.f_code.co_filename == logging.__file__:
             frame = frame.f_back  # type: ignore
@@ -77,17 +76,14 @@ def record_formatter(record: dict[str, Any]) -> str:  # pragma: no cover
 
 
 def configure_logging() -> None:  # pragma: no cover
-    """Configures logging."""
+    """Configure logging."""
     intercept_handler = InterceptHandler()
 
     logging.basicConfig(handlers=[intercept_handler], level=logging.NOTSET)
 
     for logger_name in logging.root.manager.loggerDict:
-        if logger_name.startswith("uvicorn."):
-            logging.getLogger(logger_name).handlers = []
-
-        if logger_name.startswith("taskiq."):
-            logging.getLogger(logger_name).root.handlers = [intercept_handler]
+        if logger_name.startswith(("uvicorn.", "hatchet.")):
+            logging.getLogger(logger_name).handlers = [intercept_handler]
 
     # change handler for default uvicorn logger
     logging.getLogger("uvicorn").handlers = [intercept_handler]

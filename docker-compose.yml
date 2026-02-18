@@ -32,11 +32,6 @@ services:
     ports:
       - 8000:8000
     restart: "no"
-    depends_on:
-      api-template-redis:
-        condition: service_healthy
-      api-template-rabbitmq:
-        condition: service_healthy
     security_opt:
       - no-new-privileges:true
     tty: true
@@ -46,10 +41,14 @@ services:
     env_file:
       - .env
     environment:
-      - RUN_MODE=api
       - PORT=8000
       - RELOAD=False
       - OLTP_LOG_METHOD=logfire
+      - HATCHET_CLIENT_TOKEN=${HATCHET_CLIENT_TOKEN}
+    # For self-hosted Hatchet, use:
+    # depends_on:
+    #   hatchet-lite:
+    #     condition: service_started
 
   api-workers-general:
     # image: ghcr.io/ilkersigirci/api-workers-general:latest
@@ -65,33 +64,23 @@ services:
     networks:
         - api-template-network
     restart: "no"
-    depends_on:
-      api-template-redis:
-        condition: service_healthy
-      api-template-rabbitmq:
-        condition: service_healthy
     security_opt:
       - no-new-privileges:true
     tty: true
-    command:
-      - "python"
-      - "-m"
-      - "taskiq"
-      - "worker"
-      - "worker.broker:broker"
-      - "--use-process-pool"
-      - "--workers"
-      - "${GENERAL_WORKER_COUNT:-5}"
-      - "-fsd"
-      - "-tp"
-      - "src/worker/tasks/*.py"
+    command: ["python", "-m", "worker.main"]
     volumes:
       - ./api-workers-general/.logfire:/app/.logfire
     env_file:
       - .env
     environment:
-      - RUN_MODE=worker
       - OLTP_LOG_METHOD=logfire
+      - HATCHET_WORKER_NAME=general-worker
+      - HATCHET_WORKER_SLOTS=${WORKER_COUNT:-5}
+      - HATCHET_CLIENT_TOKEN=${HATCHET_CLIENT_TOKEN}
+    # For self-hosted Hatchet, use:
+    # depends_on:
+    #   hatchet-lite:
+    #     condition: service_started
 
   api-workers-ml:
     # image: ghcr.io/ilkersigirci/api-workers-ml:latest
@@ -107,89 +96,21 @@ services:
     networks:
         - api-template-network
     restart: "no"
-    depends_on:
-      api-template-redis:
-        condition: service_healthy
-      api-template-rabbitmq:
-        condition: service_healthy
     security_opt:
       - no-new-privileges:true
     <<: *gpu-deploy
     tty: true
-    command:
-      - "python"
-      - "-m"
-      - "taskiq"
-      - "worker"
-      - "worker.broker:broker"
-      - "--use-process-pool"
-      - "--workers"
-      - "${ML_WORKER_COUNT:-3}"
-      - "-fsd"
-      - "-tp"
-      - "src/worker/tasks/*.py"
+    command: ["python", "-m", "worker.main"]
     volumes:
       - ./api-workers-ml/.logfire:/app/.logfire
     env_file:
       - .env
     environment:
-      - RUN_MODE=worker
       - OLTP_LOG_METHOD=logfire
-
-  ########## Taskiq Services ##########
-
-  api-template-redis:
-    image: redis:8
-    container_name: api-template-redis
-    restart: "unless-stopped"
-    hostname: "api-template-redis"
-    networks:
-      - api-template-network
-    ports:
-      - "$REDIS_PORT:6379"
-    command: redis-server --requirepass "${REDIS_PASS}"
-    healthcheck:
-      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASS}", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-      start_period: 5s
-
-  api-template-rabbitmq:
-    image: rabbitmq:4-management
-    container_name: api-template-rabbitmq
-    restart: "unless-stopped"
-    hostname: "api-template-rabbitmq"
-    networks:
-      - api-template-network
-    ports:
-      - "$RABBITMQ_PORT:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: $RABBITMQ_USERNAME
-      RABBITMQ_DEFAULT_PASS: $RABBITMQ_PASSWORD
-      RABBITMQ_DEFAULT_VHOST: $RABBITMQ_VHOST
-      RABBITMQ_DISK_FREE_ABSOLUTE_LIMIT: 2GB
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
-
-  ## Optional: Taskiq Dashboard for task monitoring
-  # api-template-taskiq-dashboard:
-  #   image: ghcr.io/danfimov/taskiq-dashboard:latest
-  #   container_name: api-template-taskiq-dashboard
-  #   restart: "unless-stopped"
-  #   networks:
-  #     - api-template-network
-  #   ports:
-  #     - "$TASKIQ_DASHBOARD_PORT:8000"
-  #   environment:
-  #     TASKIQ_DASHBOARD__API__PORT: 8000
-  #     TASKIQ_DASHBOARD__API__TOKEN: $TASKIQ_DASHBOARD_API_TOKEN
-  #     TASKIQ_DASHBOARD__STORAGE_TYPE: sqlite
-  #     TASKIQ_DASHBOARD__SQLITE__DSN: sqlite+aiosqlite:///taskiq_dashboard.db
-  #   volumes:
-  #     - ./docker/volumes/taskiq_dashboard/dashboard.db:/app/taskiq_dashboard.db
+      - HATCHET_WORKER_NAME=ml-worker
+      - HATCHET_WORKER_SLOTS=${ML_WORKER_COUNT:-3}
+      - HATCHET_CLIENT_TOKEN=${HATCHET_CLIENT_TOKEN}
+    # For self-hosted Hatchet, use:
+    # depends_on:
+    #   hatchet-lite:
+    #     condition: service_started

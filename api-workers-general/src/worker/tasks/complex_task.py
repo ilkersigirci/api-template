@@ -1,25 +1,34 @@
 import asyncio
 from time import time
 
-from api_shared.tasks.general import LongRunningProcessResult
+from api_shared.tasks.general import (
+    LONG_RUNNING_PROCESS_TASK,
+    LongRunningProcessInput,
+    LongRunningProcessResult,
+)
+from hatchet_sdk import Context
 from loguru import logger
 
-from worker.broker import broker
+from worker.runner import hatchet
 
 
-@broker.task(task_name="long_running_process")
-async def long_running_process(duration: int = 5) -> LongRunningProcessResult:
-    """
-    Simulates a long-running process by sleeping.
-    """
+@hatchet.task(
+    name=LONG_RUNNING_PROCESS_TASK,
+    input_validator=LongRunningProcessInput,
+)
+async def long_running_process(
+    input: LongRunningProcessInput,
+    ctx: Context,
+) -> LongRunningProcessResult:
     start_time = time()
-    logger.info(f"Starting long running process for {duration} seconds.")
+    logger.info("Starting long running process for {} seconds.", input.duration)
+    ctx.log(f"Starting long running process for {input.duration} seconds")
 
-    await asyncio.sleep(duration)
+    await asyncio.sleep(input.duration)
 
     end_time = time()
     elapsed = end_time - start_time
-    logger.info(f"Finished long running process. Elapsed: {elapsed:.2f}s")
+    logger.info("Finished long running process. Elapsed: {:.2f}s", elapsed)
 
     return LongRunningProcessResult(
         start_time=start_time,

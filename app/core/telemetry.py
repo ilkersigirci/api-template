@@ -6,7 +6,6 @@ from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
-from opentelemetry.instrumentation.redis import RedisInstrumentor
 from opentelemetry.sdk.resources import (
     DEPLOYMENT_ENVIRONMENT,
     SERVICE_NAME,
@@ -39,13 +38,9 @@ def setup_opentelemetry(app):  # pragma: no cover
 
     if settings.OLTP_LOG_METHOD == OLTPLogMethod.LOGFIRE:
         logfire.configure(environment=settings.ENVIRONMENT.value)
-
         logfire.instrument_system_metrics()
-
         logfire.instrument_httpx()
-
         logfire.instrument_fastapi(app, excluded_urls=excluded_urls)
-        logfire.instrument_redis()
 
         # FIXME: Breaks the loguru logger format. Fix this
         # if settings.OLTP_STD_LOGGING_ENABLED is True:
@@ -63,7 +58,6 @@ def setup_opentelemetry(app):  # pragma: no cover
 
     trace_provider = TracerProvider(resource=resource)
 
-    # Create and register OTLP exporter
     otlp_exporter = OTLPSpanExporter(endpoint=settings.OTLP_ENDPOINT, insecure=True)
     trace_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
 
@@ -71,13 +65,9 @@ def setup_opentelemetry(app):  # pragma: no cover
         app, tracer_provider=trace_provider, excluded_urls=excluded_urls
     )
 
-    RedisInstrumentor().instrument(tracer_provider=trace_provider)
-
-    # Instrument Python logging
     if settings.OLTP_STD_LOGGING_ENABLED is True:
         LoggingInstrumentor().instrument(tracer_provider=trace_provider)
 
-    # Set the trace provider as the global default
     trace.set_tracer_provider(trace_provider)
 
 
@@ -87,7 +77,6 @@ def stop_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
         return
 
     FastAPIInstrumentor().uninstrument_app(app)
-    RedisInstrumentor().uninstrument()
 
 
 def setup_prometheus(app: FastAPI) -> None:  # pragma: no cover

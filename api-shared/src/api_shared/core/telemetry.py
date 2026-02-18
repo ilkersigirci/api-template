@@ -2,7 +2,6 @@ import logfire
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
-from opentelemetry.instrumentation.redis import RedisInstrumentor
 from opentelemetry.sdk.resources import (
     DEPLOYMENT_ENVIRONMENT,
     SERVICE_NAME,
@@ -24,7 +23,6 @@ def setup_opentelemetry_worker(settings):
         logfire.configure(environment=settings.ENVIRONMENT.value)
         logfire.instrument_system_metrics()
         logfire.instrument_httpx()
-        logfire.instrument_redis()
 
         # FIXME: Breaks the loguru logger format. Fix this
         # if settings.OLTP_STD_LOGGING_ENABLED is True:
@@ -42,7 +40,6 @@ def setup_opentelemetry_worker(settings):
     trace_provider = TracerProvider(resource=resource)
     otlp_exporter = OTLPSpanExporter(endpoint=settings.OTLP_ENDPOINT, insecure=True)
     trace_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
-    RedisInstrumentor().instrument(tracer_provider=trace_provider)
     if getattr(settings, "OLTP_STD_LOGGING_ENABLED", False):
         LoggingInstrumentor().instrument(tracer_provider=trace_provider)
     trace.set_tracer_provider(trace_provider)
@@ -53,5 +50,3 @@ def stop_opentelemetry(settings) -> None:  # pragma: no cover
     """Disables opentelemetry instrumentation."""
     if settings.OLTP_LOG_METHOD in [OLTPLogMethod.NONE, OLTPLogMethod.LOGFIRE]:
         return
-
-    RedisInstrumentor().uninstrument()

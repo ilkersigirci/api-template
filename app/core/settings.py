@@ -2,7 +2,7 @@ from enum import StrEnum
 from pathlib import Path
 from tempfile import gettempdir
 
-from api_shared.core.settings import RunMode, SharedBaseSettings
+from api_shared.core.settings import SharedBaseSettings
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
@@ -36,7 +36,6 @@ class Settings(SharedBaseSettings):
         description="This variable is used to define multiproc_dir.It's required for [uvi|guni]corn projects.",
     )
     RELOAD: bool = False
-    RUN_MODE: RunMode = RunMode.API
     SECRET_KEY: str = "CHANGE_ME_IN_PRODUCTION"
     UVICORN_WORKERS: int = 1
 

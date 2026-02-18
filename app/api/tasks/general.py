@@ -1,128 +1,73 @@
-"""Workers broker task endpoints."""
+"""General Hatchet task endpoints."""
 
-from typing import cast
+from typing import Annotated
 
-from api_shared.services.redis.deps import get_redis_pool
 from api_shared.tasks.general import (
-    NestedModel,
+    FAILING_PROCESS_TASK,
+    LONG_RUNNING_PROCESS_TASK,
+    PYDANTIC_PARSE_CHECK_TASK,
+    FailingProcessInput,
+    LongRunningProcessInput,
+    LongRunningProcessResult,
     PydanticParseInput,
-    failing_process,
-    long_running_process,
-    pydantic_parse_check,
+    PydanticParseResult,
 )
-from api_shared.utils.task_status_manager import TaskStatus, TaskStatusManager
-from fastapi import APIRouter, HTTPException
-from redis.asyncio import Redis
-from taskiq import ResultGetError
-from taskiq_redis import RedisAsyncResultBackend
+from fastapi import APIRouter, Depends, HTTPException
+from hatchet_sdk.clients.rest.models.v1_workflow_run import V1WorkflowRun
+from hatchet_sdk.clients.rest.models.v1_workflow_run_details import (
+    V1WorkflowRunDetails,
+)
 
-from app.api.tasks.schemas import (
-    FailingTaskParams,
-    PydanticParseParams,
-    TaskOut,
-    TaskParams,
-    TaskResult,
-)
-from app.core.broker import broker_manager
+from app.api.tasks.deps import get_runner
+from app.external.runner import ExternalRunner
 
 router = APIRouter(prefix="/tasks/general", tags=["tasks"])
 
-workers_broker = broker_manager.get_broker("general")
 
-
-@router.post("/", response_model=TaskOut)
-async def trigger_task(params: TaskParams) -> TaskOut:
-    """
-    Trigger a long-running task.
-    """
-    task = await long_running_process.kiq(duration=params.duration)
-    return TaskOut(task_id=task.task_id)
-
-
-@router.post("/fail", response_model=TaskOut)
-async def trigger_failing_task(params: FailingTaskParams) -> TaskOut:
-    """
-    Trigger a task that will fail.
-    """
-    task = await failing_process.kiq(error_message=params.error_message)
-    return TaskOut(task_id=task.task_id)
-
-
-@router.post("/pydantic", response_model=TaskOut)
-async def trigger_pydantic_parse(params: PydanticParseParams) -> TaskOut:
-    """
-    Trigger a task that tests Pydantic BaseModel parsing.
-    """
-    input_data = PydanticParseInput(
-        text=params.text,
-        count=params.count,
-        nested=NestedModel(
-            name=params.nested.name,
-            value=params.nested.value,
-            tags=params.nested.tags,
-        ),
+@router.post("/long-running", response_model=V1WorkflowRun)
+async def trigger_task(
+    params: LongRunningProcessInput,
+    runner: Annotated[ExternalRunner, Depends(get_runner)],
+) -> V1WorkflowRun:
+    return await runner.trigger_task(
+        name=LONG_RUNNING_PROCESS_TASK,
+        input=params,
+        input_validator=LongRunningProcessInput,
+        output_validator=LongRunningProcessResult,
     )
-    task = await pydantic_parse_check.kiq(data=input_data)
-    return TaskOut(task_id=task.task_id)
 
 
-@router.get("/{task_id}", response_model=TaskResult)
-async def get_task_result(task_id: str) -> TaskResult:
-    """
-    Get the status and result of a task.
-    """
+@router.post("/fail", response_model=V1WorkflowRun)
+async def trigger_failing_task(
+    params: FailingProcessInput,
+    runner: Annotated[ExternalRunner, Depends(get_runner)],
+) -> V1WorkflowRun:
+    return await runner.trigger_task(
+        name=FAILING_PROCESS_TASK,
+        input=params,
+        input_validator=FailingProcessInput,
+    )
+
+
+@router.post("/pydantic", response_model=V1WorkflowRun)
+async def trigger_pydantic_parse(
+    params: PydanticParseInput,
+    runner: Annotated[ExternalRunner, Depends(get_runner)],
+) -> V1WorkflowRun:
+    return await runner.trigger_task(
+        name=PYDANTIC_PARSE_CHECK_TASK,
+        input=params,
+        input_validator=PydanticParseInput,
+        output_validator=PydanticParseResult,
+    )
+
+
+@router.get("/{task_id}", response_model=V1WorkflowRunDetails)
+async def get_task_result(
+    task_id: str,
+    runner: Annotated[ExternalRunner, Depends(get_runner)],
+) -> V1WorkflowRunDetails:
     try:
-        redis_pool = await get_redis_pool()
-        async with Redis.from_pool(redis_pool) as redis_client:
-            metadata = await TaskStatusManager.get_task_metadata(task_id, redis_client)
-
-        if not metadata:
-            raise HTTPException(
-                status_code=404, detail="Task not found or result expired"
-            )
-
-        status = metadata.get("status", TaskStatus.QUEUED)
-        result_data = None
-        error_msg = metadata.get("error")
-
-        # Early return for non-completed tasks
-        if status not in (TaskStatus.FINISHED, TaskStatus.FAILED):
-            return TaskResult(
-                task_id=task_id,
-                status=status,
-                result=None,
-                error=error_msg,
-            )
-
-        # Task is finished or failed, try to get result
-        backend = cast(RedisAsyncResultBackend, workers_broker.result_backend)
-
-        if not await backend.is_result_ready(task_id):
-            return TaskResult(
-                task_id=task_id,
-                status=status,
-                result=None,
-                error=error_msg,
-            )
-
-        # Result is ready, fetch it
-        result = await backend.get_result(task_id)
-        result_data = result.return_value if not result.is_err else None
-        if result.is_err and not error_msg:
-            error_msg = str(result.error)
-
-        return TaskResult(
-            task_id=task_id,
-            status=status,
-            result=result_data,
-            error=error_msg,
-        )
-
-    except HTTPException:
-        raise
-    except ResultGetError as exc:
-        raise HTTPException(
-            status_code=404, detail="Task not found or result expired"
-        ) from exc
+        return await runner.get_task(task_id)
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise HTTPException(status_code=404, detail="Task not found") from exc

@@ -12,7 +12,6 @@ help:
 		 awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m\
 		 %s\n", $$1, $$2}'
 
-# If .env file exists, include it and export its variables
 ifeq ($(shell test -f .env && echo 1),1)
     include .env
     export
@@ -40,18 +39,10 @@ format-unsafe: ## Run ruff for all package files. CHANGES CODE
 	uv run --module ruff format ${PACKAGE}
 	uv run --module ruff check ${PACKAGE} --fix --unsafe-fixes --show-fixes
 
-run-taskiq-scheduler: # Run taskiq ML scheduler. Only one scheduler can be run at a time.
+run-worker: ## Run Hatchet ML worker
 	uv lock --locked
-	uv run --module taskiq scheduler worker.broker:scheduler -fsd -tp 'src/worker/tasks/*.py'
+	uv run --module worker.main
 
-run-taskiq-workers: # Run ML taskiq workers using threadpools ( Default )
+test-task-logic: ## Run Hatchet task-logic tests
 	uv lock --locked
-	RUN_MODE=worker uv run --module taskiq worker worker.broker:broker --workers 2 -fsd -tp 'src/worker/tasks/*.py'
-
-run-taskiq-workers-processpool: # Run ML taskiq workers using processpools
-	uv lock --locked
-	RUN_MODE=worker uv run --module taskiq worker worker.broker:broker --use-process-pool --workers 2 -fsd -tp 'src/worker/tasks/*.py'
-
-run-taskiq-main: # Run taskiq main to test the workers and the broker
-	uv lock --locked
-	uv run --module main
+	uv run --with pytest python -m pytest tests/test_hatchet_task_logic.py

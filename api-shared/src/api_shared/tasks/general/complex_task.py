@@ -1,19 +1,18 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from api_shared.broker import broker_manager
+LONG_RUNNING_PROCESS_TASK = "long_running_process"
 
-broker = broker_manager.get_broker("general")
+
+class LongRunningProcessInput(BaseModel):
+    duration: int = Field(
+        default=10,
+        ge=1,
+        le=60,
+        description="Duration of the task in seconds.",
+    )
 
 
 class LongRunningProcessResult(BaseModel):
     start_time: float
     end_time: float
     elapsed: float
-
-
-@broker.task(task_name="long_running_process")
-async def long_running_process(duration: int = 5) -> LongRunningProcessResult:
-    """
-    Simulates a long-running process by sleeping.
-    """
-    raise NotImplementedError("This task is implemented in the worker package")

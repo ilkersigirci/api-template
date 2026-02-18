@@ -1,31 +1,27 @@
-"""Worker tasks that use the 'general' broker."""
-
-from api_shared.broker import broker_manager
-
-# This will raise RuntimeError if general broker is not enabled
-workers_broker = broker_manager.get_broker("general")
-
 from api_shared.tasks.general.complex_task import (
+    LONG_RUNNING_PROCESS_TASK,
+    LongRunningProcessInput,
     LongRunningProcessResult,
-    long_running_process,
 )
-from api_shared.tasks.general.dummy import add_one, add_one_with_retry
-from api_shared.tasks.general.failing_task import failing_process
+from api_shared.tasks.general.failing_task import (
+    FAILING_PROCESS_TASK,
+    FailingProcessInput,
+)
 from api_shared.tasks.general.pydantic_parse_task import (
+    PYDANTIC_PARSE_CHECK_TASK,
     NestedModel,
     PydanticParseInput,
     PydanticParseResult,
-    pydantic_parse_check,
 )
 
 __all__ = [
+    "FAILING_PROCESS_TASK",
+    "LONG_RUNNING_PROCESS_TASK",
+    "PYDANTIC_PARSE_CHECK_TASK",
+    "FailingProcessInput",
+    "LongRunningProcessInput",
     "LongRunningProcessResult",
     "NestedModel",
     "PydanticParseInput",
     "PydanticParseResult",
-    "add_one",
-    "add_one_with_retry",
-    "failing_process",
-    "long_running_process",
-    "pydantic_parse_check",
 ]

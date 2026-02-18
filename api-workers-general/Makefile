@@ -40,18 +40,10 @@ format-unsafe: ## Run ruff for all package files. CHANGES CODE
 	uv run --module ruff format ${PACKAGE}
 	uv run --module ruff check ${PACKAGE} --fix --unsafe-fixes --show-fixes
 
-run-taskiq-scheduler: # Run taskiq scheduler. Only one scheduler can be run at a time. It only sends tasks to the workers, doesn't execute them
+run-worker: ## Run Hatchet general worker
 	uv lock --locked
-	uv run --module taskiq scheduler worker.broker:scheduler -fsd -tp 'src/worker/tasks/*.py'
+	uv run --module worker.main
 
-run-taskiq-workers: # Run 2 taskiq workers using threadpools ( Default )
+test-task-logic: ## Run Hatchet task-logic tests
 	uv lock --locked
-	RUN_MODE=worker uv run --module taskiq worker worker.broker:broker --workers 2 -fsd -tp 'src/worker/tasks/*.py'
-
-run-taskiq-workers-processpool: # Run 2 taskiq workers using processpools
-	uv lock --locked
-	RUN_MODE=worker uv run --module taskiq worker worker.broker:broker --use-process-pool --workers 2 -fsd -tp 'src/worker/tasks/*.py'
-
-run-taskiq-main: # Run taskiq main to test the workers and the broker
-	uv lock --locked
-	uv run --module main
+	uv run --with pytest python -m pytest tests/test_hatchet_task_logic.py
