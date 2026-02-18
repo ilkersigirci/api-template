@@ -1,5 +1,5 @@
 [project]
-name = "api_template"
+name = "fastapi_template"
 version = "0.0.1"
 description = "FastAPI Template with Industry Standard Observability"
 readme = "README.md"
@@ -13,7 +13,7 @@ maintainers = [
 ]
 
 keywords = [
-    "api_template"
+    "fastapi_template"
 ]
 
 classifiers = [
@@ -81,7 +81,7 @@ addopts = [
 #    "--strict-markers",
 #    "--doctest-modules",
     # NOTE: cov is not working with pycharm debugger. Enable it later!
-#    "--cov api_template",
+#    "--cov fastapi_template",
 #    "--cov-report=xml",
 #    "--cov-report html",
 ]
@@ -133,7 +133,7 @@ extend-exclude = [
 # "*.ipynb" = ["E501"]  # disable line-too-long in notebooks
 
 # "path/to/file.py" = ["E402"]
-# 'api_template/__init__.py' = ['F405', 'F403']
+# 'fastapi_template/__init__.py' = ['F405', 'F403']
 
 # [tool.ruff.flake8-quotes]
 # inline-quotes = "single"

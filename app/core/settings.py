@@ -51,7 +51,7 @@ class Settings(SharedBaseSettings):
 
     model_config = SettingsConfigDict(
         env_file=".env",
-        # env_prefix="API_TEMPLATE_",
+        # env_prefix="FASTAPI_TEMPLATE_",
         env_file_encoding="utf-8",
         extra="ignore",
     )
