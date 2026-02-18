@@ -1,7 +1,7 @@
 #
 # Stage: builder
 #
-ARG PYTHON_VERSION=3.11
+ARG PYTHON_VERSION=3.13
 FROM ghcr.io/astral-sh/uv:0.10.0-python${PYTHON_VERSION}-trixie-slim AS builder
 
 ENV \
@@ -30,21 +30,22 @@ RUN --mount=type=cache,target=/root/.cache/uv,sharing=locked \
 #
 FROM builder AS development
 
+ENV HATCHET_WORKER_NAME=general-worker
 
-CMD ["uv", "run", "--module", "taskiq", "worker", "worker.broker:broker", "--use-process-pool", "--workers", "5", "-fsd", "-tp", "src/worker/tasks/*.py"]
-
+CMD ["uv", "run", "--module", "worker.main"]
 
 #
 # Stage: production
 #
-ARG PYTHON_VERSION=3.11
+ARG PYTHON_VERSION=3.13
 FROM python:${PYTHON_VERSION}-slim-trixie AS production
 
 ENV \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONFAULTHANDLER=1 \
-    PATH="/app/.venv/bin:$PATH"
+    PATH="/app/.venv/bin:$PATH" \
+    HATCHET_WORKER_NAME=general-worker
 
 RUN groupadd --system --gid 999 nonroot \
     && useradd --system --gid 999 --uid 999 --create-home nonroot
@@ -53,7 +54,6 @@ COPY --from=builder --chown=nonroot:nonroot /api-shared /api-shared
 COPY --from=builder --chown=nonroot:nonroot /app /app
 
 USER nonroot
-
 WORKDIR /app
 
-CMD ["python", "-m", "taskiq", "worker", "worker.broker:broker", "--use-process-pool", "--workers", "5", "-fsd", "-tp", "src/worker/tasks/*.py"]
+CMD ["python", "-m", "worker.main"]

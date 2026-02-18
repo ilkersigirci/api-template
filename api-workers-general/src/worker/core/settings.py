@@ -1,13 +1,13 @@
-from api_shared.core.settings import RunMode, SharedBaseSettings
+from api_shared.core.settings import SharedBaseSettings
+from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
 
 class Settings(SharedBaseSettings):
-    RUN_MODE: RunMode = RunMode.WORKER
+    HATCHET_WORKER_NAME: str = Field(default="general-worker")
 
     model_config = SettingsConfigDict(
         env_file=".env",
-        # env_prefix="FASTAPI_TEMPLATE_WORKER_",
         env_file_encoding="utf-8",
         extra="ignore",
     )

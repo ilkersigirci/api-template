@@ -1,9 +1,10 @@
 import torch
-from api_shared.tasks.ml import MLInferenceResult
+from api_shared.tasks.ml import ML_INFERENCE_TASK, MLInferenceInput, MLInferenceResult
+from hatchet_sdk import Context
 from loguru import logger
 from torch import nn
 
-from worker.broker import broker
+from worker.runner import hatchet
 
 
 class SimpleModel(nn.Module):
@@ -16,25 +17,19 @@ class SimpleModel(nn.Module):
         return self.softmax(self.linear(x))
 
 
-@broker.task(task_name="ml_inference")
-async def ml_inference_task(model_id: str, input_data: dict) -> MLInferenceResult:
-    """
-    Perform ML inference on input data.
+@hatchet.task(
+    name=ML_INFERENCE_TASK,
+    input_validator=MLInferenceInput,
+)
+async def ml_inference_task(input: MLInferenceInput, ctx: Context) -> MLInferenceResult:
+    logger.info("Running ML inference with model: {}", input.model_id)
+    ctx.log(f"ML inference started for model_id={input.model_id}")
 
-    Args:
-        model_id: Identifier for the ML model to use.
-        input_data: Input data for inference.
-
-    Returns:
-        Inference results.
-    """
-    logger.info(f"Running ML inference with model: {model_id}")
-
-    features = input_data.get("features", [1.0] * 10)
+    features = input.input_data.get("features", [1.0] * 10)
     input_tensor = torch.tensor([features], dtype=torch.float32)
 
     input_size = len(features)
-    output_size = input_data.get("num_classes", 3)
+    output_size = input.input_data.get("num_classes", 3)
     model = SimpleModel(input_size, output_size)
     model.eval()
 
@@ -44,7 +39,7 @@ async def ml_inference_task(model_id: str, input_data: dict) -> MLInferenceResul
         confidence = float(torch.max(output).item())
 
     result = MLInferenceResult(
-        model_id=model_id,
+        model_id=input.model_id,
         predictions=predictions,
         confidence=confidence,
     )

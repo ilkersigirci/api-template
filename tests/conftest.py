@@ -1,7 +1,6 @@
 from typing import Any, AsyncGenerator, Generator
 
 import pytest
-from api_shared.services.redis.deps import redis_state
 from app.api.application import get_app
 from app.api.auth.utils import create_access_token, get_password_hash
 from app.api.items.models import ItemModel
@@ -11,11 +10,8 @@ from app.core.settings import settings
 from app.db.deps import get_db_session
 from app.db.meta import meta
 from app.db.utils import create_database, drop_database, load_all_db_models
-from fakeredis import FakeServer
-from fakeredis.aioredis import FakeConnection
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
-from redis.asyncio import ConnectionPool
 from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -149,25 +145,8 @@ async def dbsession(
 
 
 @pytest.fixture
-async def fake_redis_pool() -> AsyncGenerator[ConnectionPool, None]:
-    """Get instance of a fake redis.
-
-    Yields:
-        FakeRedis instance.
-    """
-    server = FakeServer()
-    server.connected = True
-    pool = ConnectionPool(connection_class=FakeConnection, server=server)
-
-    yield pool
-
-    await pool.disconnect()
-
-
-@pytest.fixture
 def fastapi_app(
     dbsession: AsyncSession,
-    fake_redis_pool: ConnectionPool,
 ) -> Generator[FastAPI, None, None]:
     """Fixture for creating FastAPI app.
 
@@ -176,11 +155,10 @@ def fastapi_app(
     """
     application = get_app()
     application.dependency_overrides[get_db_session] = lambda: dbsession
-    redis_state.redis_pool = fake_redis_pool
     try:
         yield application
     finally:
-        redis_state.redis_pool = None
+        application.dependency_overrides.clear()
 
 
 @pytest.fixture

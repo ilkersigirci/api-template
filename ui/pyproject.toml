@@ -9,7 +9,7 @@ dependencies = [
 ]
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py313"
 line-length = 88
 src = ["src"]
 respect-gitignore = true

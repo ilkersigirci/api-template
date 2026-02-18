@@ -1,8 +1,16 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from api_shared.broker import broker_manager
+ML_INFERENCE_TASK = "ml_inference"
+TRAIN_MODEL_TASK = "train_model"
 
-ml_broker = broker_manager.get_broker("ml")
+
+class MLInferenceInput(BaseModel):
+    model_id: str = Field(..., description="ID of the ML model to use for inference")
+    input_data: dict = Field(
+        ...,
+        description="Input data with 'features' and optional 'num_classes'",
+        examples=[{"features": [1.0, 2.0, 3.0], "num_classes": 3}],
+    )
 
 
 class MLInferenceResult(BaseModel):
@@ -11,48 +19,21 @@ class MLInferenceResult(BaseModel):
     confidence: float
 
 
-@ml_broker.task(task_name="ml_inference")
-async def ml_inference_task(model_id: str, input_data: dict) -> MLInferenceResult:
-    """
-    Perform ML inference on input data.
-
-    This task is implemented in the ML worker package.
-    It will be processed by ML workers listening to the 'taskiq_ml' queue.
-
-    Args:
-        model_id: Identifier for the ML model to use.
-        input_data: Input data for inference.
-
-    Returns:
-        Inference results with predictions and confidence scores.
-    """
-    raise NotImplementedError("This task is implemented in the ML worker package")
+class MLTrainingInput(BaseModel):
+    dataset_id: str = Field(..., description="ID of the dataset to use for training")
+    model_configuration: dict = Field(
+        ...,
+        description="Model config with 'input_size' and 'output_size'",
+        examples=[{"input_size": 10, "output_size": 1}],
+    )
+    hyperparameters: dict = Field(
+        ...,
+        description="Training hyperparameters: epochs, learning_rate, batch_size",
+        examples=[{"epochs": 5, "learning_rate": 0.01, "batch_size": 32}],
+    )
 
 
 class MLTrainingResult(BaseModel):
     dataset_id: str
     model_id: str
     training_metrics: dict[str, float | int]
-
-
-@ml_broker.task(task_name="train_model")
-async def train_model_task(
-    dataset_id: str,
-    model_config: dict,
-    hyperparameters: dict,
-) -> MLTrainingResult:
-    """
-    Train an ML model with given configuration.
-
-    This task is implemented in the ML worker package.
-    It will be processed by ML workers listening to the 'taskiq_ml' queue.
-
-    Args:
-        dataset_id: Identifier for the training dataset.
-        model_config: Model architecture configuration.
-        hyperparameters: Training hyperparameters.
-
-    Returns:
-        Training results and model metadata.
-    """
-    raise NotImplementedError("This task is implemented in the ML worker package")

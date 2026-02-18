@@ -39,3 +39,7 @@ format-unsafe: ## Run ruff for all package files. CHANGES CODE
 	uv lock --locked
 	uv run --module ruff format ${PACKAGE}
 	uv run --module ruff check ${PACKAGE} --fix --unsafe-fixes --show-fixes
+
+test: ## Run api-shared tests
+	uv lock --locked
+	uv run --with pytest python -m pytest tests/test_dummy.py

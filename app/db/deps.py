@@ -1,21 +1,11 @@
-from typing import Annotated, AsyncGenerator
+from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
-from taskiq import TaskiqDepends
 
 
-async def get_db_session(
-    request: Annotated[Request, TaskiqDepends()],
-) -> AsyncGenerator[AsyncSession, None]:
-    """Create and get database session.
-
-    Args:
-        request: current request.
-
-    Yields:
-        session: database session.
-    """
+async def get_db_session(request: Request) -> AsyncGenerator[AsyncSession, None]:
+    """Create and get database session."""
     session: AsyncSession = request.app.state.db_session_factory()
 
     try:
