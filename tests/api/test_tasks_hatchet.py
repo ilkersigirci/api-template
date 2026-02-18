@@ -42,12 +42,16 @@ class FakeRuns:
         return self.status
 
     def get_run_ref(self, workflow_run_id: str) -> FakeRunRef:
-        return FakeRunRef(workflow_run_id=workflow_run_id, result_payload=self.result_payload)
+        return FakeRunRef(
+            workflow_run_id=workflow_run_id, result_payload=self.result_payload
+        )
 
     async def aio_get(self, workflow_run_id: str) -> V1WorkflowRunDetails:
         now = datetime.now(timezone.utc)
         output = self.result_payload if self.status == V1TaskStatus.COMPLETED else {}
-        error_message = self.error_status if self.status == V1TaskStatus.FAILED else None
+        error_message = (
+            self.error_status if self.status == V1TaskStatus.FAILED else None
+        )
 
         run = V1WorkflowRun(
             metadata=APIResourceMeta(
@@ -124,7 +128,9 @@ def fake_hatchet(fastapi_app: FastAPI) -> FakeHatchet:
 async def test_trigger_general_task(
     fastapi_app: FastAPI, client: AsyncClient, fake_hatchet: FakeHatchet
 ) -> None:
-    response = await client.post("/api/v1/tasks/general/long-running", json={"duration": 2})
+    response = await client.post(
+        "/api/v1/tasks/general/long-running", json={"duration": 2}
+    )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["metadata"]["id"] == "long_running_process-run-id"
@@ -132,7 +138,9 @@ async def test_trigger_general_task(
 
 
 @pytest.mark.anyio
-async def test_general_task_result_completed(client: AsyncClient, fake_hatchet: FakeHatchet) -> None:
+async def test_general_task_result_completed(
+    client: AsyncClient, fake_hatchet: FakeHatchet
+) -> None:
     fake_hatchet.runs.status = V1TaskStatus.COMPLETED
     fake_hatchet.runs.result_payload = {"elapsed": 1.23}
 
@@ -144,7 +152,9 @@ async def test_general_task_result_completed(client: AsyncClient, fake_hatchet: 
 
 
 @pytest.mark.anyio
-async def test_trigger_ml_training_task(client: AsyncClient, fake_hatchet: FakeHatchet) -> None:
+async def test_trigger_ml_training_task(
+    client: AsyncClient, fake_hatchet: FakeHatchet
+) -> None:
     payload = {
         "dataset_id": "ds-1",
         "model_configuration": {"input_size": 8, "output_size": 2},
@@ -158,7 +168,9 @@ async def test_trigger_ml_training_task(client: AsyncClient, fake_hatchet: FakeH
 
 
 @pytest.mark.anyio
-async def test_ml_task_result_failed(client: AsyncClient, fake_hatchet: FakeHatchet) -> None:
+async def test_ml_task_result_failed(
+    client: AsyncClient, fake_hatchet: FakeHatchet
+) -> None:
     fake_hatchet.runs.status = V1TaskStatus.FAILED
     fake_hatchet.runs.error_status = "FAILED"
 

@@ -143,6 +143,7 @@ async def dbsession(
         await trans.rollback()
         await connection.close()
 
+
 @pytest.fixture
 def fastapi_app(
     dbsession: AsyncSession,
