@@ -14,6 +14,18 @@ logfire projects use api-template
 
 Set in `.env`: `OLTP_LOG_METHOD=logfire`
 
+## Langfuse
+
+Set in `.env`: `OLTP_LOG_METHOD=langfuse`
+
+Also set the following in `.env`:
+
+```bash
+LANGFUSE_BASE_URL=FILL_IT
+LANGFUSE_PUBLIC_KEY=FILL_IT
+LANGFUSE_SECRET_KEY=FILL_IT
+```
+
 ## Hatchet
 
 Background workflows are powered by [Hatchet](https://hatchet.run).

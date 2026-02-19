@@ -1,5 +1,8 @@
+from importlib import import_module
+
 import logfire
 from api_shared.core.settings import OLTPLogMethod
+from api_shared.utils.general import is_module_installed
 from fastapi import FastAPI
 from loguru import logger  # noqa: F401
 from opentelemetry import trace
@@ -19,6 +22,16 @@ from prometheus_fastapi_instrumentator.instrumentation import (
 )
 
 from app.core.settings import settings
+
+
+def _configure_langfuse_or_raise() -> None:
+    if not is_module_installed("langfuse"):  # pragma: no cover
+        raise RuntimeError(
+            "OLTP_LOG_METHOD=langfuse requires optional dependency 'langfuse'. "
+            "Install extras with `uv sync --extra langfuse`."
+        )
+
+    import_module("langfuse").Langfuse()
 
 
 def setup_opentelemetry(app):  # pragma: no cover
@@ -46,6 +59,18 @@ def setup_opentelemetry(app):  # pragma: no cover
         # if settings.OLTP_STD_LOGGING_ENABLED is True:
         #     logger.configure(handlers=[logfire.loguru_handler()])
 
+        return
+
+    if settings.OLTP_LOG_METHOD == OLTPLogMethod.LANGFUSE:
+        _configure_langfuse_or_raise()
+        tracer_provider = trace.get_tracer_provider()
+        FastAPIInstrumentor.instrument_app(
+            app,
+            tracer_provider=tracer_provider,
+            excluded_urls=excluded_urls,
+        )
+        if settings.OLTP_STD_LOGGING_ENABLED is True:
+            LoggingInstrumentor().instrument(tracer_provider=tracer_provider)
         return
 
     resource = Resource(

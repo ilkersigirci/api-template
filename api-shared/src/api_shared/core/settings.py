@@ -25,6 +25,7 @@ class OLTPLogMethod(StrEnum):
     NONE = "none"
     MANUAL = "manual"
     LOGFIRE = "logfire"
+    LANGFUSE = "langfuse"
 
 
 class SharedBaseSettings(BaseSettings):
@@ -36,7 +37,7 @@ class SharedBaseSettings(BaseSettings):
     )
     OLTP_LOG_METHOD: OLTPLogMethod = Field(
         default=OLTPLogMethod.NONE,
-        description="OpenTelemetry logging method (none, manual, logfire).",
+        description="OpenTelemetry logging method (none, manual, logfire, langfuse).",
     )
     OTLP_ENDPOINT: CustomHttpUrlStr | None = Field(
         default=None,

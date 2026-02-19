@@ -7,11 +7,18 @@ requires-python = ">=3.11"
 dependencies = [
     "hatchet-sdk[otel]>=1.24",
     "httpx>=0.28.1",
-    "logfire[httpx,system-metrics]>=3.12.0",
     "loguru>=0.7.3",
     "opentelemetry-distro[otlp]>=0.52b0",
     "opentelemetry-instrumentation-logging>=0.52b0",
     "pydantic-settings>=2.8.1",
+]
+
+[project.optional-dependencies]
+logfire = [
+    "logfire[httpx,system-metrics]>=3.12.0",
+]
+langfuse = [
+    "langfuse>=3.2.4",
 ]
 
 [dependency-groups]

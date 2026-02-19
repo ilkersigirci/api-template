@@ -33,7 +33,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "api-shared",
+    "api-shared[langfuse,logfire]",
     "pandas>=3.0.0",
     "torch>=2.10.0",
 ]
