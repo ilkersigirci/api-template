@@ -1,4 +1,5 @@
-import logfire
+from importlib import import_module
+
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
@@ -12,6 +13,27 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 from api_shared.core.settings import OLTPLogMethod
+from api_shared.utils.general import is_module_installed
+
+
+def _get_logfire_or_raise():
+    if not is_module_installed("logfire"):  # pragma: no cover
+        raise RuntimeError(
+            "OLTP_LOG_METHOD=logfire requires optional dependency 'logfire'. "
+            "Install dependency with `api-shared[logfire]`."
+        )
+
+    return import_module("logfire")
+
+
+def _configure_langfuse_or_raise() -> None:
+    if not is_module_installed("langfuse"):  # pragma: no cover
+        raise RuntimeError(
+            "OLTP_LOG_METHOD=langfuse requires optional dependency 'langfuse'. "
+            "Install extras with `uv sync --extra langfuse`."
+        )
+
+    import_module("langfuse").Langfuse()
 
 
 def setup_opentelemetry_worker(settings):
@@ -20,6 +42,7 @@ def setup_opentelemetry_worker(settings):
         return
 
     if settings.OLTP_LOG_METHOD == OLTPLogMethod.LOGFIRE:
+        logfire = _get_logfire_or_raise()
         logfire.configure(environment=settings.ENVIRONMENT.value)
         logfire.instrument_system_metrics()
         logfire.instrument_httpx()
@@ -28,6 +51,14 @@ def setup_opentelemetry_worker(settings):
         # if settings.OLTP_STD_LOGGING_ENABLED is True:
         #     logger.configure(handlers=[logfire.loguru_handler()])
 
+        return
+
+    if settings.OLTP_LOG_METHOD == OLTPLogMethod.LANGFUSE:
+        _configure_langfuse_or_raise()
+        if settings.OLTP_STD_LOGGING_ENABLED is True:
+            LoggingInstrumentor().instrument(
+                tracer_provider=trace.get_tracer_provider()
+            )
         return
 
     resource = Resource(
@@ -40,7 +71,7 @@ def setup_opentelemetry_worker(settings):
     trace_provider = TracerProvider(resource=resource)
     otlp_exporter = OTLPSpanExporter(endpoint=settings.OTLP_ENDPOINT, insecure=True)
     trace_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
-    if getattr(settings, "OLTP_STD_LOGGING_ENABLED", False):
+    if settings.OLTP_STD_LOGGING_ENABLED is True:
         LoggingInstrumentor().instrument(tracer_provider=trace_provider)
     trace.set_tracer_provider(trace_provider)
 

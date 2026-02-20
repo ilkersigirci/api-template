@@ -35,7 +35,7 @@ classifiers = [
 dependencies = [
     "aiosqlite>=0.21.0",
     "alembic>=1.15.2",
-    "api-shared",
+    "api-shared[langfuse,logfire]",
     # "fastapi-users[oauth,sqlalchemy]>=14.0.1",
     "fastapi[standard]>=0.115.11",
     "logfire[fastapi]>=3.12.0",
