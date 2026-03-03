@@ -59,6 +59,6 @@ class UserRepository(BaseDBRepository[UserModel]):
         db_obj = self.model(**user_data)
 
         self.session.add(db_obj)
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(db_obj)
         return db_obj

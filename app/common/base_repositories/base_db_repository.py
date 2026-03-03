@@ -45,7 +45,7 @@ class BaseDBRepository(BaseRepository[T], Generic[T]):
     async def create(self, obj_in: BaseModel) -> T:
         obj = self.model(**obj_in.model_dump())
         self.session.add(obj)
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(obj)
         return obj
 
@@ -64,7 +64,7 @@ class BaseDBRepository(BaseRepository[T], Generic[T]):
         for key, value in update_data.items():
             setattr(obj, key, value)
         self.session.add(obj)
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(obj)
         return obj
 
@@ -76,5 +76,5 @@ class BaseDBRepository(BaseRepository[T], Generic[T]):
         if not obj:
             return False
         await self.session.delete(obj)
-        await self.session.commit()
+        await self.session.flush()
         return True
