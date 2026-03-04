@@ -40,11 +40,11 @@ def create_access_token(
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(
-            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+            minutes=settings.JWT_ACCESS_TOKEN_EXPIRY_MINUTES
         )
 
     to_encode = {"exp": expire, "sub": str(subject)}
-    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 ```
 
 The token includes:
@@ -98,7 +98,7 @@ def get_current_user(
 ) -> User:
     try:
         payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
         )
         token_data = TokenPayload(**payload)
 
@@ -151,21 +151,21 @@ async def read_current_user(
 
 Authentication settings are defined in `app/core/config.py`:
 
-- `SECRET_KEY`: Used for signing JWT tokens
-- `ALGORITHM`: Algorithm used for JWT token signing (HS256)
-- `ACCESS_TOKEN_EXPIRE_MINUTES`: Token expiration time in minutes
+- `JWT_SECRET_KEY`: Used for signing JWT tokens
+- `JWT_ALGORITHM`: Algorithm used for JWT token signing (HS256)
+- `JWT_ACCESS_TOKEN_EXPIRY_MINUTES`: Token expiration time in minutes
 
 These settings can be overridden using environment variables.
 
 ## Security Considerations
 
-1. **Token Expiration**: Tokens have a limited lifetime defined by `ACCESS_TOKEN_EXPIRE_MINUTES`.
+1. **Token Expiration**: Tokens have a limited lifetime defined by `JWT_ACCESS_TOKEN_EXPIRY_MINUTES`.
 
 2. **Secure Password Storage**: Passwords are hashed using bcrypt before storage.
 
 3. **HTTPS**: In production, all API endpoints should be served over HTTPS to prevent token interception.
 
-4. **Secret Key**: The `SECRET_KEY` should be kept secure and changed in production environments.
+4. **Secret Key**: The `JWT_SECRET_KEY` should be kept secure and changed in production environments.
 
 ## Possible Enhancements
 

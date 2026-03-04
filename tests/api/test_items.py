@@ -112,69 +112,56 @@ async def test_create_item_without_description(
 
 
 @pytest.mark.anyio
+@pytest.mark.parametrize(
+    "payload,missing_field",
+    [
+        ({"price": 15.99}, "name"),
+        ({"name": "Missing Price Item"}, "price"),
+    ],
+)
 async def test_create_item_missing_required_fields(
     fastapi_app: FastAPI,
     client_authenticated: AsyncClient,
+    payload: dict,
+    missing_field: str,
 ) -> None:
     """Test creating a new item with missing required fields.
 
     Args:
         fastapi_app: current application fixture.
         client_authenticated: client fixture with authentication.
+        payload: request body missing a required field.
+        missing_field: the field expected to be in the validation error.
     """
     url = fastapi_app.url_path_for("create_item")
-    # Missing name
-    response = await client_authenticated.post(
-        url,
-        json={"price": 15.99},
-    )
+    response = await client_authenticated.post(url, json=payload)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     data = response.json()
     assert "detail" in data
-    assert any("name" in error["loc"] for error in data["detail"])
-
-    # Missing price
-    response = await client_authenticated.post(
-        url,
-        json={"name": "Missing Price Item"},
-    )
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-    data = response.json()
-    assert "detail" in data
-    assert any("price" in error["loc"] for error in data["detail"])
+    assert any(missing_field in error["loc"] for error in data["detail"])
 
 
 @pytest.mark.anyio
+@pytest.mark.parametrize("price", [-10.0, 0.0])
 async def test_create_item_invalid_price(
     fastapi_app: FastAPI,
     client_authenticated: AsyncClient,
+    price: float,
 ) -> None:
-    """Test creating a new item with invalid price value.
+    """Test creating a new item with edge-case price values.
 
     Args:
         fastapi_app: current application fixture.
         client_authenticated: client fixture with authentication.
+        price: price value to test (negative or zero).
     """
     url = fastapi_app.url_path_for("create_item")
-    # Negative price - the API currently accepts negative prices
     response = await client_authenticated.post(
         url,
-        json={"name": "Negative Price Item", "price": -10.0},
+        json={"name": "Test Price Item", "price": price},
     )
     assert response.status_code == status.HTTP_200_OK
-    data = response.json()
-    assert data["name"] == "Negative Price Item"
-    assert data["price"] == -10.0
-
-    # Zero price - the API currently accepts zero prices
-    response = await client_authenticated.post(
-        url,
-        json={"name": "Zero Price Item", "price": 0.0},
-    )
-    assert response.status_code == status.HTTP_200_OK
-    data = response.json()
-    assert data["name"] == "Zero Price Item"
-    assert data["price"] == 0.0
+    assert response.json()["price"] == price
 
 
 @pytest.mark.anyio
@@ -282,33 +269,31 @@ async def test_delete_nonexistent_item(
 
 
 @pytest.mark.anyio
+@pytest.mark.parametrize(
+    "method,route,kwargs",
+    [
+        ("get", "get_items", {}),
+        ("get", "get_item", {"item_id": 1}),
+        ("post", "create_item", {}),
+    ],
+)
 async def test_access_items_unauthorized(
     fastapi_app: FastAPI,
     client: AsyncClient,
+    method: str,
+    route: str,
+    kwargs: dict,
 ) -> None:
     """Test accessing items endpoints without authentication.
 
     Args:
         fastapi_app: current application fixture.
         client: client fixture without authentication.
+        method: HTTP method to use.
+        route: route name to resolve.
+        kwargs: extra arguments for url_path_for.
     """
-    # Try to get all items
-    url = fastapi_app.url_path_for("get_items")
-    response = await client.get(url)
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    assert "detail" in response.json()
-
-    # Try to get a specific item
-    url = fastapi_app.url_path_for("get_item", item_id=1)
-    response = await client.get(url)
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    assert "detail" in response.json()
-
-    # Try to create an item
-    url = fastapi_app.url_path_for("create_item")
-    response = await client.post(
-        url,
-        json={"name": "Unauthorized Item", "price": 25.99},
-    )
+    url = fastapi_app.url_path_for(route, **kwargs)
+    response = await getattr(client, method)(url)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert "detail" in response.json()

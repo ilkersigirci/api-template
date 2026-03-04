@@ -20,18 +20,22 @@ def create_access_token(
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(
-            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+            minutes=settings.JWT_ACCESS_TOKEN_EXPIRY_MINUTES
         )
 
     to_encode = {"exp": expire, "sub": str(subject)}
-    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return jwt.encode(
+        to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
+    )
 
 
 def decode_access_token(token: str) -> dict[str, Any]:
     """
     Decode a JWT access token.
     """
-    return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    return jwt.decode(
+        token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+    )
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
