@@ -21,8 +21,8 @@ class LogLevel(StrEnum):
 
 
 class Settings(SharedBaseSettings):
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    ALGORITHM: str = "HS256"
+    JWT_ACCESS_TOKEN_EXPIRY_MINUTES: int = 30
+    JWT_ALGORITHM: str = "HS256"
     API_PREFIX: str = "/api/v1"
     CORS_ORIGINS: list[str] = Field(default_factory=lambda: ["*"])
     DB_ECHO: bool = False
@@ -36,7 +36,7 @@ class Settings(SharedBaseSettings):
         description="This variable is used to define multiproc_dir.It's required for [uvi|guni]corn projects.",
     )
     RELOAD: bool = False
-    SECRET_KEY: str = "CHANGE_ME_IN_PRODUCTION"
+    JWT_SECRET_KEY: str = "CHANGE_ME_IN_PRODUCTION"
     UVICORN_WORKERS: int = 1
 
     @property

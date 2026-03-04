@@ -169,7 +169,9 @@ class UserService:
         if not user_in_db or not verify_password(password, user_in_db.hashed_password):
             raise AuthenticationError("Incorrect email or password")
 
-        access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token_expires = timedelta(
+            minutes=settings.JWT_ACCESS_TOKEN_EXPIRY_MINUTES
+        )
         access_token = create_access_token(
             subject=str(user_in_db.id), expires_delta=access_token_expires
         )
