@@ -20,6 +20,9 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+_BASE_URL = "http://test"
+_TIMEOUT = 2.0
+
 
 @pytest.fixture(scope="session")
 def mock_users_data() -> list[dict[str, Any]]:
@@ -164,21 +167,19 @@ def fastapi_app(
 @pytest.fixture
 async def client(
     fastapi_app: FastAPI,
-    anyio_backend: Any,
 ) -> AsyncGenerator[AsyncClient, None]:
-    """Fixture that creates client for requesting server.
+    """Fixture that creates an unauthenticated client for requesting the server.
 
     Args:
         fastapi_app: the application.
-        anyio_backend: backend for anyio pytest plugin.
 
     Yields:
-        client for the app.
+        Unauthenticated client for the app.
     """
     transport = ASGITransport(app=fastapi_app)
 
     async with AsyncClient(
-        transport=transport, base_url="http://test", timeout=2.0
+        transport=transport, base_url=_BASE_URL, timeout=_TIMEOUT
     ) as ac:
         yield ac
 
@@ -194,7 +195,7 @@ def normal_user_token():
 
 
 @pytest.fixture
-def normal_user_token_headers(normal_user_token):
+def normal_user_token_headers(normal_user_token: str) -> dict[str, str]:
     """Return authorization headers for normal user.
 
     Args:
@@ -217,27 +218,18 @@ def test_user():
 
 
 @pytest.fixture
-async def client_authenticated(
-    fastapi_app: FastAPI,
-    anyio_backend: Any,
-    normal_user_token_headers,
-) -> AsyncGenerator[AsyncClient, None]:
-    """Fixture that creates client for requesting server with headers.
+def client_authenticated(
+    client: AsyncClient,
+    normal_user_token_headers: dict[str, str],
+) -> AsyncClient:
+    """Return an authenticated client by injecting auth headers into the base client.
 
     Args:
-        fastapi_app: the application.
-        anyio_backend: backend for anyio pytest plugin.
-        normal_user_token_headers: headers for normal user.
+        client: base unauthenticated client fixture.
+        normal_user_token_headers: authorization headers for normal user.
 
-    Yields:
-        client for the app.
+    Returns:
+        Client with authorization headers pre-set.
     """
-    transport = ASGITransport(app=fastapi_app)
-
-    async with AsyncClient(
-        transport=transport,
-        base_url="http://test",
-        headers=normal_user_token_headers,
-        timeout=2.0,
-    ) as ac:
-        yield ac
+    client.headers.update(normal_user_token_headers)
+    return client

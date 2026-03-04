@@ -7,18 +7,16 @@ from starlette import status
 @pytest.mark.anyio
 async def test_get_users(
     fastapi_app: FastAPI,
-    client: AsyncClient,
-    normal_user_token_headers,
+    client_authenticated: AsyncClient,
 ) -> None:
     """Test getting all users.
 
     Args:
         fastapi_app: current application fixture.
-        client: client fixture.
-        normal_user_token_headers: headers with normal user token.
+        client_authenticated: client fixture with authentication.
     """
     url = fastapi_app.url_path_for("get_users")
-    response = await client.get(url, headers=normal_user_token_headers)
+    response = await client_authenticated.get(url)
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert isinstance(data, list)
@@ -31,18 +29,16 @@ async def test_get_users(
 @pytest.mark.anyio
 async def test_get_current_user(
     fastapi_app: FastAPI,
-    client: AsyncClient,
-    normal_user_token_headers,
+    client_authenticated: AsyncClient,
 ) -> None:
     """Test getting the current user.
 
     Args:
         fastapi_app: current application fixture.
-        client: client fixture.
-        normal_user_token_headers: headers with normal user token.
+        client_authenticated: client fixture with authentication.
     """
     url = fastapi_app.url_path_for("get_current_user_info")
-    response = await client.get(url, headers=normal_user_token_headers)
+    response = await client_authenticated.get(url)
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert data["id"] == 1
@@ -53,18 +49,16 @@ async def test_get_current_user(
 @pytest.mark.anyio
 async def test_get_specific_user(
     fastapi_app: FastAPI,
-    client: AsyncClient,
-    normal_user_token_headers,
+    client_authenticated: AsyncClient,
 ) -> None:
     """Test getting a specific user by ID.
 
     Args:
         fastapi_app: current application fixture.
-        client: client fixture.
-        normal_user_token_headers: headers with normal user token.
+        client_authenticated: client fixture with authentication.
     """
     url = fastapi_app.url_path_for("get_user", user_id=2)
-    response = await client.get(url, headers=normal_user_token_headers)
+    response = await client_authenticated.get(url)
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert data["id"] == 2
@@ -75,18 +69,16 @@ async def test_get_specific_user(
 @pytest.mark.anyio
 async def test_get_nonexistent_user(
     fastapi_app: FastAPI,
-    client: AsyncClient,
-    normal_user_token_headers,
+    client_authenticated: AsyncClient,
 ) -> None:
     """Test getting a user that doesn't exist.
 
     Args:
         fastapi_app: current application fixture.
-        client: client fixture.
-        normal_user_token_headers: headers with normal user token.
+        client_authenticated: client fixture with authentication.
     """
     url = fastapi_app.url_path_for("get_user", user_id=999)
-    response = await client.get(url, headers=normal_user_token_headers)
+    response = await client_authenticated.get(url)
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["detail"] == "User with id 999 not found"
 
@@ -94,20 +86,17 @@ async def test_get_nonexistent_user(
 @pytest.mark.anyio
 async def test_create_user(
     fastapi_app: FastAPI,
-    client: AsyncClient,
-    normal_user_token_headers,
+    client_authenticated: AsyncClient,
 ) -> None:
     """Test creating a new user.
 
     Args:
         fastapi_app: current application fixture.
-        client: client fixture.
-        normal_user_token_headers: headers with normal user token.
+        client_authenticated: client fixture with authentication.
     """
     url = fastapi_app.url_path_for("create_user")
-    response = await client.post(
+    response = await client_authenticated.post(
         url,
-        headers=normal_user_token_headers,
         json={
             "name": "Created User",
             "email": "created@example.com",
@@ -124,20 +113,17 @@ async def test_create_user(
 @pytest.mark.anyio
 async def test_update_user(
     fastapi_app: FastAPI,
-    client: AsyncClient,
-    normal_user_token_headers,
+    client_authenticated: AsyncClient,
 ) -> None:
     """Test updating a user.
 
     Args:
         fastapi_app: current application fixture.
-        client: client fixture.
-        normal_user_token_headers: headers with normal user token.
+        client_authenticated: client fixture with authentication.
     """
     url = fastapi_app.url_path_for("update_user", user_id=2)
-    response = await client.put(
+    response = await client_authenticated.put(
         url,
-        headers=normal_user_token_headers,
         json={"name": "Updated Jane", "email": "updated_jane@example.com"},
     )
     assert response.status_code == status.HTTP_200_OK
@@ -150,20 +136,17 @@ async def test_update_user(
 @pytest.mark.anyio
 async def test_update_nonexistent_user(
     fastapi_app: FastAPI,
-    client: AsyncClient,
-    normal_user_token_headers,
+    client_authenticated: AsyncClient,
 ) -> None:
     """Test updating a user that doesn't exist.
 
     Args:
         fastapi_app: current application fixture.
-        client: client fixture.
-        normal_user_token_headers: headers with normal user token.
+        client_authenticated: client fixture with authentication.
     """
     url = fastapi_app.url_path_for("update_user", user_id=999)
-    response = await client.put(
+    response = await client_authenticated.put(
         url,
-        headers=normal_user_token_headers,
         json={"name": "Ghost User", "email": "ghost@example.com"},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -173,21 +156,18 @@ async def test_update_nonexistent_user(
 @pytest.mark.anyio
 async def test_delete_user(
     fastapi_app: FastAPI,
-    client: AsyncClient,
-    normal_user_token_headers,
+    client_authenticated: AsyncClient,
 ) -> None:
     """Test deleting a user.
 
     Args:
         fastapi_app: current application fixture.
-        client: client fixture.
-        normal_user_token_headers: headers with normal user token.
+        client_authenticated: client fixture with authentication.
     """
     # First create a user to delete
     create_url = fastapi_app.url_path_for("create_user")
-    create_response = await client.post(
+    create_response = await client_authenticated.post(
         create_url,
-        headers=normal_user_token_headers,
         json={
             "name": "To Delete",
             "email": "to_delete@example.com",
@@ -198,11 +178,11 @@ async def test_delete_user(
 
     # Now delete the user
     delete_url = fastapi_app.url_path_for("delete_user", user_id=user_id)
-    delete_response = await client.delete(delete_url, headers=normal_user_token_headers)
+    delete_response = await client_authenticated.delete(delete_url)
     assert delete_response.status_code == status.HTTP_200_OK
     assert delete_response.json()["message"] == "User deleted successfully"
 
     # Verify the user is gone
     get_url = fastapi_app.url_path_for("get_user", user_id=user_id)
-    get_response = await client.get(get_url, headers=normal_user_token_headers)
+    get_response = await client_authenticated.get(get_url)
     assert get_response.status_code == status.HTTP_404_NOT_FOUND

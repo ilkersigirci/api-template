@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+import pytest
 from app.api.auth.utils import (
     create_access_token,
     get_password_hash,
@@ -22,22 +23,9 @@ def test_password_hashing():
     assert verify_password("wrong_password", hashed_password) is False
 
 
-def test_create_access_token():
-    """Test token creation."""
-    subject = "test_user_id"
-    token = create_access_token(subject=subject)
-
-    # Simply check that we get a non-empty string
-    assert isinstance(token, str)
-    assert len(token) > 0
-
-
-def test_create_access_token_with_expiry():
-    """Test token creation with custom expiry time."""
-    subject = "test_user_id"
-    expires_delta = timedelta(minutes=5)
-    token = create_access_token(subject=subject, expires_delta=expires_delta)
-
-    # Simply check that we get a non-empty string
+@pytest.mark.parametrize("expires_delta", [None, timedelta(minutes=5)])
+def test_create_access_token(expires_delta):
+    """Test token creation with and without a custom expiry time."""
+    token = create_access_token(subject="test_user_id", expires_delta=expires_delta)
     assert isinstance(token, str)
     assert len(token) > 0
